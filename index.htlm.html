@@ -682,26 +682,48 @@ const lsg=k=>{try{const v=ls(k);return v?JSON.parse(v):null;}catch{return null;}
 window.onload=async()=>{
   initOnboarding();
 
-  // Auth state change - detecte PASSWORD_RECOVERY automatiquement
-  sb.auth.onAuthStateChange(async(event, session)=>{
+  const params=new URLSearchParams(window.location.search);
+  const hash=window.location.hash;
+
+  // PRIORITE 1: Lien de reinitialisation mot de passe (PKCE - nouveau Supabase)
+  const code=params.get('code');
+  if(code){
+    window.history.replaceState({},document.title,window.location.pathname);
+    try{
+      const {error}=await sb.auth.exchangeCodeForSession(code);
+      if(!error){
+        showScreen('auth');
+        showResetPassword();
+        return;
+      }
+    }catch(e){}
+  }
+
+  // PRIORITE 2: Lien de reinitialisation mot de passe (ancien hash Supabase)
+  if(hash&&hash.includes('type=recovery')){
+    window.history.replaceState({},document.title,window.location.pathname);
+    const hashParams=new URLSearchParams(hash.replace('#',''));
+    const token=hashParams.get('access_token');
+    if(token){
+      try{await sb.auth.setSession({access_token:token,refresh_token:hashParams.get('refresh_token')||''});}catch(e){}
+    }
+    showScreen('auth');
+    showResetPassword();
+    return;
+  }
+
+  // Detecter PASSWORD_RECOVERY via auth state change (backup)
+  sb.auth.onAuthStateChange((event)=>{
     if(event==='PASSWORD_RECOVERY'){
       showScreen('auth');
       showResetPassword();
-      return;
-    }
-    if(event==='SIGNED_IN' && session && !currentUser){
-      // Auto-login apres reset mot de passe
-      currentUser=session.user;
-      await loadUserData();
-      showHome();
     }
   });
 
   const legal=ls('only5:legal_accepted');
   if(!legal){showScreen('legal');return;}
 
-  // Verifier retour Stripe ?plan=xxx&paid=1
-  const params=new URLSearchParams(window.location.search);
+  // PRIORITE 3: Retour Stripe apres paiement
   const paidPlan=params.get('plan');
   if(paidPlan&&params.get('paid')==='1'){
     window.history.replaceState({},document.title,window.location.pathname);
@@ -764,37 +786,54 @@ function acceptLegal(){
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
-function showLogin(){
-  document.getElementById('login-form').style.display='block';
-  document.getElementById('register-form').style.display='none';
-  document.getElementById('forgot-form').style.display='none';
-  document.getElementById('reset-form').style.display='none';
-}
+function showLogin(){hideAllAuthForms();document.getElementById('login-form').style.display='block';}
 function showRegister(){
   document.getElementById('login-form').style.display='none';
   document.getElementById('register-form').style.display='block';
   document.getElementById('forgot-form').style.display='none';
 }
-function showForgot(){
-  document.getElementById('login-form').style.display='none';
-  document.getElementById('register-form').style.display='none';
-  document.getElementById('forgot-form').style.display='block';
-  document.getElementById('reset-form').style.display='none';
+let forgotEmail='';
+function hideAllAuthForms(){
+  ['login-form','register-form','forgot-form','otp-form','reset-form'].forEach(id=>{
+    try{const el=document.getElementById(id);if(el)el.style.display='none';}catch(e){}
+  });
 }
-function showResetPassword(){
-  document.getElementById('login-form').style.display='none';
-  document.getElementById('register-form').style.display='none';
-  document.getElementById('forgot-form').style.display='none';
-  document.getElementById('reset-form').style.display='block';
+function showForgot(){hideAllAuthForms();document.getElementById('forgot-form').style.display='block';}
+function showOtpForm(){hideAllAuthForms();document.getElementById('otp-form').style.display='block';}
+function showResetPassword(){hideAllAuthForms();document.getElementById('reset-form').style.display='block';}
+
+async function doForgotSendCode(resend=false){
+  const emailField=document.getElementById('forgot-email');
+  const email=resend?forgotEmail:(emailField?emailField.value.trim().toLowerCase():'');
+  if(!email){showErr('forgot-err','Entrez votre email.');return;}
+  forgotEmail=email;
+  showLoading(true);
+  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:false}});
+  showLoading(false);
+  if(error){showErr('forgot-err','Email non trouve ou erreur: '+error.message);return;}
+  const lbl=document.getElementById('otp-email-label');
+  if(lbl)lbl.textContent='Code envoye a '+email;
+  showOtpForm();
+}
+async function doVerifyOtp(){
+  const code=document.getElementById('otp-code').value.trim();
+  if(!code||code.length<6){showErr('otp-err','Entrez le code a 6 chiffres.');return;}
+  showLoading(true);
+  const {error}=await sb.auth.verifyOtp({email:forgotEmail,token:code,type:'email'});
+  showLoading(false);
+  if(error){showErr('otp-err','Code incorrect ou expire. Reessayez.');return;}
+  showResetPassword();
 }
 async function doReset(){
   const pwd=document.getElementById('reset-password').value;
   const pwd2=document.getElementById('reset-password2').value;
   if(!pwd||pwd.length<6){showErr('reset-err','Mot de passe : 6 caracteres minimum.');return;}
   if(pwd!==pwd2){showErr('reset-err','Les mots de passe ne correspondent pas.');return;}
+  showLoading(true);
   const {error}=await sb.auth.updateUser({password:pwd});
+  showLoading(false);
   if(error){showErr('reset-err','Erreur: '+error.message);return;}
-  alert('Mot de passe modifie avec succes ! Connectez-vous avec votre nouveau mot de passe.');
+  alert('Mot de passe modifie ! Vous pouvez vous connecter.');
   showLogin();
 }
 async function doForgot(){
