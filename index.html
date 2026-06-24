@@ -11,6 +11,7 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMEEwQTBBIi8+PHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjRjVDNTE4Ij7ilaU8L3RleHQ+PC9zdmc+">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:#0A0A0A;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
@@ -163,7 +164,10 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
   <div id="login-form" style="width:100%;max-width:340px">
     <div style="color:#F5C518;font-weight:700;font-size:20px;margin-bottom:20px;text-align:center">Connexion</div>
     <input id="login-email" type="email" inputmode="email" autocomplete="email" placeholder="Adresse email" class="auth-input">
-    <input id="login-password" type="password" autocomplete="current-password" placeholder="Mot de passe" class="auth-input" onkeydown="if(event.key==='Enter')doLogin()">
+    <div style="position:relative">
+      <input id="login-password" type="password" autocomplete="current-password" placeholder="Mot de passe" class="auth-input" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:48px">
+      <button type="button" onclick="togglePwd('login-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#888;padding:4px">🙈</button>
+    </div>
     <div id="login-err" style="color:#E8202A;font-size:13px;text-align:center;margin-bottom:10px;display:none"></div>
     <button class="btn btn-gold" onclick="doLogin()">Se connecter &#8594;</button>
     <div style="text-align:center;margin-top:14px">
@@ -178,9 +182,68 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
   <div id="register-form" style="width:100%;max-width:340px;display:none">
     <div style="color:#F5C518;font-weight:700;font-size:20px;margin-bottom:6px;text-align:center">Creer un compte</div>
     <div style="color:#666;font-size:13px;text-align:center;margin-bottom:20px">Essai gratuit · 3 envois offerts</div>
-    <input id="reg-email" type="email" inputmode="email" autocomplete="email" placeholder="Adresse email" class="auth-input">
-    <input id="reg-password" type="password" autocomplete="new-password" placeholder="Mot de passe (8 car. min)" class="auth-input">
-    <input id="reg-password2" type="password" autocomplete="new-password" placeholder="Confirmer le mot de passe" class="auth-input" onkeydown="if(event.key==='Enter')doRegister()">
+    <input id="reg-email" type="email" inputmode="email" autocomplete="email" placeholder="Adresse email" class="auth-input" data-ph="email">
+    <div style="position:relative">
+      <input id="reg-password" type="password" autocomplete="new-password" placeholder="Mot de passe (8 car. min)" class="auth-input" data-ph="mdp_min" style="padding-right:48px">
+      <button type="button" onclick="togglePwd('reg-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#888;padding:4px">🙈</button>
+    </div>
+    <div style="position:relative">
+      <input id="reg-password2" type="password" autocomplete="new-password" placeholder="Confirmer le mot de passe" class="auth-input" data-ph="confirmer_mdp" onkeydown="if(event.key==='Enter')doRegister()" style="padding-right:48px">
+      <button type="button" onclick="togglePwd('reg-password2',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#888;padding:4px">🙈</button>
+    </div>
+    <select id="reg-lang" onchange="setLang(this.value)" style="width:100%;padding:12px 14px;border:1.5px solid #333;border-radius:12px;background:#1A1A1A;color:#fff;font-size:14px;margin-bottom:10px;font-family:inherit;outline:none">
+      <option value="" disabled>🌍 Choisir votre langue</option>
+    </select>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <select id="reg-indicatif" style="width:140px;min-width:140px;padding:12px 8px;border:1.5px solid #333;border-radius:12px;background:#1A1A1A;color:#fff;font-size:13px;font-family:inherit;outline:none">
+        <option value="+33">🇫🇷 +33</option>
+        <option value="+92">🇵🇰 +92</option>
+        <option value="+44">🇬🇧 +44</option>
+        <option value="+1">🇺🇸 +1</option>
+        <option value="+213">🇩🇿 +213</option>
+        <option value="+212">🇲🇦 +212</option>
+        <option value="+216">🇹🇳 +216</option>
+        <option value="+221">🇸🇳 +221</option>
+        <option value="+225">🇨🇮 +225</option>
+        <option value="+226">🇧🇫 +226</option>
+        <option value="+223">🇲🇱 +223</option>
+        <option value="+237">🇨🇲 +237</option>
+        <option value="+243">🇨🇩 +243</option>
+        <option value="+234">🇳🇬 +234</option>
+        <option value="+254">🇰🇪 +254</option>
+        <option value="+251">🇪🇹 +251</option>
+        <option value="+91">🇮🇳 +91</option>
+        <option value="+880">🇧🇩 +880</option>
+        <option value="+62">🇮🇩 +62</option>
+        <option value="+60">🇲🇾 +60</option>
+        <option value="+63">🇵🇭 +63</option>
+        <option value="+84">🇻🇳 +84</option>
+        <option value="+66">🇹🇭 +66</option>
+        <option value="+86">🇨🇳 +86</option>
+        <option value="+81">🇯🇵 +81</option>
+        <option value="+82">🇰🇷 +82</option>
+        <option value="+7">🇷🇺 +7</option>
+        <option value="+380">🇺🇦 +380</option>
+        <option value="+49">🇩🇪 +49</option>
+        <option value="+34">🇪🇸 +34</option>
+        <option value="+39">🇮🇹 +39</option>
+        <option value="+351">🇵🇹 +351</option>
+        <option value="+31">🇳🇱 +31</option>
+        <option value="+32">🇧🇪 +32</option>
+        <option value="+41">🇨🇭 +41</option>
+        <option value="+90">🇹🇷 +90</option>
+        <option value="+966">🇸🇦 +966</option>
+        <option value="+971">🇦🇪 +971</option>
+        <option value="+20">🇪🇬 +20</option>
+        <option value="+55">🇧🇷 +55</option>
+        <option value="+52">🇲🇽 +52</option>
+        <option value="+54">🇦🇷 +54</option>
+        <option value="+57">🇨🇴 +57</option>
+        <option value="+27">🇿🇦 +27</option>
+        <option value="+61">🇦🇺 +61</option>
+      </select>
+      <input id="reg-phone" type="tel" inputmode="tel" placeholder="Votre numero" class="auth-input" style="flex:1;margin-bottom:0">
+    </div>
     <div id="reg-err" style="color:#E8202A;font-size:13px;text-align:center;margin-bottom:10px;display:none"></div>
     <button class="btn btn-gold" onclick="doRegister()">Creer mon compte &#8594;</button>
     <div style="text-align:center;margin-top:16px">
@@ -223,8 +286,14 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div style="color:#F5C518;font-weight:700;font-size:22px;margin-bottom:6px">Nouveau mot de passe</div>
       <div style="color:#666;font-size:13px">Code verifie ! Choisissez votre nouveau mot de passe.</div>
     </div>
-    <input id="reset-password" type="password" autocomplete="new-password" placeholder="Nouveau mot de passe" class="auth-input">
-    <input id="reset-password2" type="password" autocomplete="new-password" placeholder="Confirmer le mot de passe" class="auth-input" onkeydown="if(event.key==='Enter')doReset()">
+    <div style="position:relative">
+      <input id="reset-password" type="password" autocomplete="new-password" placeholder="Nouveau mot de passe" class="auth-input" style="padding-right:48px">
+      <button type="button" onclick="togglePwd('reset-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#888;padding:4px">🙈</button>
+    </div>
+    <div style="position:relative">
+      <input id="reset-password2" type="password" autocomplete="new-password" placeholder="Confirmer le mot de passe" class="auth-input" onkeydown="if(event.key==='Enter')doReset()" style="padding-right:48px">
+      <button type="button" onclick="togglePwd('reset-password2',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#888;padding:4px">🙈</button>
+    </div>
     <div id="reset-err" style="color:#E8202A;font-size:13px;text-align:center;margin-bottom:10px;display:none"></div>
     <button class="btn btn-gold" onclick="doReset()">Enregistrer &#8594;</button>
   </div>
@@ -320,8 +389,45 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <span class="sec-title" style="margin:0">Client</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn-sm" style="background:#1565C0;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-weight:700;display:flex;align-items:center;gap:5px" onclick="document.getElementById('ocr-input').click()">📷 Photo</button>
+          <button class="btn-sm" onclick="saveCurrentClient()">+ Sauvegarder</button>
+        </div>
+      </div>
+      <!-- SCANNER MODAL -->
+      <div id="scanner-modal" style="display:none;position:fixed;inset:0;background:#000;z-index:9999;flex-direction:column">
+        <div style="position:relative;flex:1;display:flex;align-items:center;justify-content:center">
+          <video id="scanner-video" autoplay playsinline style="width:100%;height:100%;object-fit:cover"></video>
+          <!-- Cadre viseur -->
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+            <div style="width:85%;height:80px;border:3px solid #F5C518;border-radius:8px;box-shadow:0 0 0 2000px rgba(0,0,0,0.55)">
+              <div style="position:absolute;top:-28px;left:0;right:0;text-align:center;color:#F5C518;font-size:13px;font-weight:700" id="scanner-hint">Cadre la ligne Client:</div>
+              <!-- Coins -->
+              <div style="position:absolute;top:-3px;left:-3px;width:20px;height:20px;border-top:4px solid #F5C518;border-left:4px solid #F5C518;border-radius:3px 0 0 0"></div>
+              <div style="position:absolute;top:-3px;right:-3px;width:20px;height:20px;border-top:4px solid #F5C518;border-right:4px solid #F5C518;border-radius:0 3px 0 0"></div>
+              <div style="position:absolute;bottom:-3px;left:-3px;width:20px;height:20px;border-bottom:4px solid #F5C518;border-left:4px solid #F5C518;border-radius:0 0 0 3px"></div>
+              <div style="position:absolute;bottom:-3px;right:-3px;width:20px;height:20px;border-bottom:4px solid #F5C518;border-right:4px solid #F5C518;border-radius:0 0 3px 0"></div>
+            </div>
+          </div>
+          <!-- Ligne de scan animée -->
+          <div id="scan-line" style="position:absolute;left:7.5%;width:85%;height:2px;background:rgba(245,197,24,0.7);animation:scanline 2s linear infinite"></div>
+        </div>
+        <div style="background:#0A0A0A;padding:16px 20px 32px;display:flex;flex-direction:column;gap:10px">
+          <div id="scanner-status" style="color:#F5C518;text-align:center;font-size:13px;font-weight:700;min-height:20px"></div>
+          <div style="display:flex;gap:10px">
+            <button id="scanner-btn-prenom" onclick="scanCapture('nom')" style="flex:1;padding:14px;background:#1565C0;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit">👤 Capturer Prénom</button>
+            <button id="scanner-btn-tel" onclick="scanCapture('tel')" style="flex:1;padding:14px;background:#25D366;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit">📞 Capturer Tél</button>
+          </div>
+          <button onclick="closeScanner()" style="width:100%;padding:12px;background:#333;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">✕ Fermer</button>
+        </div>
+        <canvas id="scanner-canvas" style="display:none"></canvas>
+      </div>
+      <style>@keyframes scanline{0%{top:calc(50% - 40px)}50%{top:calc(50% + 40px)}100%{top:calc(50% - 40px)}}</style>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button onclick="openScanner()" style="flex:1;padding:12px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">📷 Scanner Kezia</button>
         <button class="btn-sm" onclick="saveCurrentClient()">+ Sauvegarder</button>
       </div>
+      <div id="ocr-loading" style="display:none;text-align:center;padding:10px;color:#1565C0;font-size:13px;font-weight:700">🔍 Analyse en cours...</div>
       <input id="send-prenom" class="inp" placeholder="Prenom du client" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words">
       <input id="send-phone" class="inp" type="tel" inputmode="tel" placeholder="Telephone" autocomplete="off">
     </div>
@@ -493,7 +599,52 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div class="sec-title">Modifier le profil</div>
       <span class="label">Nom de la boutique</span><input id="edit-boutique" class="inp" autocomplete="off">
       <span class="label">Prenom du gerant</span><input id="edit-gerant" class="inp" autocomplete="off">
-      <span class="label">WhatsApp boutique</span><input id="edit-whatsapp" class="inp" type="tel" autocomplete="off">
+      <span class="label">WhatsApp boutique</span>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <select id="edit-indicatif" style="width:130px;min-width:130px;padding:10px 8px;border:1.5px solid #E0E0E0;border-radius:10px;background:#fff;color:#333;font-size:13px;font-family:inherit;outline:none">
+          <option value="+33">🇫🇷 +33</option>
+          <option value="+92">🇵🇰 +92</option>
+          <option value="+44">🇬🇧 +44</option>
+          <option value="+1">🇺🇸 +1</option>
+          <option value="+213">🇩🇿 +213</option>
+          <option value="+212">🇲🇦 +212</option>
+          <option value="+216">🇹🇳 +216</option>
+          <option value="+221">🇸🇳 +221</option>
+          <option value="+225">🇨🇮 +225</option>
+          <option value="+226">🇧🇫 +226</option>
+          <option value="+223">🇲🇱 +223</option>
+          <option value="+237">🇨🇲 +237</option>
+          <option value="+243">🇨🇩 +243</option>
+          <option value="+234">🇳🇬 +234</option>
+          <option value="+254">🇰🇪 +254</option>
+          <option value="+251">🇪🇹 +251</option>
+          <option value="+91">🇮🇳 +91</option>
+          <option value="+880">🇧🇩 +880</option>
+          <option value="+62">🇮🇩 +62</option>
+          <option value="+60">🇲🇾 +60</option>
+          <option value="+63">🇵🇭 +63</option>
+          <option value="+84">🇻🇳 +84</option>
+          <option value="+66">🇹🇭 +66</option>
+          <option value="+86">🇨🇳 +86</option>
+          <option value="+81">🇯🇵 +81</option>
+          <option value="+82">🇰🇷 +82</option>
+          <option value="+7">🇷🇺 +7</option>
+          <option value="+380">🇺🇦 +380</option>
+          <option value="+49">🇩🇪 +49</option>
+          <option value="+34">🇪🇸 +34</option>
+          <option value="+39">🇮🇹 +39</option>
+          <option value="+351">🇵🇹 +351</option>
+          <option value="+31">🇳🇱 +31</option>
+          <option value="+90">🇹🇷 +90</option>
+          <option value="+966">🇸🇦 +966</option>
+          <option value="+971">🇦🇪 +971</option>
+          <option value="+20">🇪🇬 +20</option>
+          <option value="+55">🇧🇷 +55</option>
+          <option value="+27">🇿🇦 +27</option>
+          <option value="+61">🇦🇺 +61</option>
+        </select>
+        <input id="edit-whatsapp" class="inp" type="tel" autocomplete="off" placeholder="06 12 34 56 78" style="flex:1;margin-bottom:0">
+      </div>
       <span class="label">Lien Google My Business</span><input id="edit-google" class="inp" autocomplete="off">
       <span class="label">SIRET</span><input id="edit-siret" class="inp" autocomplete="off">
       <span class="label">Couleur principale</span>
@@ -504,7 +655,66 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         <button class="btn btn-black" style="flex:2" onclick="saveProfile()">Enregistrer</button>
       </div>
     </div>
-    <button class="btn btn-red" onclick="logout()">Se deconnecter</button>
+    <div class="card">
+      <div class="sec-title" data-t="langue">Langue</div>
+      <select id="settings-lang" onchange="setLang(this.value)" style="width:100%;padding:12px 14px;border:1.5px solid #333;border-radius:12px;background:#1A1A1A;color:#fff;font-size:14px;margin-bottom:8px;font-family:inherit;outline:none"></select>
+    </div>
+    <div class="card">
+      <div class="sec-title">Numéro WhatsApp boutique</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <select id="settings-indicatif" style="width:140px;min-width:140px;padding:12px 8px;border:1.5px solid #E0E0E0;border-radius:10px;background:#fff;color:#333;font-size:13px;font-family:inherit;outline:none">
+          <option value="+33">🇫🇷 +33</option>
+          <option value="+92">🇵🇰 +92</option>
+          <option value="+44">🇬🇧 +44</option>
+          <option value="+1">🇺🇸 +1</option>
+          <option value="+213">🇩🇿 +213</option>
+          <option value="+212">🇲🇦 +212</option>
+          <option value="+216">🇹🇳 +216</option>
+          <option value="+221">🇸🇳 +221</option>
+          <option value="+225">🇨🇮 +225</option>
+          <option value="+226">🇧🇫 +226</option>
+          <option value="+223">🇲🇱 +223</option>
+          <option value="+237">🇨🇲 +237</option>
+          <option value="+243">🇨🇩 +243</option>
+          <option value="+234">🇳🇬 +234</option>
+          <option value="+254">🇰🇪 +254</option>
+          <option value="+251">🇪🇹 +251</option>
+          <option value="+91">🇮🇳 +91</option>
+          <option value="+880">🇧🇩 +880</option>
+          <option value="+62">🇮🇩 +62</option>
+          <option value="+60">🇲🇾 +60</option>
+          <option value="+63">🇵🇭 +63</option>
+          <option value="+84">🇻🇳 +84</option>
+          <option value="+66">🇹🇭 +66</option>
+          <option value="+86">🇨🇳 +86</option>
+          <option value="+81">🇯🇵 +81</option>
+          <option value="+82">🇰🇷 +82</option>
+          <option value="+7">🇷🇺 +7</option>
+          <option value="+380">🇺🇦 +380</option>
+          <option value="+49">🇩🇪 +49</option>
+          <option value="+34">🇪🇸 +34</option>
+          <option value="+39">🇮🇹 +39</option>
+          <option value="+351">🇵🇹 +351</option>
+          <option value="+31">🇳🇱 +31</option>
+          <option value="+32">🇧🇪 +32</option>
+          <option value="+41">🇨🇭 +41</option>
+          <option value="+90">🇹🇷 +90</option>
+          <option value="+966">🇸🇦 +966</option>
+          <option value="+971">🇦🇪 +971</option>
+          <option value="+20">🇪🇬 +20</option>
+          <option value="+55">🇧🇷 +55</option>
+          <option value="+52">🇲🇽 +52</option>
+          <option value="+54">🇦🇷 +54</option>
+          <option value="+57">🇨🇴 +57</option>
+          <option value="+27">🇿🇦 +27</option>
+          <option value="+61">🇦🇺 +61</option>
+        </select>
+        <input id="settings-whatsapp-num" type="tel" inputmode="tel" placeholder="Votre numéro" class="inp" style="flex:1;margin-bottom:0">
+      </div>
+      <button class="btn btn-black" onclick="saveWhatsappSettings()">Enregistrer le numéro</button>
+      <div id="wa-settings-ok" style="display:none;color:#25D366;font-size:13px;font-weight:700;text-align:center;margin-top:8px">✓ Numéro mis à jour !</div>
+    </div>
+    <button class="btn btn-red" onclick="logout()" data-t="se_deconnecter">Se deconnecter</button>
     <div style="text-align:center;padding:20px;font-size:11px;color:#CCC">&#169; 2025 B2TF Prod · Only&#9733;5</div>
   </div>
 </div>
@@ -527,9 +737,193 @@ const AUTH_FORMS=['login-form','register-form','forgot-form','otp-form','reset-f
 function showOnly(formId){AUTH_FORMS.forEach(f=>{const el=safe(f);if(el)el.style.display='none';});const el=safe(formId);if(el)el.style.display='block';}
 
 // ── SUPABASE ──────────────────────────────────────────────────────────────────
+// ── TRADUCTIONS ───────────────────────────────────────────────────────────────
+const LANGUAGES={
+  'fr':'🇫🇷 Français',
+  'en':'🇬🇧 English',
+  'ur':'🇵🇰 اردو',
+  'ar':'🇸🇦 العربية',
+  'es':'🇪🇸 Español',
+  'pt':'🇵🇹 Português',
+  'de':'🇩🇪 Deutsch',
+  'it':'🇮🇹 Italiano',
+  'zh':'🇨🇳 中文',
+  'ru':'🇷🇺 Русский',
+  'ja':'🇯🇵 日本語',
+  'ko':'🇰🇷 한국어',
+  'tr':'🇹🇷 Türkçe',
+  'nl':'🇳🇱 Nederlands',
+  'pl':'🇵🇱 Polski',
+  'sv':'🇸🇪 Svenska',
+  'hi':'🇮🇳 हिन्दी',
+  'vi':'🇻🇳 Tiếng Việt',
+  'id':'🇮🇩 Bahasa Indonesia',
+  'th':'🇹🇭 ไทย',
+  'sw':'🇰🇪 Kiswahili',
+  'wo':'🇸🇳 Wolof',
+  'ha':'🇳🇬 Hausa',
+  'am':'🇪🇹 አማርኛ',
+  'fa':'🇮🇷 فارسی',
+  'uk':'🇺🇦 Українська',
+  'ro':'🇷🇴 Română',
+  'hu':'🇭🇺 Magyar',
+  'cs':'🇨🇿 Čeština',
+  'el':'🇬🇷 Ελληνικά',
+  'fi':'🇫🇮 Suomi',
+  'da':'🇩🇰 Dansk',
+  'no':'🇳🇴 Norsk',
+  'af':'🇿🇦 Afrikaans',
+  'tl':'🇵🇭 Filipino',
+  'ms':'🇲🇾 Bahasa Melayu',
+  'bn':'🇧🇩 বাংলা',
+};
+
+const TRANSLATIONS={
+  fr:{
+    connexion:'Connexion',creer_compte:'Creer un compte',email:'Adresse email',
+    mot_de_passe:'Mot de passe',se_connecter:'Se connecter',mdp_oublie:'Mot de passe oublie ?',
+    pas_de_compte:'Pas de compte ?',creer_lien:'Creer un compte',retour:'← Retour connexion',
+    essai:'Essai gratuit · 3 envois offerts',mdp_min:'Mot de passe (8 car. min)',
+    confirmer_mdp:'Confirmer le mot de passe',creer_btn:'Creer mon compte →',
+    envoyer:'Envoyer',clients:'Clients',stats:'Stats',messages:'Messages',
+    reglages:'Reglages',abonnement:'Abonnement',langue:'Langue',
+    choisir_langue:'Choisir votre langue',enregistrer:'Enregistrer',
+    se_deconnecter:'Se deconnecter',profil:'Votre profil',modifier:'Modifier',
+    nouveau_mdp:'Nouveau mot de passe',confirmer_nouveau_mdp:'Confirmer le nouveau mot de passe',
+    changer_mdp:'Changer le mot de passe →',plan_actuel:'PLAN ACTUEL',essai_gratuit:'Essai gratuit',
+    envois_offerts:'3 envois offerts',choisir:'Choisir',bonjour:'Bonjour',
+    prenom_client:'Prenom du client',telephone:'Telephone',apercu:'Apercu',
+    sauvegarder:'+ Sauvegarder',nouveau_client:'Nouveau client',
+    version_demo:'Version demo',envois_restants:'envois restants',
+    whatsapp_btn:'WhatsApp',sms_btn:'SMS',mes_messages:'Mes messages',
+    nouveau:'+ Nouveau',variables:'Variables',annuler:'Annuler',supprimer:'Sup',
+    editer:'Editer',nom_modele:'Nom du modele',
+  },
+  en:{
+    connexion:'Login',creer_compte:'Create account',email:'Email address',
+    mot_de_passe:'Password',se_connecter:'Sign in',mdp_oublie:'Forgot password?',
+    pas_de_compte:'No account?',creer_lien:'Create account',retour:'← Back to login',
+    essai:'Free trial · 3 messages offered',mdp_min:'Password (8 char. min)',
+    confirmer_mdp:'Confirm password',creer_btn:'Create my account →',
+    envoyer:'Send',clients:'Clients',stats:'Stats',messages:'Messages',
+    reglages:'Settings',abonnement:'Subscription',langue:'Language',
+    choisir_langue:'Choose your language',enregistrer:'Save',
+    se_deconnecter:'Sign out',profil:'Your profile',modifier:'Edit',
+    nouveau_mdp:'New password',confirmer_nouveau_mdp:'Confirm new password',
+    changer_mdp:'Change password →',plan_actuel:'CURRENT PLAN',essai_gratuit:'Free trial',
+    envois_offerts:'3 messages offered',choisir:'Choose',bonjour:'Hello',
+    prenom_client:'Client first name',telephone:'Phone',apercu:'Preview',
+    sauvegarder:'+ Save',nouveau_client:'New client',
+    version_demo:'Demo version',envois_restants:'messages left',
+    whatsapp_btn:'WhatsApp',sms_btn:'SMS',mes_messages:'My messages',
+    nouveau:'+ New',variables:'Variables',annuler:'Cancel',supprimer:'Del',
+    editer:'Edit',nom_modele:'Template name',
+  },
+  es:{
+    connexion:'Iniciar sesión',creer_compte:'Crear cuenta',email:'Correo electrónico',
+    mot_de_passe:'Contraseña',se_connecter:'Entrar',mdp_oublie:'¿Olvidaste tu contraseña?',
+    pas_de_compte:'¿Sin cuenta?',creer_lien:'Crear cuenta',retour:'← Volver',
+    essai:'Prueba gratis · 3 envíos',mdp_min:'Contraseña (8 car. mín)',
+    confirmer_mdp:'Confirmar contraseña',creer_btn:'Crear mi cuenta →',
+    envoyer:'Enviar',clients:'Clientes',stats:'Estadísticas',messages:'Mensajes',
+    reglages:'Ajustes',abonnement:'Suscripción',langue:'Idioma',
+    choisir_langue:'Elige tu idioma',enregistrer:'Guardar',
+    se_deconnecter:'Cerrar sesión',profil:'Tu perfil',modifier:'Editar',
+    nouveau_mdp:'Nueva contraseña',confirmer_nouveau_mdp:'Confirmar nueva contraseña',
+    changer_mdp:'Cambiar contraseña →',plan_actuel:'PLAN ACTUAL',essai_gratuit:'Prueba gratis',
+    envois_offerts:'3 envíos gratis',choisir:'Elegir',bonjour:'Hola',
+    prenom_client:'Nombre del cliente',telephone:'Teléfono',apercu:'Vista previa',
+    sauvegarder:'+ Guardar',nouveau_client:'Nuevo cliente',
+    version_demo:'Versión demo',envois_restants:'envíos restantes',
+    whatsapp_btn:'WhatsApp',sms_btn:'SMS',mes_messages:'Mis mensajes',
+    nouveau:'+ Nuevo',variables:'Variables',annuler:'Cancelar',supprimer:'Elim',
+    editer:'Editar',nom_modele:'Nombre plantilla',
+  },
+  ar:{
+    connexion:'تسجيل الدخول',creer_compte:'إنشاء حساب',email:'البريد الإلكتروني',
+    mot_de_passe:'كلمة المرور',se_connecter:'دخول',mdp_oublie:'نسيت كلمة المرور؟',
+    pas_de_compte:'ليس لديك حساب؟',creer_lien:'إنشاء حساب',retour:'→ العودة',
+    essai:'تجربة مجانية · 3 رسائل',mdp_min:'كلمة المرور (8 أحرف)',
+    confirmer_mdp:'تأكيد كلمة المرور',creer_btn:'إنشاء حسابي ←',
+    envoyer:'إرسال',clients:'العملاء',stats:'إحصائيات',messages:'رسائل',
+    reglages:'الإعدادات',abonnement:'الاشتراك',langue:'اللغة',
+    choisir_langue:'اختر لغتك',enregistrer:'حفظ',
+    se_deconnecter:'تسجيل الخروج',profil:'ملفك الشخصي',modifier:'تعديل',
+    nouveau_mdp:'كلمة مرور جديدة',confirmer_nouveau_mdp:'تأكيد كلمة المرور الجديدة',
+    changer_mdp:'تغيير كلمة المرور ←',plan_actuel:'الخطة الحالية',essai_gratuit:'تجربة مجانية',
+    envois_offerts:'3 رسائل مجانية',choisir:'اختر',bonjour:'مرحباً',
+    prenom_client:'اسم العميل',telephone:'هاتف',apercu:'معاينة',
+    sauvegarder:'+ حفظ',nouveau_client:'عميل جديد',
+    version_demo:'نسخة تجريبية',envois_restants:'رسائل متبقية',
+    whatsapp_btn:'واتساب',sms_btn:'رسالة',mes_messages:'رسائلي',
+    nouveau:'+ جديد',variables:'متغيرات',annuler:'إلغاء',supprimer:'حذف',
+    editer:'تعديل',nom_modele:'اسم النموذج',
+  },
+  pt:{
+    connexion:'Entrar',creer_compte:'Criar conta',email:'Endereço de email',
+    mot_de_passe:'Senha',se_connecter:'Entrar',mdp_oublie:'Esqueceu a senha?',
+    pas_de_compte:'Sem conta?',creer_lien:'Criar conta',retour:'← Voltar',
+    essai:'Teste grátis · 3 envios',mdp_min:'Senha (8 car. mín)',
+    confirmer_mdp:'Confirmar senha',creer_btn:'Criar minha conta →',
+    envoyer:'Enviar',clients:'Clientes',stats:'Estatísticas',messages:'Mensagens',
+    reglages:'Configurações',abonnement:'Assinatura',langue:'Idioma',
+    choisir_langue:'Escolha seu idioma',enregistrer:'Salvar',
+    se_deconnecter:'Sair',profil:'Seu perfil',modifier:'Editar',
+    nouveau_mdp:'Nova senha',confirmer_nouveau_mdp:'Confirmar nova senha',
+    changer_mdp:'Mudar senha →',plan_actuel:'PLANO ATUAL',essai_gratuit:'Teste grátis',
+    envois_offerts:'3 envios grátis',choisir:'Escolher',bonjour:'Olá',
+    prenom_client:'Nome do cliente',telephone:'Telefone',apercu:'Pré-visualização',
+    sauvegarder:'+ Salvar',nouveau_client:'Novo cliente',
+    version_demo:'Versão demo',envois_restants:'envios restantes',
+    whatsapp_btn:'WhatsApp',sms_btn:'SMS',mes_messages:'Minhas mensagens',
+    nouveau:'+ Novo',variables:'Variáveis',annuler:'Cancelar',supprimer:'Excl',
+    editer:'Editar',nom_modele:'Nome do modelo',
+  },
+};
+// Pour les autres langues, on copie l'anglais par défaut
+['de','it','zh','ru','ja','ko','tr','nl','pl','sv','da','fi','no','cs','hu','ro','el','he','hi','bn','ur','fa','th','vi','id','ms','tl','sw','wo','ha','yo','ig','am','so','uk','ca','hr','sk','bg','lt','lv','et','sr','mk','sq','hy','ka','az','kk','uz','mn','my','km','lo','si','ne','pa','gu','mr','ta','te','kn','ml','zu','xh','af'].forEach(code=>{
+  if(!TRANSLATIONS[code])TRANSLATIONS[code]={...TRANSLATIONS['en']};
+});
+
+let currentLang=localStorage.getItem('only5:lang')||'fr';
+function t(key){return(TRANSLATIONS[currentLang]||TRANSLATIONS['fr'])[key]||TRANSLATIONS['fr'][key]||key;}
+function setLang(code){
+  currentLang=code;
+  localStorage.setItem('only5:lang',code);
+  applyTranslations();
+}
+function applyTranslations(){
+  const rtl=['ar','he','ur','fa'];
+  document.body.style.direction=rtl.includes(currentLang)?'rtl':'ltr';
+  // Mettre à jour les tabs avec les bons labels
+  const tabLabels=['envoyer','clients','stats','messages','reglages','abonnement'];
+  const tabBtns=document.querySelectorAll('.tab-bar .tab-btn');
+  tabBtns.forEach((btn,i)=>{if(tabLabels[i])btn.textContent=t(tabLabels[i]);});
+  // Mettre à jour les éléments data-t
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const key=el.getAttribute('data-t');
+    if(key)el.textContent=t(key);
+  });
+  document.querySelectorAll('[data-ph]').forEach(el=>{
+    const key=el.getAttribute('data-ph');
+    if(key)el.placeholder=t(key);
+  });
+}
 const SUPA_URL='https://lxydusbhaulrnwgkwpmt.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4eWR1c2JoYXVscm53Z2t3cG10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODAwNzQsImV4cCI6MjA5NzI1NjA3NH0.e0meQz86SBAIAhHxgoD0CfHxncylirBnAyIbDA6crXs';
-const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage}});
+
+// ── SESSION 2H ────────────────────────────────────────────────────────────────
+const SESSION_DURATION=2*60*60*1000; // 2 heures en ms
+function updateLastActive(){localStorage.setItem('only5:lastActive',Date.now().toString());}
+function isSessionExpired(){
+  const last=localStorage.getItem('only5:lastActive');
+  if(!last)return true;
+  return Date.now()-parseInt(last)>SESSION_DURATION;
+}
+// Mettre à jour lastActive à chaque interaction
+document.addEventListener('click',updateLastActive);
+document.addEventListener('keydown',updateLastActive);
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const TRIAL_LIMIT=3;
@@ -600,7 +994,18 @@ const lsg=k=>{try{const v=ls(k);return v?JSON.parse(v):null;}catch{return null;}
 // ═══════════════════════════════════════════════════════════════════
 // INIT — CGU VERIFIEE EN PREMIER (correction principale)
 // ═══════════════════════════════════════════════════════════════════
+function initLangSelects(){
+  const opts=Object.entries(LANGUAGES).map(([code,name])=>`<option value="${code}">${name}</option>`).join('');
+  const regLang=document.getElementById('reg-lang');
+  const settingsLang=document.getElementById('settings-lang');
+  if(regLang)regLang.innerHTML=opts;
+  if(settingsLang)settingsLang.innerHTML=opts;
+  if(regLang)regLang.value=currentLang;
+  if(settingsLang)settingsLang.value=currentLang;
+  applyTranslations();
+}
 window.onload=async()=>{
+  initLangSelects();
   initOnboarding();
 
   const params=new URLSearchParams(window.location.search);
@@ -608,17 +1013,21 @@ window.onload=async()=>{
 
   // PRIORITE 1 : reset mot de passe via code PKCE (lien email Supabase)
   const code=params.get('code');
-  if(code){
-    window.history.replaceState({},document.title,window.location.pathname);
+  const type=params.get('type');
+  if(code||(type&&type==='recovery')){
     showLoading(true);
     try{
-      const {data,error}=await sb.auth.exchangeCodeForSession(code);
+      let sessionOk=false;
+      if(code){
+        const {data,error}=await sb.auth.exchangeCodeForSession(code);
+        if(!error&&data?.session)sessionOk=true;
+      }
       showLoading(false);
-      if(!error&&data?.session){
+      window.history.replaceState({},document.title,window.location.pathname);
+      if(sessionOk||type==='recovery'){
         showScreen('auth');showResetPassword();return;
       }
     }catch(e){showLoading(false);}
-    // Si echec, continuer normalement
   }
 
   // PRIORITE 2 : reset mot de passe via hash (ancien format Supabase)
@@ -668,6 +1077,13 @@ window.onload=async()=>{
   // PRIORITE 6 : session existante
   const {data:{session:existingSession}}=await sb.auth.getSession();
   if(existingSession){
+    // Vérifier si la session a expiré (2h d'inactivité)
+    if(isSessionExpired()){
+      await sb.auth.signOut();
+      showScreen('auth');showLogin();
+      return;
+    }
+    updateLastActive();
     currentUser=existingSession.user;
     await loadUserData();showHome();
     return;
@@ -757,22 +1173,39 @@ async function doReset(){
 }
 function showErr(id,msg){const el=safe(id);if(!el)return;el.textContent=msg;el.style.display='block';setTimeout(()=>{const e=safe(id);if(e)e.style.display='none';},4000);}
 
+function togglePwd(id,btn){
+  const inp=document.getElementById(id);
+  if(!inp)return;
+  if(inp.type==='password'){inp.type='text';btn.textContent='👁';}
+  else{inp.type='password';btn.textContent='🙈';}
+}
 async function doLogin(){
   const email=document.getElementById('login-email').value.trim().toLowerCase();
   const pwd=document.getElementById('login-password').value;
   if(!email||!pwd){showErr('login-err','Remplissez email et mot de passe.');return;}
   showLoading(true);
-  const {data,error}=await sb.auth.signInWithPassword({email,password:pwd});
-  showLoading(false);
-  if(error){showErr('login-err','Email ou mot de passe incorrect.');return;}
-  currentUser=data.user;
-  history=[];savedClients=[];importedClients=[];templates=[];profile=null;trialCount=0;
-  await loadUserData();showHome();
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pwd});
+    showLoading(false);
+    if(error){showErr('login-err','Erreur: '+error.message);return;}
+    if(!data?.user){showErr('login-err','Pas de session retournee.');return;}
+    currentUser=data.user;
+    updateLastActive();
+    history=[];savedClients=[];importedClients=[];templates=[];profile=null;trialCount=0;
+    await loadUserData();showHome();
+  }catch(e){
+    showLoading(false);
+    showErr('login-err','Catch: '+e.message);
+  }
 }
 async function doRegister(){
   const email=document.getElementById('reg-email').value.trim().toLowerCase();
   const pwd=document.getElementById('reg-password').value;
   const pwd2=document.getElementById('reg-password2').value;
+  const langSel=document.getElementById('reg-lang');
+  const langue=langSel?.value||'fr';
+  localStorage.setItem('only5:lang',langue);
+  currentLang=langue;
   if(!email||!pwd||!pwd2){showErr('reg-err','Remplissez tous les champs.');return;}
   if(!email.includes('@')){showErr('reg-err','Email invalide.');return;}
   if(pwd.length<8){showErr('reg-err','Mot de passe : 8 caracteres minimum.');return;}
@@ -784,25 +1217,64 @@ async function doRegister(){
   currentUser=data.user;
   await notifyNewUser(email);showScreen('onboarding');
 }
-function logout(){try{sb.auth.signOut();}catch(e){}window.location.reload();}
+async function logout(){
+  showLoading(true);
+  try{await sb.auth.signOut();}catch(e){}
+  currentUser=null;profile=null;templates=[];history=[];savedClients=[];
+  showLoading(false);
+  showScreen('auth');showLogin();
+}
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────────────────────
 async function notifyNewUser(email){
   try{await fetch('https://formsubmit.co/ajax/only5.team.pro@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'Nouvelle inscription Only5',Email:email,Date:new Date().toLocaleString('fr-FR'),Statut:'Essai gratuit'})});}catch(e){}
 }
 
-// ── LOAD USER DATA ────────────────────────────────────────────────────────────
+// ── ADMIN ACCOUNT ─────────────────────────────────────────────────────────────
+const ADMIN_EMAILS=['vassily77000@gmail.com','anasnaveed1409@gmail.com'];
+function isAdmin(){return ADMIN_EMAILS.includes(currentUser?.email?.toLowerCase());}
+
 async function loadUserData(){
   if(!currentUser)return;
   const uid=currentUser.id;showLoading(true);
   const {data:prof}=await sb.from('profiles').select('*').eq('id',uid).single();
   profile=prof||null;
+  // Compte admin → plan Business automatique
+  if(isAdmin()&&profile&&profile.plan!=='business'){
+    await sb.from('profiles').update({plan:'business'}).eq('id',uid);
+    if(profile)profile.plan='business';
+  }
+  if(isAdmin()&&profile)profile.plan='business';
   const {data:tpls}=await sb.from('templates').select('*').eq('user_id',uid).order('created_at');
-  templates=tpls&&tpls.length>0?tpls.map(t=>({id:t.id.toString(),label:t.label,color:t.color,content:t.content})):[...DEFAULT_TEMPLATES];
+  if(tpls&&tpls.length>0){
+    templates=tpls.map(t=>({id:t.id.toString(),label:t.label,color:t.color||'#F5C518',content:t.content}));
+    // Vérifier que les 4 templates par défaut sont présents
+    const sectorDefaults=getTemplatesForSector(profile?.secteur||'');
+    const existingLabels=templates.map(t=>t.label.toLowerCase());
+    const missing=sectorDefaults.filter(d=>!existingLabels.includes(d.label.toLowerCase()));
+    if(missing.length>0){
+      try{
+        const toInsert=missing.map(t=>({user_id:uid,label:t.label,content:t.content,color:t.color}));
+        const {data:newTpls}=await sb.from('templates').insert(toInsert).select();
+        if(newTpls)templates=[...templates,...newTpls.map(t=>({id:t.id.toString(),label:t.label,color:t.color||'#F5C518',content:t.content}))];
+      }catch(e){}
+    }
+  }else{
+    const sectorTpls=getTemplatesForSector(profile?.secteur||'');
+    templates=[...sectorTpls];
+    try{
+      const toInsert=templates.map(t=>({user_id:uid,label:t.label,content:t.content,color:t.color}));
+      const {data:newTpls}=await sb.from('templates').insert(toInsert).select();
+      if(newTpls)templates=newTpls.map(t=>({id:t.id.toString(),label:t.label,color:t.color||'#F5C518',content:t.content}));
+    }catch(e){}
+  }
   selTpl=templates[0]?.id||'standard';
   const {data:hist}=await sb.from('envois').select('*').eq('user_id',uid).order('sent_at',{ascending:false}).limit(20);
   history=hist||[];
-  trialCount=lsg('only5:trial:'+uid)||0;isPaid=lsg('only5:paid:'+uid)||false;
+  trialCount=lsg('only5:trial:'+uid)||0;
+  const plan=profile?.plan||'trial';
+  isPaid=(plan!=='trial')||isAdmin();
+  if(isAdmin())isPaid=true;
   savedClients=lsg('only5:saved:'+uid)||[];importedClients=lsg('only5:imported:'+uid)||[];
   showLoading(false);
 }
@@ -856,6 +1328,8 @@ async function obFinish(){
 // ── HOME ──────────────────────────────────────────────────────────────────────
 function showHome(){
   if(!profile){showScreen('onboarding');return;}
+  currentLang=profile.langue||localStorage.getItem('only5:lang')||'fr';
+  applyTranslations();
   const acc=profile.couleur||'#E8202A';
   document.documentElement.style.setProperty('--accent',acc);
   document.getElementById('home-header').style.background=acc;
@@ -904,13 +1378,178 @@ async function sendMsg(canal){
   const plan=getPlan();
   if(plan==='business'){const satisfied=confirm('Avant d envoyer, verifiez que '+prenom+' est satisfait.\n\nLe client est-il satisfait de sa visite ?');if(!satisfied){alert('Pas de demande d avis envoyee. Pensez a regler le probleme avec '+prenom+'.');return;}}
   const tpl=templates.find(t=>t.id===selTpl)||templates[0];
+  if(!tpl){alert('Aucun message selectionne.');return;}
   const msg=fillMsg(tpl.content,prenom);const fph=fmtPhone(phone);const enc=encodeURIComponent(msg);
   window.open(canal==='whatsapp'?'https://wa.me/'+fph.replace('+','')+'?text='+enc:'sms:'+fph+'?body='+enc,'_blank');
-  if(currentUser){const entry={user_id:currentUser.id,prenom,phone:fph,canal,template_id:selTpl};const {data}=await sb.from('envois').insert(entry).select().single();if(data)history=[data,...history.slice(0,19)];}
+  const entry={user_id:currentUser?.id||null,prenom,phone:fph,canal,template_id:selTpl,template_label:tpl.label,sent_at:new Date().toISOString()};
+  if(currentUser){
+    try{const {data}=await sb.from('envois').insert(entry).select().single();if(data)history=[data,...history.slice(0,49)];}catch(e){}
+  }
   if(!isPaid){trialCount++;lss('only5:trial:'+(currentUser?.id||'demo'),trialCount);updateTrialBanner();if(trialCount>=TRIAL_LIMIT)setTimeout(()=>document.getElementById('paywall').classList.add('show'),1500);}
-  const f=document.getElementById('flash-sent');f.style.display='block';setTimeout(()=>f.style.display='none',2500);clearForm();
+  const f=document.getElementById('flash-sent');if(f){f.style.display='block';setTimeout(()=>f.style.display='none',2500);}
+  // Effacer seulement prenom et telephone, garder les templates
+  document.getElementById('send-prenom').value='';
+  document.getElementById('send-phone').value='';
+  // Rafraichir stats sans toucher aux templates
+  renderStats();
 }
-function clearForm(){document.getElementById('send-prenom').value='';document.getElementById('send-phone').value='';}
+// ── OCR PHOTO ─────────────────────────────────────────────────────────────────
+
+// ── SCANNER KEZIA ─────────────────────────────────────────────────────────────
+let scannerStream=null;
+function openScanner(){
+  const modal=document.getElementById('scanner-modal');
+  modal.style.display='flex';
+  modal.style.flexDirection='column';
+  const video=document.getElementById('scanner-video');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}})
+    .then(stream=>{scannerStream=stream;video.srcObject=stream;})
+    .catch(e=>{closeScanner();alert('Caméra non accessible. Utilise le bouton photo ci-dessous.');});
+}
+function closeScanner(){
+  if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
+  document.getElementById('scanner-modal').style.display='none';
+}
+async function scanCapture(mode){
+  const video=document.getElementById('scanner-video');
+  const canvas=document.getElementById('scanner-canvas');
+  const status=document.getElementById('scanner-status');
+  // Capture frame
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(video,0,0);
+  // Crop zone centrale (bande horizontale du cadre)
+  const cropH=Math.round(canvas.height*0.18);
+  const cropY=Math.round(canvas.height*0.41);
+  const cropCanvas=document.createElement('canvas');
+  cropCanvas.width=canvas.width;
+  cropCanvas.height=cropH;
+  cropCanvas.getContext('2d').drawImage(canvas,0,cropY,canvas.width,cropH,0,0,canvas.width,cropH);
+  status.textContent='🔍 Analyse...';
+  const ocrLoading=document.getElementById('ocr-loading');
+  ocrLoading.style.display='block';
+  ocrLoading.textContent='🔍 Analyse en cours...';
+  try{
+    const {data:{text}}=await Tesseract.recognize(cropCanvas,'fra+eng',{
+      logger:m=>{if(m.status==='recognizing text'){status.textContent='🔍 '+Math.round(m.progress*100)+'%';}}
+    });
+    ocrLoading.style.display='none';
+    status.textContent='';
+    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
+    let found='';
+    if(mode==='nom'){
+      for(const line of lines){
+        if(line.toLowerCase().includes('client')){
+          const after=line.replace(/^.*client\s*[:\-=]?\s*/i,'').replace(/\(.*?\)/g,'').trim();
+          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
+          if(words.length>=2){found=words[words.length-1];break;}
+          else if(words.length===1){found=words[0];break;}
+        }
+        if(line.toLowerCase().includes('nom &')){
+          const after=line.replace(/nom\s*[&]+\s*pr[eé]nom\s*/i,'').trim();
+          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
+          if(words.length>=2){found=words[words.length-1];break;}
+          else if(words.length===1){found=words[0];break;}
+        }
+      }
+      if(found){document.getElementById('send-prenom').value=found;closeScanner();showFlash('✓ Prénom: '+found);}
+      else{status.textContent='❌ Pas de prénom trouvé. Recadre sur "Client:"';}
+    }else{
+      for(const line of lines){
+        const low=line.toLowerCase();
+        if(low.includes('tel perso')||low.includes('tel.perso')||low.includes('tel pers')||low.includes('portable')){
+          const digits=line.replace(/[^0-9]/g,'');
+          const m=digits.match(/0[67]\d{8}/);
+          if(m){found=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');break;}
+        }
+      }
+      if(!found){
+        const digits=text.replace(/[^0-9]/g,'');
+        const m=digits.match(/0[67]\d{8}/);
+        if(m)found=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+      }
+      if(found){document.getElementById('send-phone').value=found;closeScanner();showFlash('✓ Tél: '+found);}
+      else{status.textContent='❌ Pas de numéro 06/07. Recadre sur "TEL PERSO"';}
+    }
+  }catch(e){
+    ocrLoading.style.display='none';
+    status.textContent='❌ Erreur. Réessaie.';
+  }
+}
+function showFlash(msg){
+  const f=document.getElementById('flash-sent');
+  if(f){f.textContent=msg;f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
+}
+
+async function extractFromPhoto(input,mode){
+  const file=input.files[0];if(!file)return;
+  const ocrLoading=document.getElementById('ocr-loading');
+  ocrLoading.style.display='block';
+  ocrLoading.textContent='🔍 Analyse en cours...';
+  input.value='';
+  try{
+    const {data:{text}}=await Tesseract.recognize(file,'fra+eng',{
+      logger:m=>{if(m.status==='recognizing text'){ocrLoading.textContent='🔍 Analyse... '+Math.round(m.progress*100)+'%';}}
+    });
+    ocrLoading.style.display='none';
+    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
+    let telephone='';
+    let prenom='';
+
+    if(!mode||mode==='nom'||mode==='all'){
+      // Cherche "Client: NOM PRENOM" → dernier mot = prénom
+      for(const line of lines){
+        const low=line.toLowerCase();
+        if(low.includes('client')){
+          const after=line.replace(/^.*client\s*[:\-=]?\s*/i,'').replace(/\(.*?\)/g,'').trim();
+          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
+          if(words.length>=2){prenom=words[words.length-1];break;}
+          else if(words.length===1){prenom=words[0];break;}
+        }
+        // Écran Kezia: "Nom & Prénom ARNOUX SOPHIE"
+        if(low.includes('nom &')||low.includes('nom&')){
+          const after=line.replace(/nom\s*[&]+\s*pr[eé]nom\s*/i,'').trim();
+          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
+          if(words.length>=2){prenom=words[words.length-1];break;}
+          else if(words.length===1){prenom=words[0];break;}
+        }
+      }
+    }
+
+    if(!mode||mode==='tel'||mode==='all'){
+      // Cherche "TEL PERSO 06.78.66.85.33"
+      for(const line of lines){
+        const low=line.toLowerCase();
+        if(low.includes('tel perso')||low.includes('tel.perso')||low.includes('telperso')||low.includes('tel pers')||low.includes('portable')){
+          const digits=line.replace(/[^0-9]/g,'');
+          const m=digits.match(/0[67]\d{8}/);
+          if(m){telephone=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');break;}
+        }
+      }
+      // Fallback: 06/07 n'importe où dans le texte
+      if(!telephone){
+        const digits=text.replace(/[^0-9]/g,'');
+        const m=digits.match(/0[67]\d{8}/);
+        if(m)telephone=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+      }
+    }
+
+    if(prenom)document.getElementById('send-prenom').value=prenom;
+    if(telephone)document.getElementById('send-phone').value=telephone;
+
+    if(!prenom&&!telephone){
+      alert('Rien detecte. Cadre bien la ligne Client: ou TEL PERSO.');
+    }else{
+      const f=document.getElementById('flash-sent');
+      if(f){f.textContent='✓ '+(prenom?'Prénom: '+prenom+' ':'')+' '+(telephone?'Tél: '+telephone:'');f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
+    }
+  }catch(e){
+    ocrLoading.style.display='none';
+    alert('Erreur analyse. Tapez manuellement.');
+  }
+}
+
 function saveCurrentClient(){
   const prenom=document.getElementById('send-prenom').value.trim();const phone=document.getElementById('send-phone').value.trim();
   if(!prenom||!phone)return;const fph=fmtPhone(phone);if(savedClients.find(c=>c.phone===fph))return;
@@ -1009,6 +1648,39 @@ function resend(id,prenom,phone,tplId){selTpl=tplId;document.getElementById('sen
 function renderSettings(){
   const rows=document.getElementById('profile-rows');rows.innerHTML='';if(!profile)return;
   [['Boutique',profile.boutique],['Secteur',profile.secteur],['Gerant',profile.gerant],['WhatsApp',profile.whatsapp],['Google',profile.google_link],['SIRET',profile.fact_siret]].filter(([,v])=>v).forEach(([k,v])=>{rows.innerHTML+='<div class="profile-row"><div class="profile-key">'+k+'</div><div class="profile-val">'+v+'</div></div>';});
+  const sl=document.getElementById('settings-lang');
+  if(sl){
+    if(!sl.options.length){
+      sl.innerHTML=Object.entries(LANGUAGES).map(([code,name])=>`<option value="${code}">${name}</option>`).join('');
+    }
+    sl.value=currentLang;
+  }
+  if(profile&&profile.whatsapp){
+    const wa=profile.whatsapp;
+    const indSel=document.getElementById('settings-indicatif');
+    const numInp=document.getElementById('settings-whatsapp-num');
+    if(indSel&&numInp){
+      const allOpts=Array.from(indSel.options).map(o=>o.value).sort((a,b)=>b.length-a.length);
+      let matched='+33';
+      for(const ind of allOpts){if(wa.startsWith(ind)){matched=ind;break;}}
+      indSel.value=matched;
+      numInp.value=wa.slice(matched.length);
+    }
+  }
+}
+async function saveWhatsappSettings(){
+  if(!currentUser)return;
+  const indicatif=document.getElementById('settings-indicatif').value||'+33';
+  const num=document.getElementById('settings-whatsapp-num').value.trim().replace(/^0/,'');
+  if(!num){alert('Entrez un numero.');return;}
+  const full=indicatif+num;
+  showLoading(true);
+  const {error}=await sb.from('profiles').update({whatsapp:full}).eq('id',currentUser.id);
+  showLoading(false);
+  if(error){alert('Erreur: '+error.message);return;}
+  if(profile)profile.whatsapp=full;
+  const ok=document.getElementById('wa-settings-ok');
+  if(ok){ok.style.display='block';setTimeout(()=>ok.style.display='none',3000);}
 }
 function editProfile(){
   if(!profile)return;
@@ -1018,7 +1690,10 @@ function editProfile(){
 }
 async function saveProfile(){
   if(!currentUser)return;
-  const updated={...profile,boutique:document.getElementById('edit-boutique').value.trim()||profile.boutique,gerant:document.getElementById('edit-gerant').value.trim()||profile.gerant,whatsapp:document.getElementById('edit-whatsapp').value.trim(),google_link:document.getElementById('edit-google').value.trim()||profile.google_link,fact_siret:document.getElementById('edit-siret').value.trim(),couleur:document.getElementById('edit-couleur').value||profile.couleur};
+  const indicatif=document.getElementById('edit-indicatif')?.value||'+33';
+  const whatsappNum=document.getElementById('edit-whatsapp').value.trim().replace(/^0/,'');
+  const whatsappFull=whatsappNum?(indicatif+whatsappNum):'';
+  const updated={...profile,boutique:document.getElementById('edit-boutique').value.trim()||profile.boutique,gerant:document.getElementById('edit-gerant').value.trim()||profile.gerant,whatsapp:whatsappFull||profile.whatsapp,google_link:document.getElementById('edit-google').value.trim()||profile.google_link,fact_siret:document.getElementById('edit-siret').value.trim(),couleur:document.getElementById('edit-couleur').value||profile.couleur};
   showLoading(true);const {error}=await sb.from('profiles').upsert({...updated,id:currentUser.id});showLoading(false);
   if(error){alert('Erreur: '+error.message);return;}
   profile=updated;document.getElementById('profile-edit').style.display='none';document.getElementById('profile-view').style.display='block';showHome();alert('Profil sauvegarde !');
@@ -1031,11 +1706,29 @@ function renderTplSettings(){
 function showAddTpl(){if(!canUseFeature('templates_custom')){showPlanAlert('templates_custom');return;}editingTplId=null;document.getElementById('tpl-edit-label').value='';document.getElementById('tpl-edit-content').value='';document.getElementById('tpl-edit-preview').textContent='';initColorPicker('tpl-edit-colors','tpl-edit-color','#F5C518');document.getElementById('tpl-edit-form').style.display='block';}
 function editTpl(id){const t=templates.find(x=>x.id===id);if(!t)return;editingTplId=id;document.getElementById('tpl-edit-label').value=t.label;document.getElementById('tpl-edit-content').value=t.content;document.getElementById('tpl-edit-preview').textContent=fillMsg(t.content,'[Client]');initColorPicker('tpl-edit-colors','tpl-edit-color',t.color);document.getElementById('tpl-edit-form').style.display='block';}
 async function saveTplEdit(){
-  const label=document.getElementById('tpl-edit-label').value.trim();const content=document.getElementById('tpl-edit-content').value.trim();const color=document.getElementById('tpl-edit-color').value||'#F5C518';
+  const label=document.getElementById('tpl-edit-label').value.trim();
+  const content=document.getElementById('tpl-edit-content').value.trim();
+  const color=document.getElementById('tpl-edit-color').value||'#F5C518';
   if(!label||!content){alert('Remplissez le nom et le contenu.');return;}
-  if(editingTplId){const idx=templates.findIndex(t=>t.id===editingTplId);if(idx>=0){templates[idx]={...templates[idx],label,content,color};if(currentUser){await sb.from('templates').update({label,content,color}).eq('id',editingTplId).eq('user_id',currentUser.id);}}}
-  else{const newTpl={id:'tpl_'+Date.now(),label,content,color};templates.push(newTpl);if(currentUser){await sb.from('templates').insert({user_id:currentUser.id,label,content,color});}}
-  document.getElementById('tpl-edit-form').style.display='none';editingTplId=null;renderTplList();renderTplSettings();
+  if(editingTplId){
+    const idx=templates.findIndex(t=>t.id===editingTplId);
+    if(idx>=0){
+      templates[idx]={...templates[idx],label,content,color};
+      if(currentUser){await sb.from('templates').update({label,content,color}).eq('id',editingTplId).eq('user_id',currentUser.id);}
+    }
+  }else{
+    if(currentUser){
+      const {data}=await sb.from('templates').insert({user_id:currentUser.id,label,content,color}).select().single();
+      if(data){templates.push({id:data.id.toString(),label,content,color});}
+      else{templates.push({id:'tpl_'+Date.now(),label,content,color});}
+    }else{
+      templates.push({id:'tpl_'+Date.now(),label,content,color});
+    }
+  }
+  document.getElementById('tpl-edit-form').style.display='none';
+  editingTplId=null;
+  renderTplList();
+  renderTplSettings();
 }
 async function deleteTpl(id){if(!confirm('Supprimer ce template ?'))return;templates=templates.filter(t=>t.id!==id);if(currentUser){await sb.from('templates').delete().eq('id',id).eq('user_id',currentUser.id);}renderTplList();renderTplSettings();}
 </script>
