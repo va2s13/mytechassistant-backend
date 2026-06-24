@@ -11,6 +11,7 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMEEwQTBBIi8+PHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjRjVDNTE4Ij7ilaU8L3RleHQ+PC9zdmc+">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:#0A0A0A;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
@@ -1366,30 +1367,65 @@ async function extractFromPhoto(input){
   const file=input.files[0];if(!file)return;
   const ocrLoading=document.getElementById('ocr-loading');
   ocrLoading.style.display='block';
+  ocrLoading.textContent='🔍 Analyse en cours...';
   input.value='';
   try{
-    const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
-    const response=await fetch('/api/ocr',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({image:base64,mediaType:file.type||'image/jpeg'})
+    // Tesseract OCR - 100% gratuit, dans le navigateur
+    const {data:{text}}=await Tesseract.recognize(file,'fra+eng',{
+      logger:m=>{if(m.status==='recognizing text'){ocrLoading.textContent='🔍 Analyse... '+Math.round(m.progress*100)+'%';}}
     });
-    if(!response.ok)throw new Error('Erreur serveur '+response.status);
-    const result=await response.json();
     ocrLoading.style.display='none';
-    if(result.prenom)document.getElementById('send-prenom').value=result.prenom;
-    if(result.telephone)document.getElementById('send-phone').value=result.telephone;
-    if(!result.prenom&&!result.telephone){alert('Aucun nom ou telephone detecte. Essayez de cadrer mieux la photo ou tapez manuellement.');}
-    else{
-      const f=document.getElementById('flash-sent');
-      if(f&&(result.prenom||result.telephone)){
-        const old=f.textContent;f.textContent='✓ Infos extraites automatiquement !';f.style.display='block';
-        setTimeout(()=>{f.style.display='none';f.textContent=old;},2500);
+    
+    // Extraire le numéro de téléphone
+    const phoneRegex=/(?:\+?\d[\s\-\.\(\)]?){8,15}/g;
+    const phones=text.match(phoneRegex)||[];
+    let telephone='';
+    for(const p of phones){
+      const digits=p.replace(/\D/g,'');
+      if(digits.length>=8&&digits.length<=15){telephone=p.trim();break;}
+    }
+    
+    // Extraire le prénom - cherche après mots-clés
+    let prenom='';
+    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
+    const keywords=['client','prenom','nom','prénom','destinataire','acheteur','customer','name'];
+    for(const line of lines){
+      const low=line.toLowerCase();
+      for(const kw of keywords){
+        if(low.includes(kw)){
+          // Prendre ce qui est après le mot-clé
+          const parts=line.split(/[:=\s]+/);
+          const idx=parts.findIndex(p=>p.toLowerCase().includes(kw));
+          if(idx>=0&&parts[idx+1]){
+            const candidate=parts[idx+1].trim();
+            if(candidate.length>1&&!/\d/.test(candidate)){prenom=candidate;break;}
+          }
+        }
       }
+      if(prenom)break;
+    }
+    // Si pas trouvé avec mots-clés, prendre première ligne qui ressemble à un nom
+    if(!prenom){
+      for(const line of lines){
+        const words=line.split(/\s+/);
+        if(words.length>=1&&words.length<=4&&/^[A-Za-zÀ-ÿ\-\']+$/.test(words[0])&&words[0].length>2){
+          prenom=words[0];break;
+        }
+      }
+    }
+    
+    if(prenom)document.getElementById('send-prenom').value=prenom;
+    if(telephone)document.getElementById('send-phone').value=telephone;
+    
+    if(!prenom&&!telephone){
+      alert('Aucun nom ou telephone detecte. Cadrez mieux le texte ou tapez manuellement.');
+    }else{
+      const f=document.getElementById('flash-sent');
+      if(f){f.textContent='✓ Infos extraites !';f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},2500);}
     }
   }catch(e){
     ocrLoading.style.display='none';
-    alert('Erreur analyse photo: '+e.message+'. Tapez manuellement.');
+    alert('Erreur analyse photo. Tapez manuellement.');
   }
 }
 function saveCurrentClient(){
@@ -2940,36 +2976,7 @@ async function sendMsg(canal){
   renderStats();
 }
 // ── OCR PHOTO ─────────────────────────────────────────────────────────────────
-async function extractFromPhoto(input){
-  const file=input.files[0];if(!file)return;
-  const ocrLoading=document.getElementById('ocr-loading');
-  ocrLoading.style.display='block';
-  input.value='';
-  try{
-    const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
-    const response=await fetch('/api/ocr',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({image:base64,mediaType:file.type||'image/jpeg'})
-    });
-    if(!response.ok)throw new Error('Erreur serveur '+response.status);
-    const result=await response.json();
-    ocrLoading.style.display='none';
-    if(result.prenom)document.getElementById('send-prenom').value=result.prenom;
-    if(result.telephone)document.getElementById('send-phone').value=result.telephone;
-    if(!result.prenom&&!result.telephone){alert('Aucun nom ou telephone detecte. Essayez de cadrer mieux la photo ou tapez manuellement.');}
-    else{
-      const f=document.getElementById('flash-sent');
-      if(f&&(result.prenom||result.telephone)){
-        const old=f.textContent;f.textContent='✓ Infos extraites automatiquement !';f.style.display='block';
-        setTimeout(()=>{f.style.display='none';f.textContent=old;},2500);
-      }
-    }
-  }catch(e){
-    ocrLoading.style.display='none';
-    alert('Erreur analyse photo: '+e.message+'. Tapez manuellement.');
-  }
-}
+/* duplicate removed */
 function saveCurrentClient(){
   const prenom=document.getElementById('send-prenom').value.trim();const phone=document.getElementById('send-phone').value.trim();
   if(!prenom||!phone)return;const fph=fmtPhone(phone);if(savedClients.find(c=>c.phone===fph))return;
