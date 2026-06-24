@@ -1535,16 +1535,11 @@ function takeScanPhoto(){
   const ctx=crop.getContext('2d');
   ctx.imageSmoothingEnabled=false;
   ctx.drawImage(canvas,frameLeft,frameTop,frameW,frameH,0,0,frameW*3,frameH*3);
-  // Prétraitement : augmenter contraste AVANT seuillage
-  const imgData=ctx.getImageData(0,0,crop.width,crop.height);
-  const d=imgData.data;
-  for(let i=0;i<d.length;i+=4){
-    const gray=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-    // Seuil adaptatif : texte noir sur blanc
-    const val=gray>160?255:0;
-    d[i]=d[i+1]=d[i+2]=val;d[i+3]=255;
-  }
-  ctx.putImageData(imgData,0,0);
+  // Pas de seuillage - image naturelle pour meilleure lecture Tesseract
+  // Juste augmenter le contraste légèrement
+  ctx.filter='contrast(1.4) brightness(1.1)';
+  ctx.drawImage(crop,0,0);
+  ctx.filter='none';
   currentPhotoCanvas=crop;
   document.getElementById('scan-preview-img').src=crop.toDataURL('image/png');
   showScanView('preview');
