@@ -259,7 +259,8 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     </div>
     <input id="forgot-email" type="email" inputmode="email" autocomplete="email" placeholder="Votre adresse email" class="auth-input" onkeydown="if(event.key==='Enter')doForgotSendCode()">
     <div id="forgot-err" style="color:#E8202A;font-size:13px;text-align:center;margin-bottom:10px;display:none"></div>
-    <button class="btn btn-gold" onclick="doForgotSendCode()">Recevoir le code &#8594;</button>
+    <button class="btn btn-gold" onclick="doForgotSendCode()" style="margin-bottom:12px">Recevoir le lien &#8594;</button>
+    <div style="background:#FFFBE6;border:1px solid #F5C518;border-radius:10px;padding:10px 14px;font-size:12px;color:#666;line-height:1.6">📧 Un lien sera envoyé à votre email. Ouvrez-le depuis votre téléphone pour réinitialiser.</div>
     <div style="text-align:center;margin-top:16px">
       <button onclick="showLogin()" style="background:none;border:none;color:#888;font-size:13px;cursor:pointer;font-family:inherit">&#8592; Retour connexion</button>
     </div>
@@ -445,14 +446,38 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         <div id="scanner-status" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.85);color:#F5C518;font-size:15px;font-weight:700;padding:16px 24px;border-radius:12px;display:none;text-align:center;z-index:20"></div>
       </div>
       <style>@keyframes scanline{0%{top:calc(50% - 40px)}50%{top:calc(50% + 40px)}100%{top:calc(50% - 40px)}}</style>
-      <div style="display:flex;gap:8px;margin-bottom:10px">
-        <button onclick="openScanner()" style="flex:1;padding:12px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">📷 Photo</button>
-        <button class="btn-sm" onclick="saveCurrentClient()">+ Sauvegarder</button>
-      </div>
-      <div id="ocr-loading" style="display:none;text-align:center;padding:10px;color:#1565C0;font-size:13px;font-weight:700">🔍 Analyse en cours...</div>
+      <div id="ocr-loading" style="display:none;text-align:center;padding:8px;color:#1565C0;font-size:13px;font-weight:700">🔍 Analyse...</div>
       <!-- Saisie client -->
-      <input id="send-prenom" class="inp" placeholder="Prénom + Nom du client" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words">
-      <input id="send-phone" class="inp" type="tel" inputmode="tel" placeholder="Téléphone" autocomplete="off">
+      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+        <input id="send-prenom" class="inp" placeholder="Prénom + Nom" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words" style="flex:1;margin-bottom:0">
+        <button onclick="openScanner('nom')" style="padding:10px 12px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">📷 Nom</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+        <div style="display:flex;gap:6px;flex:1">
+          <select id="send-indicatif" style="width:110px;min-width:110px;padding:13px 6px;border:1.5px solid #E0E0E0;border-radius:10px;background:#fff;color:#333;font-size:13px;font-family:inherit;outline:none">
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+92">🇵🇰 +92</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+213">🇩🇿 +213</option>
+            <option value="+212">🇲🇦 +212</option>
+            <option value="+216">🇹🇳 +216</option>
+            <option value="+221">🇸🇳 +221</option>
+            <option value="+225">🇨🇮 +225</option>
+            <option value="+226">🇧🇫 +226</option>
+            <option value="+223">🇲🇱 +223</option>
+            <option value="+237">🇨🇲 +237</option>
+            <option value="+880">🇧🇩 +880</option>
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+234">🇳🇬 +234</option>
+            <option value="+254">🇰🇪 +254</option>
+            <option value="+27">🇿🇦 +27</option>
+            <option value="+55">🇧🇷 +55</option>
+          </select>
+          <input id="send-phone" class="inp" type="tel" inputmode="tel" placeholder="Numéro" autocomplete="off" style="flex:1;margin-bottom:0">
+        </div>
+        <button onclick="openScanner('tel')" style="padding:10px 12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">📷 Tél</button>
+      </div>
       <!-- Choix message pour ce client -->
       <span class="label">Message pour ce client</span>
       <div id="tpl-list"></div>
@@ -923,12 +948,17 @@ const TRANSLATIONS={
   if(!TRANSLATIONS[code])TRANSLATIONS[code]={...TRANSLATIONS['en']};
 });
 
-let currentLang=localStorage.getItem('only5:lang')||'fr';
+let currentLang=localStorage.getItem('only5:lang')||'en';
 function t(key){return(TRANSLATIONS[currentLang]||TRANSLATIONS['fr'])[key]||TRANSLATIONS['fr'][key]||key;}
 function setLang(code){
   currentLang=code;
   localStorage.setItem('only5:lang',code);
   applyTranslations();
+  // Sauvegarder en BDD si connecté
+  if(currentUser&&profile){
+    sb.from('profiles').update({langue:code}).eq('id',currentUser.id).then(()=>{});
+    profile.langue=code;
+  }
 }
 function applyTranslations(){
   const rtl=['ar','he','ur','fa'];
@@ -952,14 +982,9 @@ const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage}});
 
 // ── SESSION 2H ────────────────────────────────────────────────────────────────
-const SESSION_DURATION=2*60*60*1000; // 2 heures en ms
+// Session permanente - pas d'expiration automatique
 function updateLastActive(){localStorage.setItem('only5:lastActive',Date.now().toString());}
-function isSessionExpired(){
-  const last=localStorage.getItem('only5:lastActive');
-  if(!last)return true;
-  return Date.now()-parseInt(last)>SESSION_DURATION;
-}
-// Mettre à jour lastActive à chaque interaction
+function isSessionExpired(){return false;} // Session permanente
 document.addEventListener('click',updateLastActive);
 document.addEventListener('keydown',updateLastActive);
 
@@ -1186,12 +1211,27 @@ async function doForgotSendCode(resend){
   if(!email){showErr('forgot-err','Entrez votre email.');return;}
   forgotEmail=email;
   showLoading(true);
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+  const {error}=await sb.auth.resetPasswordForEmail(email,{
+    redirectTo:window.location.origin+window.location.pathname+'?type=recovery'
+  });
   showLoading(false);
-  if(error){showErr('forgot-err','Email non trouve ou erreur: '+error.message);return;}
-  // Afficher message de confirmation
+  if(error){showErr('forgot-err','Erreur: '+error.message);return;}
   const form=safe('forgot-form');
-  if(form){form.innerHTML='<div style="text-align:center;padding:20px 0"><div style="font-size:48px;margin-bottom:16px">📧</div><div style="font-weight:900;font-size:20px;color:#fff;margin-bottom:10px">Email envoye !</div><div style="color:#888;font-size:14px;line-height:1.7;margin-bottom:24px">Un lien de reinitialisation a ete envoye a<br><strong style="color:#F5C518">'+email+'</strong><br><br>Cliquez sur le lien dans l email pour creer un nouveau mot de passe.</div><button class="btn btn-outline" onclick="showLogin()">← Retour connexion</button></div>';}
+  if(form){form.innerHTML=`
+    <div style="text-align:center;padding:20px 0">
+      <div style="font-size:48px;margin-bottom:16px">📧</div>
+      <div style="font-weight:900;font-size:20px;color:#fff;margin-bottom:10px">Email envoyé !</div>
+      <div style="color:#888;font-size:14px;line-height:1.8;margin-bottom:24px">
+        Lien envoyé à<br><strong style="color:#F5C518">${email}</strong><br><br>
+        ⚠️ <strong style="color:#fff">Important :</strong><br>
+        Ouvrez l'email depuis votre téléphone<br>
+        et cliquez sur le lien bleu<br>
+        <em style="color:#666">Si l'email tarde, vérifiez vos spams</em>
+      </div>
+      <button class="btn btn-outline" onclick="doForgotSendCode(true)" style="margin-bottom:10px">🔄 Renvoyer l'email</button>
+      <button class="btn btn-outline" onclick="showLogin()">← Retour connexion</button>
+    </div>
+  `;}
 }
 async function doVerifyOtp(){
   const code=document.getElementById('otp-code').value.trim();
@@ -1442,20 +1482,32 @@ let scannerStream=null;
 let scanPhotos=[]; // stocke les canvas des photos gardées
 let currentPhotoCanvas=null;
 
-function openScanner(){
+function openScanner(mode){
+  scannerMode=mode||'all';
   scanPhotos=[];
   currentPhotoCanvas=null;
-  document.getElementById('scan-photos-row').innerHTML='';
-  document.getElementById('btn-analyser').style.display='none';
-  document.getElementById('scan-photo-count').style.display='none';
+  const row=document.getElementById('scan-photos-row');
+  if(row)row.innerHTML='';
+  const analyserBtn=document.getElementById('btn-analyser');
+  if(analyserBtn)analyserBtn.style.display='none';
+  const countEl=document.getElementById('scan-photo-count');
+  if(countEl)countEl.style.display='none';
+  const hint=document.getElementById('scanner-hint');
+  if(hint){
+    if(mode==='nom')hint.textContent='📷 Vise la ligne Client: ou Nom & Prénom';
+    else if(mode==='tel')hint.textContent='📷 Vise la ligne TEL PERSO';
+    else hint.textContent='📷 Vise Client: ou TEL PERSO';
+  }
   showScanView('camera');
   const modal=document.getElementById('scanner-modal');
   modal.style.display='flex';
+  modal.style.flexDirection='column';
   const video=document.getElementById('scanner-video');
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}})
     .then(stream=>{scannerStream=stream;video.srcObject=stream;})
     .catch(e=>{closeScanner();alert('Caméra non accessible.');});
 }
+
 function closeScanner(){
   if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
   document.getElementById('scanner-modal').style.display='none';
@@ -1469,24 +1521,28 @@ function takeScanPhoto(){
   const video=document.getElementById('scanner-video');
   const canvas=document.getElementById('scanner-canvas');
   canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-  canvas.getContext('2d').drawImage(video,0,0);
-  // Crop zone cadre (plus large pour mieux capturer)
-  const cropH=Math.round(canvas.height*0.30);
-  const cropY=Math.round(canvas.height*0.35);
+  const ctx0=canvas.getContext('2d');
+  ctx0.drawImage(video,0,0);
+  // Cadre jaune = exactement 50%-90px à 50%+90px en hauteur, 5%-95% en largeur
+  // On crop EXACTEMENT cette zone
+  const frameTop=Math.round(canvas.height*0.5)-90;
+  const frameH=180;
+  const frameLeft=Math.round(canvas.width*0.05);
+  const frameW=Math.round(canvas.width*0.90);
+  // Agrandir x3 pour meilleure lecture OCR
   const crop=document.createElement('canvas');
-  // Agrandir x2 pour meilleure lecture OCR
-  crop.width=canvas.width*2;crop.height=cropH*2;
+  crop.width=frameW*3;crop.height=frameH*3;
   const ctx=crop.getContext('2d');
-  ctx.drawImage(canvas,0,cropY,canvas.width,cropH,0,0,canvas.width*2,cropH*2);
-  // Prétraitement : contraste élevé + noir/blanc
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(canvas,frameLeft,frameTop,frameW,frameH,0,0,frameW*3,frameH*3);
+  // Prétraitement : augmenter contraste AVANT seuillage
   const imgData=ctx.getImageData(0,0,crop.width,crop.height);
   const d=imgData.data;
   for(let i=0;i<d.length;i+=4){
-    // Niveaux de gris
     const gray=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-    // Seuillage : pixel blanc ou noir selon luminosité
-    const val=gray>128?255:0;
-    d[i]=d[i+1]=d[i+2]=val;
+    // Seuil adaptatif : texte noir sur blanc
+    const val=gray>160?255:0;
+    d[i]=d[i+1]=d[i+2]=val;d[i+3]=255;
   }
   ctx.putImageData(imgData,0,0);
   currentPhotoCanvas=crop;
@@ -1799,23 +1855,30 @@ function renderSettings(){
     sl.value=currentLang;
   }
   if(profile&&profile.whatsapp){
-    const wa=profile.whatsapp;
+    let wa=profile.whatsapp;
     const indSel=document.getElementById('settings-indicatif');
     const numInp=document.getElementById('settings-whatsapp-num');
     if(indSel&&numInp){
-      const allOpts=Array.from(indSel.options).map(o=>o.value).sort((a,b)=>b.length-a.length);
-      let matched='+33';
-      for(const ind of allOpts){if(wa.startsWith(ind)){matched=ind;break;}}
-      indSel.value=matched;
-      numInp.value=wa.slice(matched.length);
+      // Normaliser : si commence par 0, c'est un numéro français sans indicatif
+      if(wa.startsWith('0')&&!wa.startsWith('00')){
+        indSel.value='+33';
+        numInp.value=wa; // garder tel quel avec le 0
+      } else {
+        const allOpts=Array.from(indSel.options).map(o=>o.value).sort((a,b)=>b.length-a.length);
+        let matched='+33';
+        for(const ind of allOpts){if(wa.startsWith(ind)){matched=ind;break;}}
+        indSel.value=matched;
+        numInp.value=wa.slice(matched.length);
+      }
     }
   }
 }
 async function saveWhatsappSettings(){
   if(!currentUser)return;
   const indicatif=document.getElementById('settings-indicatif').value||'+33';
-  const num=document.getElementById('settings-whatsapp-num').value.trim().replace(/^0/,'');
-  if(!num){alert('Entrez un numero.');return;}
+  let num=document.getElementById('settings-whatsapp-num').value.trim().replace(/[^0-9]/g,'');
+  num=num.replace(/^0/,''); // enlever le 0 initial
+  if(!num||num.length<8){alert('Entrez un numéro valide (sans le 0 initial).');return;}
   const full=indicatif+num;
   showLoading(true);
   const {error}=await sb.from('profiles').update({whatsapp:full}).eq('id',currentUser.id);
@@ -1944,21 +2007,22 @@ function viderListe(){
 async function envoyerGroupe(canal){
   if(!clientsListe.length)return;
   if(!canUseFeature('send')){document.getElementById('paywall').classList.add('show');return;}
+  const nb=clientsListe.length;
+  // Envoyer un par un avec instruction claire
   for(let i=0;i<clientsListe.length;i++){
     const c=clientsListe[i];
     const tpl=templates.find(t=>t.id===c.tplId)||templates[0];
     if(!tpl)continue;
     const msg=fillMsg(tpl.content,c.prenom);
     const enc=encodeURIComponent(msg);
-    const fph=c.phone.replace('+','');
-    // Ouvrir chaque message avec délai
-    await new Promise(resolve=>{
-      setTimeout(()=>{
-        window.open(canal==='whatsapp'?'https://wa.me/'+fph+'?text='+enc:'sms:'+c.phone+'?body='+enc,'_blank');
-        resolve();
-      },i*800);
-    });
-    // Enregistrer
+    const fph=c.phone.replace(/[^0-9+]/g,'');
+    const url=canal==='whatsapp'
+      ?'https://wa.me/'+fph.replace('+','')+'?text='+enc
+      :'sms:'+fph+'?body='+enc;
+    // Ouvrir avec délai entre chaque
+    if(i>0)await new Promise(r=>setTimeout(r,1200));
+    window.open(url,'_blank');
+    // Enregistrer en BDD
     if(currentUser){
       try{
         const entry={user_id:currentUser.id,prenom:c.prenom,phone:c.phone,canal,template_id:c.tplId,template_label:tpl.label,sent_at:new Date().toISOString()};
@@ -1968,11 +2032,10 @@ async function envoyerGroupe(canal){
     }
     if(!isPaid){trialCount++;lss('only5:trial:'+(currentUser?.id||'demo'),trialCount);}
   }
-  const nb=clientsListe.length;
   clientsListe=[];
   renderClientListe();
   const f=document.getElementById('flash-sent');
-  if(f){f.textContent='✓ '+nb+' messages envoyés !';f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
+  if(f){f.textContent='✓ '+nb+' message'+(nb>1?'s':'')+' envoyés !';f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
   renderStats();
 }
 
