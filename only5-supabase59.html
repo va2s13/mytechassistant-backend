@@ -394,39 +394,13 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
           <button class="btn-sm" onclick="saveCurrentClient()">+ Sauvegarder</button>
         </div>
       </div>
-      <!-- SCANNER MODAL -->
-      <div id="scanner-modal" style="display:none;position:fixed;inset:0;background:#000;z-index:9999;flex-direction:column">
-        <div style="position:relative;flex:1;display:flex;align-items:center;justify-content:center">
-          <video id="scanner-video" autoplay playsinline style="width:100%;height:100%;object-fit:cover"></video>
-          <!-- Cadre viseur -->
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
-            <div style="width:85%;height:80px;border:3px solid #F5C518;border-radius:8px;box-shadow:0 0 0 2000px rgba(0,0,0,0.55)">
-              <div style="position:absolute;top:-28px;left:0;right:0;text-align:center;color:#F5C518;font-size:13px;font-weight:700" id="scanner-hint">Cadre la ligne Client:</div>
-              <!-- Coins -->
-              <div style="position:absolute;top:-3px;left:-3px;width:20px;height:20px;border-top:4px solid #F5C518;border-left:4px solid #F5C518;border-radius:3px 0 0 0"></div>
-              <div style="position:absolute;top:-3px;right:-3px;width:20px;height:20px;border-top:4px solid #F5C518;border-right:4px solid #F5C518;border-radius:0 3px 0 0"></div>
-              <div style="position:absolute;bottom:-3px;left:-3px;width:20px;height:20px;border-bottom:4px solid #F5C518;border-left:4px solid #F5C518;border-radius:0 0 0 3px"></div>
-              <div style="position:absolute;bottom:-3px;right:-3px;width:20px;height:20px;border-bottom:4px solid #F5C518;border-right:4px solid #F5C518;border-radius:0 0 3px 0"></div>
-            </div>
-          </div>
-          <!-- Ligne de scan animée -->
-          <div id="scan-line" style="position:absolute;left:7.5%;width:85%;height:2px;background:rgba(245,197,24,0.7);animation:scanline 2s linear infinite"></div>
-        </div>
-        <div style="background:#0A0A0A;padding:16px 20px 32px;display:flex;flex-direction:column;gap:10px">
-          <div id="scanner-status" style="color:#F5C518;text-align:center;font-size:13px;font-weight:700;min-height:20px"></div>
-          <div style="display:flex;gap:10px">
-            <button id="scanner-btn-prenom" onclick="scanCapture('nom')" style="flex:1;padding:14px;background:#1565C0;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit">👤 Capturer Prénom</button>
-            <button id="scanner-btn-tel" onclick="scanCapture('tel')" style="flex:1;padding:14px;background:#25D366;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit">📞 Capturer Tél</button>
-          </div>
-          <button onclick="closeScanner()" style="width:100%;padding:12px;background:#333;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">✕ Fermer</button>
-        </div>
-        <canvas id="scanner-canvas" style="display:none"></canvas>
-      </div>
-      <style>@keyframes scanline{0%{top:calc(50% - 40px)}50%{top:calc(50% + 40px)}100%{top:calc(50% - 40px)}}</style>
+      <input type="file" id="ocr-input-nom" accept="image/*" capture="environment" style="display:none" onchange="extractFromPhoto(this,'nom')">
+      <input type="file" id="ocr-input-tel" accept="image/*" capture="environment" style="display:none" onchange="extractFromPhoto(this,'tel')">
       <div style="display:flex;gap:8px;margin-bottom:10px">
-        <button onclick="openScanner()" style="flex:1;padding:12px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">📷 Scanner Kezia</button>
-        <button class="btn-sm" onclick="saveCurrentClient()">+ Sauvegarder</button>
+        <button onclick="document.getElementById('ocr-input-nom').click()" style="flex:1;padding:10px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">👤 Photo Prénom</button>
+        <button onclick="document.getElementById('ocr-input-tel').click()" style="flex:1;padding:10px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📞 Photo Téléphone</button>
       </div>
+      <div style="background:#EEF4FF;border:1px solid #1565C0;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#1565C0;line-height:1.6">📷 Cadre la ligne <strong>Client:</strong> pour le prénom · Cadre <strong>TEL PERSO</strong> pour le numéro</div>
       <div id="ocr-loading" style="display:none;text-align:center;padding:10px;color:#1565C0;font-size:13px;font-weight:700">🔍 Analyse en cours...</div>
       <input id="send-prenom" class="inp" placeholder="Prenom du client" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words">
       <input id="send-phone" class="inp" type="tel" inputmode="tel" placeholder="Telephone" autocomplete="off">
@@ -1394,94 +1368,6 @@ async function sendMsg(canal){
   renderStats();
 }
 // ── OCR PHOTO ─────────────────────────────────────────────────────────────────
-
-// ── SCANNER KEZIA ─────────────────────────────────────────────────────────────
-let scannerStream=null;
-function openScanner(){
-  const modal=document.getElementById('scanner-modal');
-  modal.style.display='flex';
-  modal.style.flexDirection='column';
-  const video=document.getElementById('scanner-video');
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}})
-    .then(stream=>{scannerStream=stream;video.srcObject=stream;})
-    .catch(e=>{closeScanner();alert('Caméra non accessible. Utilise le bouton photo ci-dessous.');});
-}
-function closeScanner(){
-  if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
-  document.getElementById('scanner-modal').style.display='none';
-}
-async function scanCapture(mode){
-  const video=document.getElementById('scanner-video');
-  const canvas=document.getElementById('scanner-canvas');
-  const status=document.getElementById('scanner-status');
-  // Capture frame
-  canvas.width=video.videoWidth;
-  canvas.height=video.videoHeight;
-  const ctx=canvas.getContext('2d');
-  ctx.drawImage(video,0,0);
-  // Crop zone centrale (bande horizontale du cadre)
-  const cropH=Math.round(canvas.height*0.18);
-  const cropY=Math.round(canvas.height*0.41);
-  const cropCanvas=document.createElement('canvas');
-  cropCanvas.width=canvas.width;
-  cropCanvas.height=cropH;
-  cropCanvas.getContext('2d').drawImage(canvas,0,cropY,canvas.width,cropH,0,0,canvas.width,cropH);
-  status.textContent='🔍 Analyse...';
-  const ocrLoading=document.getElementById('ocr-loading');
-  ocrLoading.style.display='block';
-  ocrLoading.textContent='🔍 Analyse en cours...';
-  try{
-    const {data:{text}}=await Tesseract.recognize(cropCanvas,'fra+eng',{
-      logger:m=>{if(m.status==='recognizing text'){status.textContent='🔍 '+Math.round(m.progress*100)+'%';}}
-    });
-    ocrLoading.style.display='none';
-    status.textContent='';
-    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
-    let found='';
-    if(mode==='nom'){
-      for(const line of lines){
-        if(line.toLowerCase().includes('client')){
-          const after=line.replace(/^.*client\s*[:\-=]?\s*/i,'').replace(/\(.*?\)/g,'').trim();
-          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
-          if(words.length>=2){found=words[words.length-1];break;}
-          else if(words.length===1){found=words[0];break;}
-        }
-        if(line.toLowerCase().includes('nom &')){
-          const after=line.replace(/nom\s*[&]+\s*pr[eé]nom\s*/i,'').trim();
-          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
-          if(words.length>=2){found=words[words.length-1];break;}
-          else if(words.length===1){found=words[0];break;}
-        }
-      }
-      if(found){document.getElementById('send-prenom').value=found;closeScanner();showFlash('✓ Prénom: '+found);}
-      else{status.textContent='❌ Pas de prénom trouvé. Recadre sur "Client:"';}
-    }else{
-      for(const line of lines){
-        const low=line.toLowerCase();
-        if(low.includes('tel perso')||low.includes('tel.perso')||low.includes('tel pers')||low.includes('portable')){
-          const digits=line.replace(/[^0-9]/g,'');
-          const m=digits.match(/0[67]\d{8}/);
-          if(m){found=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');break;}
-        }
-      }
-      if(!found){
-        const digits=text.replace(/[^0-9]/g,'');
-        const m=digits.match(/0[67]\d{8}/);
-        if(m)found=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
-      }
-      if(found){document.getElementById('send-phone').value=found;closeScanner();showFlash('✓ Tél: '+found);}
-      else{status.textContent='❌ Pas de numéro 06/07. Recadre sur "TEL PERSO"';}
-    }
-  }catch(e){
-    ocrLoading.style.display='none';
-    status.textContent='❌ Erreur. Réessaie.';
-  }
-}
-function showFlash(msg){
-  const f=document.getElementById('flash-sent');
-  if(f){f.textContent=msg;f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
-}
-
 async function extractFromPhoto(input,mode){
   const file=input.files[0];if(!file)return;
   const ocrLoading=document.getElementById('ocr-loading');
