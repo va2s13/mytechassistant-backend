@@ -396,41 +396,53 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       </div>
       <!-- SCANNER MODAL -->
       <div id="scanner-modal" style="display:none;position:fixed;inset:0;background:#000;z-index:9999;flex-direction:column">
-        <!-- Bouton retour -->
-        <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;padding:14px 16px;background:linear-gradient(to bottom,rgba(0,0,0,0.7),transparent)">
-          <button onclick="closeScanner()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:16px;font-weight:700;padding:8px 16px;border-radius:20px;cursor:pointer;font-family:inherit;backdrop-filter:blur(4px)">← Retour</button>
-          <div id="scanner-hint" style="flex:1;text-align:center;color:#F5C518;font-size:14px;font-weight:700">Vise une ligne et prends la photo</div>
-        </div>
-        <!-- Caméra -->
-        <video id="scanner-video" autoplay playsinline style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></video>
-        <!-- Fond noir avec trou jaune -->
-        <div style="position:absolute;inset:0;pointer-events:none">
-          <!-- Haut noir -->
-          <div style="position:absolute;top:0;left:0;right:0;height:calc(50% - 45px);background:rgba(0,0,0,0.65)"></div>
-          <!-- Bas noir -->
-          <div style="position:absolute;bottom:0;left:0;right:0;height:calc(50% - 45px);background:rgba(0,0,0,0.65)"></div>
-          <!-- Gauche noir -->
-          <div style="position:absolute;top:calc(50% - 45px);left:0;width:5%;height:90px;background:rgba(0,0,0,0.65)"></div>
-          <!-- Droite noir -->
-          <div style="position:absolute;top:calc(50% - 45px);right:0;width:5%;height:90px;background:rgba(0,0,0,0.65)"></div>
-          <!-- Cadre jaune -->
-          <div style="position:absolute;top:calc(50% - 45px);left:5%;width:90%;height:90px;border:3px solid #F5C518;border-radius:8px">
-            <div style="position:absolute;top:-3px;left:-3px;width:24px;height:24px;border-top:5px solid #F5C518;border-left:5px solid #F5C518;border-radius:4px 0 0 0"></div>
-            <div style="position:absolute;top:-3px;right:-3px;width:24px;height:24px;border-top:5px solid #F5C518;border-right:5px solid #F5C518;border-radius:0 4px 0 0"></div>
-            <div style="position:absolute;bottom:-3px;left:-3px;width:24px;height:24px;border-bottom:5px solid #F5C518;border-left:5px solid #F5C518;border-radius:0 0 0 4px"></div>
-            <div style="position:absolute;bottom:-3px;right:-3px;width:24px;height:24px;border-bottom:5px solid #F5C518;border-right:5px solid #F5C518;border-radius:0 0 4px 0"></div>
+
+        <!-- VUE CAMERA -->
+        <div id="scan-view-camera" style="position:absolute;inset:0;display:flex;flex-direction:column">
+          <!-- Header -->
+          <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;padding:14px 16px;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent)">
+            <button onclick="closeScanner()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:15px;font-weight:700;padding:8px 16px;border-radius:20px;cursor:pointer;font-family:inherit">← Retour</button>
+            <div style="flex:1;text-align:center;color:#F5C518;font-size:13px;font-weight:700">Vise Client: ou TEL PERSO</div>
+            <div id="scan-photo-count" style="background:#F5C518;color:#000;font-size:12px;font-weight:900;padding:4px 10px;border-radius:12px;display:none">0 photo</div>
+          </div>
+          <!-- Video -->
+          <video id="scanner-video" autoplay playsinline style="width:100%;height:100%;object-fit:cover"></video>
+          <!-- Masque noir + cadre jaune -->
+          <div style="position:absolute;inset:0;pointer-events:none">
+            <div style="position:absolute;top:0;left:0;right:0;height:calc(50% - 50px);background:rgba(0,0,0,0.7)"></div>
+            <div style="position:absolute;bottom:0;left:0;right:0;height:calc(50% - 50px);background:rgba(0,0,0,0.7)"></div>
+            <div style="position:absolute;top:calc(50% - 50px);left:0;width:4%;height:100px;background:rgba(0,0,0,0.7)"></div>
+            <div style="position:absolute;top:calc(50% - 50px);right:0;width:4%;height:100px;background:rgba(0,0,0,0.7)"></div>
+            <div style="position:absolute;top:calc(50% - 50px);left:4%;width:92%;height:100px;border:3px solid #F5C518;border-radius:8px">
+              <div style="position:absolute;top:-4px;left:-4px;width:22px;height:22px;border-top:5px solid #F5C518;border-left:5px solid #F5C518;border-radius:4px 0 0 0"></div>
+              <div style="position:absolute;top:-4px;right:-4px;width:22px;height:22px;border-top:5px solid #F5C518;border-right:5px solid #F5C518;border-radius:0 4px 0 0"></div>
+              <div style="position:absolute;bottom:-4px;left:-4px;width:22px;height:22px;border-bottom:5px solid #F5C518;border-left:5px solid #F5C518;border-radius:0 0 0 4px"></div>
+              <div style="position:absolute;bottom:-4px;right:-4px;width:22px;height:22px;border-bottom:5px solid #F5C518;border-right:5px solid #F5C518;border-radius:0 0 4px 0"></div>
+            </div>
+          </div>
+          <!-- Bas -->
+          <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);padding:16px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:12px">
+            <div id="scan-photos-row" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"></div>
+            <div style="display:flex;align-items:center;gap:20px">
+              <div style="width:50px"></div>
+              <button onclick="takeScanPhoto()" style="width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid #F5C518;cursor:pointer;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(245,197,24,0.4)">📷</button>
+              <button id="btn-analyser" onclick="analyserPhotos()" style="display:none;padding:10px 16px;background:#F5C518;color:#000;border:none;border-radius:12px;font-size:13px;font-weight:900;cursor:pointer;font-family:inherit">Analyser ▶</button>
+            </div>
+            <div style="color:rgba(255,255,255,0.5);font-size:11px">Prends autant de photos que tu veux puis clique Analyser</div>
           </div>
         </div>
-        <!-- Bas : statut + bouton photo -->
-        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);padding:20px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:14px">
-          <div id="scanner-status" style="color:#F5C518;font-size:13px;font-weight:700;min-height:18px;text-align:center"></div>
-          <!-- Photos prises -->
-          <div id="scan-results" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%"></div>
-          <!-- Bouton photo rond -->
-          <button onclick="scanCapture()" style="width:70px;height:70px;border-radius:50%;background:#fff;border:5px solid #F5C518;cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(245,197,24,0.5)">📷</button>
-          <div style="color:rgba(255,255,255,0.6);font-size:11px">Vise Client: ou TEL PERSO et prends la photo</div>
+
+        <!-- VUE APERCU PHOTO -->
+        <div id="scan-view-preview" style="display:none;position:absolute;inset:0;background:#000;flex-direction:column;align-items:center;justify-content:center">
+          <img id="scan-preview-img" style="width:100%;max-height:70vh;object-fit:contain">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 20px 40px;display:flex;gap:12px">
+            <button onclick="cancelPhoto()" style="flex:1;padding:14px;background:#333;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">✗ Annuler</button>
+            <button onclick="keepPhoto()" style="flex:2;padding:14px;background:#F5C518;color:#000;border:none;border-radius:12px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit">✓ Garder</button>
+          </div>
         </div>
+
         <canvas id="scanner-canvas" style="display:none"></canvas>
+        <div id="scanner-status" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.85);color:#F5C518;font-size:15px;font-weight:700;padding:16px 24px;border-radius:12px;display:none;text-align:center;z-index:20"></div>
       </div>
       <style>@keyframes scanline{0%{top:calc(50% - 40px)}50%{top:calc(50% + 40px)}100%{top:calc(50% - 40px)}}</style>
       <div style="display:flex;gap:8px;margin-bottom:10px">
@@ -1407,76 +1419,111 @@ async function sendMsg(canal){
 
 // ── SCANNER KEZIA ─────────────────────────────────────────────────────────────
 let scannerStream=null;
+let scanPhotos=[]; // stocke les canvas des photos gardées
+let currentPhotoCanvas=null;
+
 function openScanner(){
+  scanPhotos=[];
+  currentPhotoCanvas=null;
+  document.getElementById('scan-photos-row').innerHTML='';
+  document.getElementById('btn-analyser').style.display='none';
+  document.getElementById('scan-photo-count').style.display='none';
+  showScanView('camera');
   const modal=document.getElementById('scanner-modal');
   modal.style.display='flex';
-  modal.style.flexDirection='column';
   const video=document.getElementById('scanner-video');
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}})
     .then(stream=>{scannerStream=stream;video.srcObject=stream;})
-    .catch(e=>{closeScanner();alert('Caméra non accessible. Utilise le bouton photo ci-dessous.');});
+    .catch(e=>{closeScanner();alert('Caméra non accessible.');});
 }
 function closeScanner(){
   if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
   document.getElementById('scanner-modal').style.display='none';
+  scanPhotos=[];currentPhotoCanvas=null;
 }
-async function scanCapture(){
+function showScanView(view){
+  document.getElementById('scan-view-camera').style.display=view==='camera'?'block':'none';
+  document.getElementById('scan-view-preview').style.display=view==='preview'?'flex':'none';
+}
+function takeScanPhoto(){
   const video=document.getElementById('scanner-video');
   const canvas=document.getElementById('scanner-canvas');
+  canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  // Crop zone cadre
+  const cropH=Math.round(canvas.height*0.25);
+  const cropY=Math.round(canvas.height*0.375);
+  const crop=document.createElement('canvas');
+  crop.width=canvas.width;crop.height=cropH;
+  crop.getContext('2d').drawImage(canvas,0,cropY,canvas.width,cropH,0,0,canvas.width,cropH);
+  currentPhotoCanvas=crop;
+  // Aperçu
+  document.getElementById('scan-preview-img').src=crop.toDataURL('image/jpeg',0.9);
+  showScanView('preview');
+}
+function cancelPhoto(){
+  currentPhotoCanvas=null;
+  showScanView('camera');
+}
+function keepPhoto(){
+  if(!currentPhotoCanvas)return;
+  scanPhotos.push(currentPhotoCanvas);
+  // Miniature
+  const row=document.getElementById('scan-photos-row');
+  const mini=document.createElement('img');
+  mini.src=currentPhotoCanvas.toDataURL('image/jpeg',0.5);
+  mini.style.cssText='width:48px;height:32px;object-fit:cover;border-radius:6px;border:2px solid #F5C518';
+  row.appendChild(mini);
+  // Compteur
+  const cnt=document.getElementById('scan-photo-count');
+  cnt.textContent=scanPhotos.length+' photo'+(scanPhotos.length>1?'s':'');
+  cnt.style.display='block';
+  document.getElementById('btn-analyser').style.display='block';
+  currentPhotoCanvas=null;
+  showScanView('camera');
+}
+async function analyserPhotos(){
+  if(!scanPhotos.length)return;
   const status=document.getElementById('scanner-status');
-  canvas.width=video.videoWidth;
-  canvas.height=video.videoHeight;
-  const ctx=canvas.getContext('2d');
-  ctx.drawImage(video,0,0);
-  // Crop zone centrale
-  const cropH=Math.round(canvas.height*0.22);
-  const cropY=Math.round(canvas.height*0.39);
-  const cropCanvas=document.createElement('canvas');
-  cropCanvas.width=canvas.width;
-  cropCanvas.height=cropH;
-  cropCanvas.getContext('2d').drawImage(canvas,0,cropY,canvas.width,cropH,0,0,canvas.width,cropH);
-  status.textContent='🔍 Analyse...';
-  try{
-    const {data:{text}}=await Tesseract.recognize(cropCanvas,'fra+eng',{
-      logger:m=>{if(m.status==='recognizing text'){status.textContent='🔍 '+Math.round(m.progress*100)+'%';}}
-    });
-    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
-    let prenom='';let telephone='';
-    for(const line of lines){
-      const low=line.toLowerCase();
-      // Prénom
-      if(!prenom&&(low.includes('client')||low.includes('nom &'))){
-        const after=line.replace(/^.*(client|nom\s*[&]+\s*pr[eé]nom)\s*[:\-=]?\s*/i,'').replace(/\(.*?\)/g,'').trim();
-        const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
-        if(words.length>=2)prenom=words[words.length-1];
-        else if(words.length===1)prenom=words[0];
+  status.style.display='block';
+  status.textContent='🔍 Analyse en cours...';
+  let prenomFinal='';let telFinal='';
+  for(let i=0;i<scanPhotos.length;i++){
+    status.textContent='🔍 Photo '+(i+1)+'/'+scanPhotos.length+'...';
+    try{
+      const {data:{text}}=await Tesseract.recognize(scanPhotos[i],'fra+eng');
+      const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
+      for(const line of lines){
+        const low=line.toLowerCase();
+        if(!prenomFinal&&(low.includes('client')||low.includes('nom &'))){
+          const after=line.replace(/^.*(client|nom\s*[&]+\s*pr[eé]nom)\s*[:\-=]?\s*/i,'').replace(/\(.*?\)/g,'').trim();
+          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
+          if(words.length>=1)prenomFinal=words.join(' ');
+        }
+        if(!telFinal&&(low.includes('tel perso')||low.includes('tel.perso')||low.includes('tel pers')||low.includes('portable'))){
+          const digits=line.replace(/[^0-9]/g,'');
+          const m=digits.match(/0[67]\d{8}/);
+          if(m)telFinal=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+        }
       }
-      // Téléphone
-      if(!telephone&&(low.includes('tel perso')||low.includes('tel.perso')||low.includes('tel pers')||low.includes('portable'))){
-        const digits=line.replace(/[^0-9]/g,'');
+      if(!telFinal){
+        const digits=text.replace(/[^0-9]/g,'');
         const m=digits.match(/0[67]\d{8}/);
-        if(m)telephone=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+        if(m)telFinal=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
       }
-    }
-    if(!telephone){
-      const digits=text.replace(/[^0-9]/g,'');
-      const m=digits.match(/0[67]\d{8}/);
-      if(m)telephone=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
-    }
-    // Afficher résultat
-    const results=document.getElementById('scan-results');
-    if(prenom||telephone){
-      if(prenom)document.getElementById('send-prenom').value=prenom;
-      if(telephone)document.getElementById('send-phone').value=telephone;
-      const chip=document.createElement('div');
-      chip.style.cssText='background:rgba(245,197,24,0.2);border:1px solid #F5C518;border-radius:8px;padding:6px 10px;font-size:12px;color:#F5C518;font-weight:700';
-      chip.textContent=(prenom?'👤 '+prenom+' ':'' )+(telephone?'📞 '+telephone:'');
-      results.appendChild(chip);
-      status.textContent='✓ Trouvé ! Reprends une photo ou ferme.';
-    }else{
-      status.textContent='❌ Rien trouvé. Recadre sur Client: ou TEL PERSO';
-    }
-  }catch(e){status.textContent='❌ Erreur. Réessaie.';}
+    }catch(e){}
+  }
+  status.style.display='none';
+  if(prenomFinal)document.getElementById('send-prenom').value=prenomFinal;
+  if(telFinal)document.getElementById('send-phone').value=telFinal;
+  if(prenomFinal||telFinal){
+    closeScanner();
+    showFlash('✓ '+(prenomFinal?prenomFinal+' ':'')+(telFinal?telFinal:''));
+  }else{
+    status.style.display='block';
+    status.textContent='❌ Rien trouvé. Reprends les photos en cadrant bien Client: et TEL PERSO';
+    setTimeout(()=>status.style.display='none',3000);
+  }
 }
 function showFlash(msg){
   const f=document.getElementById('flash-sent');
