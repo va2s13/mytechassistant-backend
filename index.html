@@ -142,15 +142,15 @@ Contact : contact@b2tfprod.fr
 6. COOKIES
 Aucun cookie de tracking. Token d authentification stocke localement pour maintenir la session.</div>
   <div style="padding:16px 20px 40px;border-top:1px solid #2A2A2A;background:#0A0A0A">
-    <div id="btn-cgu" onclick="toggleCheck('cgu')" ontouchend="event.preventDefault();toggleCheck('cgu')" style="width:100%;padding:18px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:12px;min-height:60px;user-select:none;-webkit-user-select:none;touch-action:manipulation">
-      <div id="box-cgu" style="min-width:30px;width:30px;height:30px;border-radius:8px;border:2px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#0A0A0A"></div>
-      <span style="line-height:1.4;flex:1">J ai lu et j accepte les <strong style="color:#F5C518">CGU</strong></span>
-    </div>
-    <div id="btn-politique" onclick="toggleCheck('politique')" ontouchend="event.preventDefault();toggleCheck('politique')" style="width:100%;padding:18px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:18px;min-height:60px;user-select:none;-webkit-user-select:none;touch-action:manipulation">
-      <div id="box-politique" style="min-width:30px;width:30px;height:30px;border-radius:8px;border:2px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#0A0A0A"></div>
-      <span style="line-height:1.4;flex:1">J ai lu et j accepte la <strong style="color:#F5C518">Politique de confidentialite</strong></span>
-    </div>
-    <div id="btn-legal" onclick="acceptLegal()" ontouchend="event.preventDefault();acceptLegal()" style="width:100%;padding:18px;background:#2A2A2A;color:#666;border:none;border-radius:14px;font-size:16px;font-weight:800;text-align:center;cursor:not-allowed;min-height:60px;display:flex;align-items:center;justify-content:center;touch-action:manipulation">Veuillez accepter les deux documents</div>
+    <button id="btn-cgu" onclick="toggleCheck('cgu')" style="width:100%;padding:20px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:12px;min-height:64px;font-family:inherit;-webkit-tap-highlight-color:rgba(245,197,24,0.2)">
+      <div id="box-cgu" style="min-width:34px;width:34px;height:34px;border-radius:8px;border:2.5px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#0A0A0A;transition:all .2s"></div>
+      <span style="line-height:1.4;flex:1;text-align:left">J'ai lu et j'accepte les <strong style="color:#F5C518">CGU</strong></span>
+    </button>
+    <button id="btn-politique" onclick="toggleCheck('politique')" style="width:100%;padding:20px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:18px;min-height:64px;font-family:inherit;-webkit-tap-highlight-color:rgba(245,197,24,0.2)">
+      <div id="box-politique" style="min-width:34px;width:34px;height:34px;border-radius:8px;border:2.5px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#0A0A0A;transition:all .2s"></div>
+      <span style="line-height:1.4;flex:1;text-align:left">J'ai lu et j'accepte la <strong style="color:#F5C518">Politique de confidentialité</strong></span>
+    </button>
+    <button id="btn-legal" onclick="acceptLegal()" style="width:100%;padding:20px;background:#2A2A2A;color:#666;border:none;border-radius:14px;font-size:16px;font-weight:800;text-align:center;cursor:not-allowed;min-height:64px;font-family:inherit;transition:all .3s">Veuillez accepter les deux documents</button>
   </div>
 </div>
 
@@ -1156,20 +1156,26 @@ function showLegalTab(tab){
 }
 let checkedCgu=false,checkedPolitique=false;
 function toggleCheck(which){
-  // Prevent double-fire on iOS (touchend + click)
-  const now=Date.now();
-  if(window._lastToggle&&now-window._lastToggle<300)return;
-  window._lastToggle=now;
   if(which==='cgu'){
     checkedCgu=!checkedCgu;
-    const box=safe('box-cgu');const btn=safe('btn-cgu');
-    if(box){box.style.background=checkedCgu?'#F5C518':'transparent';box.style.borderColor=checkedCgu?'#F5C518':'#444';box.textContent=checkedCgu?'OK':'';}
-    if(btn)btn.style.borderColor=checkedCgu?'#F5C518':'#333';
+    const box=safe('box-cgu');
+    const btn=safe('btn-cgu');
+    if(box){
+      box.style.background=checkedCgu?'#F5C518':'transparent';
+      box.style.borderColor=checkedCgu?'#F5C518':'#666';
+      box.textContent=checkedCgu?'✓':'';
+    }
+    if(btn)btn.style.borderColor=checkedCgu?'#F5C518':'#444';
   }else{
     checkedPolitique=!checkedPolitique;
-    const box=safe('box-politique');const btn=safe('btn-politique');
-    if(box){box.style.background=checkedPolitique?'#F5C518':'transparent';box.style.borderColor=checkedPolitique?'#F5C518':'#444';box.textContent=checkedPolitique?'OK':'';}
-    if(btn)btn.style.borderColor=checkedPolitique?'#F5C518':'#333';
+    const box=safe('box-politique');
+    const btn=safe('btn-politique');
+    if(box){
+      box.style.background=checkedPolitique?'#F5C518':'transparent';
+      box.style.borderColor=checkedPolitique?'#F5C518':'#666';
+      box.textContent=checkedPolitique?'✓':'';
+    }
+    if(btn)btn.style.borderColor=checkedPolitique?'#F5C518':'#444';
   }
   const ok=checkedCgu&&checkedPolitique;
   const btnLegal=safe('btn-legal');
@@ -1177,7 +1183,7 @@ function toggleCheck(which){
     btnLegal.style.background=ok?'#F5C518':'#2A2A2A';
     btnLegal.style.color=ok?'#0A0A0A':'#666';
     btnLegal.style.cursor=ok?'pointer':'not-allowed';
-    btnLegal.textContent=ok?'Accepter et continuer':'Veuillez accepter les deux documents';
+    btnLegal.textContent=ok?'✓ Accepter et continuer →':'Veuillez accepter les deux documents';
   }
 }
 function acceptLegal(){
@@ -1413,7 +1419,7 @@ function showHome(){
   if(window.deferredPWAPrompt&&!localStorage.getItem('only5:pwa_dismissed')){
     const banner=document.createElement('div');
     banner.style.cssText='position:fixed;bottom:80px;left:16px;right:16px;background:#0A0A0A;border:2px solid #F5C518;border-radius:14px;padding:14px 16px;z-index:50;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
-    banner.innerHTML='<span style="font-size:24px">📱</span><div style="flex:1"><div style="color:#fff;font-weight:700;font-size:14px">Installer Only★5</div><div style="color:#888;font-size:12px">Accès rapide depuis l'écran d'accueil</div></div><button onclick="installPWA()" style="background:#F5C518;color:#000;border:none;border-radius:8px;padding:8px 14px;font-weight:800;font-size:13px;cursor:pointer">Installer</button><button onclick="this.parentElement.remove();localStorage.setItem('only5:pwa_dismissed','1')" style="background:none;border:none;color:#666;font-size:20px;cursor:pointer;padding:4px">×</button>';
+    banner.innerHTML='<span style="font-size:24px">📱</span><div style="flex:1"><div style="color:#fff;font-weight:700;font-size:14px">Installer Only★5</div><div style="color:#888;font-size:12px">Acces rapide depuis votre ecran</div></div><button onclick="installPWA()" style="background:#F5C518;color:#000;border:none;border-radius:8px;padding:8px 14px;font-weight:800;font-size:13px;cursor:pointer">Installer</button><button onclick="this.parentElement.remove();localStorage.setItem(\'only5:pwa_dismissed\',\'1\')" style="background:none;border:none;color:#666;font-size:20px;cursor:pointer;padding:4px">x</button>';
     document.body.appendChild(banner);
     setTimeout(()=>{if(banner.parentElement)banner.remove();},10000);
   }
@@ -2075,7 +2081,7 @@ if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.navigator.standalone&&
   setTimeout(()=>{
     const b=document.createElement('div');
     b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1A1A1A;border-top:2px solid #F5C518;padding:16px 20px 32px;z-index:50;text-align:center';
-    b.innerHTML='<div style="color:#F5C518;font-weight:800;font-size:15px;margin-bottom:8px">📱 Installer Only★5 sur iPhone</div><div style="color:#AAA;font-size:13px;line-height:1.7">Appuie sur <strong style="color:#fff">⬆️ Partager</strong> en bas de Safari<br>puis <strong style="color:#fff">"Sur l'écran d'accueil"</strong></div><button onclick="this.parentElement.remove();localStorage.setItem('only5:ios_pwa_shown','1')" style="margin-top:12px;background:#F5C518;color:#000;border:none;border-radius:10px;padding:10px 24px;font-weight:800;font-size:14px;cursor:pointer">OK compris</button>';
+    b.innerHTML='<div style="color:#F5C518;font-weight:800;font-size:15px;margin-bottom:8px">📱 Installer Only★5 sur iPhone</div><div style="color:#AAA;font-size:13px;line-height:1.7">Appuie sur <strong style="color:#fff">Partager</strong> en bas de Safari<br>puis <strong style="color:#fff">Sur l ecran d accueil</strong></div><button onclick="this.parentElement.remove();localStorage.setItem(\'only5:ios_pwa_shown\',\'1\')" style="margin-top:12px;background:#F5C518;color:#000;border:none;border-radius:10px;padding:10px 24px;font-weight:800;font-size:14px;cursor:pointer">OK compris</button>';
     document.body.appendChild(b);
   },3000);
 }
