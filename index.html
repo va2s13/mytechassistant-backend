@@ -495,26 +495,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <button id="btn-sms" class="btn" style="flex:1;color:#fff;background:#E8202A" onclick="sendMsg('sms')">SMS</button>
     </div>
 
-    <!-- BOUTON AJOUTER A LA LISTE -->
-    <button onclick="ajouterClientListe()" style="width:100%;padding:12px;background:#0A0A0A;color:#F5C518;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:14px">+ Ajouter à la liste sans envoyer</button>
-
-    <!-- LISTE MULTI-CLIENTS -->
-    <div class="card" style="padding:12px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span class="sec-title" style="margin:0">Liste d'envoi <span id="groupe-count" style="background:#1565C0;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px">0</span></span>
-        <button onclick="viderListe()" style="background:none;border:none;color:#E8202A;font-size:12px;cursor:pointer;font-family:inherit">🗑 Vider</button>
-      </div>
-      <div id="multi-clients-list" style="margin-bottom:10px"></div>
-      <div id="groupe-btns" style="display:none">
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-green" style="flex:1" onclick="envoyerGroupe('whatsapp')">📱 WhatsApp tous</button>
-          <button class="btn" style="flex:1;color:#fff;background:#E8202A" onclick="envoyerGroupe('sms')">💬 SMS tous</button>
-        </div>
-      </div>
-      <div id="liste-vide-msg" style="text-align:center;padding:12px;color:#AAA;font-size:13px">Ajoutez des clients ci-dessus</div>
-    </div>
-
-    <button class="btn btn-outline" onclick="clearForm()">🗑 Effacer les champs</button>
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Nouveau client</button>
   </div>
   <div id="tab-clients" class="tab-content">
     <div class="card">
