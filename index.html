@@ -141,15 +141,15 @@ Contact : contact@b2tfprod.fr
 6. COOKIES
 Aucun cookie de tracking. Token d authentification stocke localement pour maintenir la session.</div>
   <div style="padding:16px 20px 40px;border-top:1px solid #2A2A2A;background:#0A0A0A">
-    <div id="btn-cgu" onclick="toggleCheck('cgu')" style="width:100%;padding:18px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:12px;min-height:60px;user-select:none;-webkit-user-select:none;touch-action:manipulation">
+    <div id="btn-cgu" onclick="toggleCheck('cgu')" ontouchend="event.preventDefault();toggleCheck('cgu')" style="width:100%;padding:18px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:12px;min-height:60px;user-select:none;-webkit-user-select:none;touch-action:manipulation">
       <div id="box-cgu" style="min-width:30px;width:30px;height:30px;border-radius:8px;border:2px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#0A0A0A"></div>
       <span style="line-height:1.4;flex:1">J ai lu et j accepte les <strong style="color:#F5C518">CGU</strong></span>
     </div>
-    <div id="btn-politique" onclick="toggleCheck('politique')" style="width:100%;padding:18px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:18px;min-height:60px;user-select:none;-webkit-user-select:none;touch-action:manipulation">
+    <div id="btn-politique" onclick="toggleCheck('politique')" ontouchend="event.preventDefault();toggleCheck('politique')" style="width:100%;padding:18px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:18px;min-height:60px;user-select:none;-webkit-user-select:none;touch-action:manipulation">
       <div id="box-politique" style="min-width:30px;width:30px;height:30px;border-radius:8px;border:2px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#0A0A0A"></div>
       <span style="line-height:1.4;flex:1">J ai lu et j accepte la <strong style="color:#F5C518">Politique de confidentialite</strong></span>
     </div>
-    <div id="btn-legal" onclick="acceptLegal()" style="width:100%;padding:18px;background:#2A2A2A;color:#666;border:none;border-radius:14px;font-size:16px;font-weight:800;text-align:center;cursor:not-allowed;min-height:60px;display:flex;align-items:center;justify-content:center;touch-action:manipulation">Veuillez accepter les deux documents</div>
+    <div id="btn-legal" onclick="acceptLegal()" ontouchend="event.preventDefault();acceptLegal()" style="width:100%;padding:18px;background:#2A2A2A;color:#666;border:none;border-radius:14px;font-size:16px;font-weight:800;text-align:center;cursor:not-allowed;min-height:60px;display:flex;align-items:center;justify-content:center;touch-action:manipulation">Veuillez accepter les deux documents</div>
   </div>
 </div>
 
@@ -450,47 +450,46 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         <button class="btn-sm" onclick="saveCurrentClient()">+ Sauvegarder</button>
       </div>
       <div id="ocr-loading" style="display:none;text-align:center;padding:10px;color:#1565C0;font-size:13px;font-weight:700">🔍 Analyse en cours...</div>
-      <input id="send-prenom" class="inp" placeholder="Prenom du client" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words">
-      <input id="send-phone" class="inp" type="tel" inputmode="tel" placeholder="Telephone" autocomplete="off">
-    </div>
-    <div class="card">
-      <div class="sec-title">Message</div>
+      <!-- Saisie client -->
+      <input id="send-prenom" class="inp" placeholder="Prénom + Nom du client" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words">
+      <input id="send-phone" class="inp" type="tel" inputmode="tel" placeholder="Téléphone" autocomplete="off">
+      <!-- Choix message pour ce client -->
+      <span class="label">Message pour ce client</span>
       <div id="tpl-list"></div>
     </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span class="sec-title" style="margin:0">Apercu</span>
-        <button class="btn-sm" onclick="togglePreview(this)">&#9660;</button>
-      </div>
-      <div id="preview-box" style="display:none" class="preview-msg"></div>
-    </div>
+
+    <div id="flash-sent" class="flash">Message envoye !</div>
     <div id="trial-banner" style="display:none;background:#FFFBE6;border:1px solid #F5C518;border-radius:10px;padding:9px 14px;margin-bottom:12px;justify-content:space-between">
       <span style="font-size:13px">Version demo</span>
       <span id="trial-count-txt" style="font-size:13px;font-weight:700"></span>
     </div>
-    <div id="flash-sent" class="flash">Message envoye !</div>
 
-    <!-- LISTE MULTI-CLIENTS -->
-    <div id="multi-clients-list" style="margin-bottom:10px"></div>
-
-    <div style="display:flex;gap:10px;margin-bottom:10px">
+    <!-- BOUTONS ENVOI CLIENT UNIQUE -->
+    <div style="display:flex;gap:10px;margin-bottom:8px">
       <button class="btn btn-green" style="flex:1" onclick="sendMsg('whatsapp')">WhatsApp</button>
       <button id="btn-sms" class="btn" style="flex:1;color:#fff;background:#E8202A" onclick="sendMsg('sms')">SMS</button>
     </div>
-    <!-- Bouton ajouter client à la liste -->
-    <button class="btn btn-outline" onclick="ajouterClientListe()" style="margin-bottom:8px">+ Ajouter à la liste</button>
-    <!-- Bouton envoi groupé (apparait si liste > 0) -->
-    <div id="groupe-btns" style="display:none;margin-bottom:8px">
-      <div style="background:#F9F9F9;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:13px;color:#666;text-align:center">
-        <span id="groupe-count">0</span> client(s) dans la liste
+
+    <!-- BOUTON AJOUTER A LA LISTE -->
+    <button onclick="ajouterClientListe()" style="width:100%;padding:12px;background:#0A0A0A;color:#F5C518;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:14px">+ Ajouter à la liste sans envoyer</button>
+
+    <!-- LISTE MULTI-CLIENTS -->
+    <div class="card" style="padding:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span class="sec-title" style="margin:0">Liste d'envoi <span id="groupe-count" style="background:#1565C0;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px">0</span></span>
+        <button onclick="viderListe()" style="background:none;border:none;color:#E8202A;font-size:12px;cursor:pointer;font-family:inherit">🗑 Vider</button>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-green" style="flex:1" onclick="envoyerGroupe('whatsapp')">📱 Envoyer groupe WhatsApp</button>
-        <button class="btn" style="flex:1;color:#fff;background:#E8202A" onclick="envoyerGroupe('sms')">💬 Groupe SMS</button>
+      <div id="multi-clients-list" style="margin-bottom:10px"></div>
+      <div id="groupe-btns" style="display:none">
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-green" style="flex:1" onclick="envoyerGroupe('whatsapp')">📱 WhatsApp tous</button>
+          <button class="btn" style="flex:1;color:#fff;background:#E8202A" onclick="envoyerGroupe('sms')">💬 SMS tous</button>
+        </div>
       </div>
-      <button class="btn btn-outline" onclick="viderListe()" style="margin-top:8px;color:#E8202A;border-color:#E8202A">🗑 Vider la liste</button>
+      <div id="liste-vide-msg" style="text-align:center;padding:12px;color:#AAA;font-size:13px">Ajoutez des clients ci-dessus</div>
     </div>
-    <button class="btn btn-outline" onclick="clearForm()">Nouveau client</button>
+
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Effacer les champs</button>
   </div>
   <div id="tab-clients" class="tab-content">
     <div class="card">
@@ -1142,6 +1141,10 @@ function showLegalTab(tab){
 }
 let checkedCgu=false,checkedPolitique=false;
 function toggleCheck(which){
+  // Prevent double-fire on iOS (touchend + click)
+  const now=Date.now();
+  if(window._lastToggle&&now-window._lastToggle<300)return;
+  window._lastToggle=now;
   if(which==='cgu'){
     checkedCgu=!checkedCgu;
     const box=safe('box-cgu');const btn=safe('btn-cgu');
@@ -1833,4 +1836,146 @@ async function saveProfile(){
   const indicatif=document.getElementById('edit-indicatif')?.value||'+33';
   const whatsappNum=document.getElementById('edit-whatsapp').value.trim().replace(/^0/,'');
   const whatsappFull=whatsappNum?(indicatif+whatsappNum):'';
-  const updated={...profile,boutiqu
+  const updated={...profile,boutique:document.getElementById('edit-boutique').value.trim()||profile.boutique,gerant:document.getElementById('edit-gerant').value.trim()||profile.gerant,whatsapp:whatsappFull||profile.whatsapp,google_link:document.getElementById('edit-google').value.trim()||profile.google_link,fact_siret:document.getElementById('edit-siret').value.trim(),couleur:document.getElementById('edit-couleur').value||profile.couleur};
+  showLoading(true);const {error}=await sb.from('profiles').upsert({...updated,id:currentUser.id});showLoading(false);
+  if(error){alert('Erreur: '+error.message);return;}
+  profile=updated;document.getElementById('profile-edit').style.display='none';document.getElementById('profile-view').style.display='block';showHome();alert('Profil sauvegarde !');
+}
+function renderTplSettings(){
+  document.getElementById('tpl-count').textContent=templates.length;
+  const list=document.getElementById('tpl-setting-list');list.innerHTML='';
+  templates.forEach(t=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #F0F0F0';row.innerHTML='<div class="dot" style="background:'+t.color+';width:12px;height:12px"></div><span style="flex:1;font-size:14px;font-weight:600">'+t.label+'</span><button class="btn-sm" onclick="editTpl(\''+t.id+'\')">Editer</button><button class="btn-sm" style="color:#E8202A;border-color:#E8202A" onclick="deleteTpl(\''+t.id+'\')">Sup</button>';list.appendChild(row);});
+}
+function showAddTpl(){if(!canUseFeature('templates_custom')){showPlanAlert('templates_custom');return;}editingTplId=null;document.getElementById('tpl-edit-label').value='';document.getElementById('tpl-edit-content').value='';document.getElementById('tpl-edit-preview').textContent='';initColorPicker('tpl-edit-colors','tpl-edit-color','#F5C518');document.getElementById('tpl-edit-form').style.display='block';}
+function editTpl(id){const t=templates.find(x=>x.id===id);if(!t)return;editingTplId=id;document.getElementById('tpl-edit-label').value=t.label;document.getElementById('tpl-edit-content').value=t.content;document.getElementById('tpl-edit-preview').textContent=fillMsg(t.content,'[Client]');initColorPicker('tpl-edit-colors','tpl-edit-color',t.color);document.getElementById('tpl-edit-form').style.display='block';}
+async function saveTplEdit(){
+  const label=document.getElementById('tpl-edit-label').value.trim();
+  const content=document.getElementById('tpl-edit-content').value.trim();
+  const color=document.getElementById('tpl-edit-color').value||'#F5C518';
+  if(!label||!content){alert('Remplissez le nom et le contenu.');return;}
+  if(editingTplId){
+    const idx=templates.findIndex(t=>t.id===editingTplId);
+    if(idx>=0){
+      templates[idx]={...templates[idx],label,content,color};
+      if(currentUser){await sb.from('templates').update({label,content,color}).eq('id',editingTplId).eq('user_id',currentUser.id);}
+    }
+  }else{
+    if(currentUser){
+      const {data}=await sb.from('templates').insert({user_id:currentUser.id,label,content,color}).select().single();
+      if(data){templates.push({id:data.id.toString(),label,content,color});}
+      else{templates.push({id:'tpl_'+Date.now(),label,content,color});}
+    }else{
+      templates.push({id:'tpl_'+Date.now(),label,content,color});
+    }
+  }
+  document.getElementById('tpl-edit-form').style.display='none';
+  editingTplId=null;
+  renderTplList();
+  renderTplSettings();
+}
+async function deleteTpl(id){if(!confirm('Supprimer ce template ?'))return;templates=templates.filter(t=>t.id!==id);if(currentUser){await sb.from('templates').delete().eq('id',id).eq('user_id',currentUser.id);}renderTplList();renderTplSettings();}
+
+// ── MULTI-CLIENTS ─────────────────────────────────────────────────────────────
+let clientsListe=[];
+
+function ajouterClientListe(){
+  const prenom=document.getElementById('send-prenom').value.trim();
+  const phone=document.getElementById('send-phone').value.trim();
+  if(!prenom||phone.length<8){alert('Remplissez le prénom et le téléphone.');return;}
+  const tpl=templates.find(t=>t.id===selTpl)||templates[0];
+  const fph=fmtPhone(phone);
+  clientsListe.push({prenom,phone:fph,tplId:selTpl,tplLabel:tpl?tpl.label:'Standard'});
+  renderClientListe();
+  // Badge
+  const badge=document.getElementById('liste-badge');
+  if(badge){badge.textContent=clientsListe.length;badge.style.display='inline';}
+  // Vider les champs pour entrer le suivant
+  document.getElementById('send-prenom').value='';
+  document.getElementById('send-phone').value='';
+  document.getElementById('send-prenom').focus();
+}
+
+function renderClientListe(){
+  const list=document.getElementById('multi-clients-list');
+  const btns=document.getElementById('groupe-btns');
+  const count=document.getElementById('groupe-count');
+  const videMsg=document.getElementById('liste-vide-msg');
+  if(!clientsListe.length){
+    list.innerHTML='';
+    if(btns)btns.style.display='none';
+    if(count)count.textContent='0';
+    if(videMsg)videMsg.style.display='block';
+    return;
+  }
+  if(videMsg)videMsg.style.display='none';
+  if(btns)btns.style.display='block';
+  if(count)count.textContent=clientsListe.length;
+  list.innerHTML=clientsListe.map((c,i)=>`
+    <div style="background:#F0F4FF;border-radius:10px;padding:10px 12px;margin-bottom:8px;border-left:4px solid #1565C0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div>
+          <div style="font-weight:800;font-size:15px;color:#0A0A0A">${c.prenom}</div>
+          <div style="color:#666;font-size:12px">${c.phone}</div>
+        </div>
+        <button onclick="retirerClient(${i})" style="background:#FFE8E8;border:none;color:#E8202A;font-size:13px;font-weight:700;cursor:pointer;padding:6px 10px;border-radius:8px">✕</button>
+      </div>
+      <div style="font-size:11px;color:#666;margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Message :</div>
+      <select onchange="clientsListe[${i}].tplId=this.value;clientsListe[${i}].tplLabel=this.options[this.selectedIndex].text"
+        style="width:100%;padding:8px 10px;border:1.5px solid #1565C0;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:#1565C0;font-weight:700">
+        ${templates.map(t=>`<option value="${t.id}" ${t.id===c.tplId?'selected':''}>${t.label}</option>`).join('')}
+      </select>
+    </div>
+  `).join('');
+}
+
+function retirerClient(i){
+  clientsListe.splice(i,1);
+  renderClientListe();
+}
+
+function viderListe(){
+  if(!confirm('Vider toute la liste ?'))return;
+  clientsListe=[];
+  renderClientListe();
+  const badge=document.getElementById('liste-badge');
+  if(badge)badge.style.display='none';
+}
+
+async function envoyerGroupe(canal){
+  if(!clientsListe.length)return;
+  if(!canUseFeature('send')){document.getElementById('paywall').classList.add('show');return;}
+  for(let i=0;i<clientsListe.length;i++){
+    const c=clientsListe[i];
+    const tpl=templates.find(t=>t.id===c.tplId)||templates[0];
+    if(!tpl)continue;
+    const msg=fillMsg(tpl.content,c.prenom);
+    const enc=encodeURIComponent(msg);
+    const fph=c.phone.replace('+','');
+    // Ouvrir chaque message avec délai
+    await new Promise(resolve=>{
+      setTimeout(()=>{
+        window.open(canal==='whatsapp'?'https://wa.me/'+fph+'?text='+enc:'sms:'+c.phone+'?body='+enc,'_blank');
+        resolve();
+      },i*800);
+    });
+    // Enregistrer
+    if(currentUser){
+      try{
+        const entry={user_id:currentUser.id,prenom:c.prenom,phone:c.phone,canal,template_id:c.tplId,template_label:tpl.label,sent_at:new Date().toISOString()};
+        const {data}=await sb.from('envois').insert(entry).select().single();
+        if(data)history=[data,...history.slice(0,49)];
+      }catch(e){}
+    }
+    if(!isPaid){trialCount++;lss('only5:trial:'+(currentUser?.id||'demo'),trialCount);}
+  }
+  const nb=clientsListe.length;
+  clientsListe=[];
+  renderClientListe();
+  const f=document.getElementById('flash-sent');
+  if(f){f.textContent='✓ '+nb+' messages envoyés !';f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
+  renderStats();
+}
+
+</script>
+</body>
+</html>
