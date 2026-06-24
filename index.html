@@ -388,7 +388,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     </div>
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <span class="sec-title" style="margin:0">Client</span>
+        <span class="sec-title" style="margin:0">Client <span id="liste-badge" style="display:none;background:#1565C0;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px">0</span></span>
         <div style="display:flex;gap:8px">
           <button class="btn-sm" style="background:#1565C0;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-weight:700;display:flex;align-items:center;gap:5px" onclick="document.getElementById('ocr-input').click()">📷 Photo</button>
           <button class="btn-sm" onclick="saveCurrentClient()">+ Sauvegarder</button>
@@ -469,9 +469,26 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <span id="trial-count-txt" style="font-size:13px;font-weight:700"></span>
     </div>
     <div id="flash-sent" class="flash">Message envoye !</div>
+
+    <!-- LISTE MULTI-CLIENTS -->
+    <div id="multi-clients-list" style="margin-bottom:10px"></div>
+
     <div style="display:flex;gap:10px;margin-bottom:10px">
       <button class="btn btn-green" style="flex:1" onclick="sendMsg('whatsapp')">WhatsApp</button>
       <button id="btn-sms" class="btn" style="flex:1;color:#fff;background:#E8202A" onclick="sendMsg('sms')">SMS</button>
+    </div>
+    <!-- Bouton ajouter client à la liste -->
+    <button class="btn btn-outline" onclick="ajouterClientListe()" style="margin-bottom:8px">+ Ajouter à la liste</button>
+    <!-- Bouton envoi groupé (apparait si liste > 0) -->
+    <div id="groupe-btns" style="display:none;margin-bottom:8px">
+      <div style="background:#F9F9F9;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:13px;color:#666;text-align:center">
+        <span id="groupe-count">0</span> client(s) dans la liste
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-green" style="flex:1" onclick="envoyerGroupe('whatsapp')">📱 Envoyer groupe WhatsApp</button>
+        <button class="btn" style="flex:1;color:#fff;background:#E8202A" onclick="envoyerGroupe('sms')">💬 Groupe SMS</button>
+      </div>
+      <button class="btn btn-outline" onclick="viderListe()" style="margin-top:8px;color:#E8202A;border-color:#E8202A">🗑 Vider la liste</button>
     </div>
     <button class="btn btn-outline" onclick="clearForm()">Nouveau client</button>
   </div>
@@ -1450,15 +1467,27 @@ function takeScanPhoto(){
   const canvas=document.getElementById('scanner-canvas');
   canvas.width=video.videoWidth;canvas.height=video.videoHeight;
   canvas.getContext('2d').drawImage(video,0,0);
-  // Crop zone cadre
-  const cropH=Math.round(canvas.height*0.25);
-  const cropY=Math.round(canvas.height*0.375);
+  // Crop zone cadre (plus large pour mieux capturer)
+  const cropH=Math.round(canvas.height*0.30);
+  const cropY=Math.round(canvas.height*0.35);
   const crop=document.createElement('canvas');
-  crop.width=canvas.width;crop.height=cropH;
-  crop.getContext('2d').drawImage(canvas,0,cropY,canvas.width,cropH,0,0,canvas.width,cropH);
+  // Agrandir x2 pour meilleure lecture OCR
+  crop.width=canvas.width*2;crop.height=cropH*2;
+  const ctx=crop.getContext('2d');
+  ctx.drawImage(canvas,0,cropY,canvas.width,cropH,0,0,canvas.width*2,cropH*2);
+  // Prétraitement : contraste élevé + noir/blanc
+  const imgData=ctx.getImageData(0,0,crop.width,crop.height);
+  const d=imgData.data;
+  for(let i=0;i<d.length;i+=4){
+    // Niveaux de gris
+    const gray=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    // Seuillage : pixel blanc ou noir selon luminosité
+    const val=gray>128?255:0;
+    d[i]=d[i+1]=d[i+2]=val;
+  }
+  ctx.putImageData(imgData,0,0);
   currentPhotoCanvas=crop;
-  // Aperçu
-  document.getElementById('scan-preview-img').src=crop.toDataURL('image/jpeg',0.9);
+  document.getElementById('scan-preview-img').src=crop.toDataURL('image/png');
   showScanView('preview');
 }
 function cancelPhoto(){
@@ -1482,6 +1511,72 @@ function keepPhoto(){
   currentPhotoCanvas=null;
   showScanView('camera');
 }
+function preprocessCanvas(src){
+  // Crée une version améliorée pour OCR : agrandissement + contraste élevé + noir/blanc
+  const scale=2.5;
+  const dst=document.createElement('canvas');
+  dst.width=src.width*scale;
+  dst.height=src.height*scale;
+  const ctx=dst.getContext('2d');
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
+  ctx.drawImage(src,0,0,dst.width,dst.height);
+  // Contraste + noir/blanc
+  const imgData=ctx.getImageData(0,0,dst.width,dst.height);
+  const d=imgData.data;
+  for(let i=0;i<d.length;i+=4){
+    // Luminosité
+    let l=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    // Contraste fort
+    l=((l-128)*2.5)+128;
+    // Seuil noir/blanc
+    const v=l>140?255:0;
+    d[i]=d[i+1]=d[i+2]=v;
+  }
+  ctx.putImageData(imgData,0,0);
+  return dst;
+}
+
+function extraireInfos(text){
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
+  let prenom='';let tel='';
+  for(const line of lines){
+    const low=line.toLowerCase().replace(/[^a-z0-9àâäéèêëîïôùûüç&:.\s]/g,' ');
+    // ── PRENOM ──
+    if(!prenom){
+      // Format ticket: "Client: NOM PRENOM" ou "client : NOM PRENOM"
+      const mClient=line.match(/client\s*[:\-=]?\s*([A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ\-]+(?:\s+[A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ\-]+)*)/i);
+      if(mClient){
+        const clean=mClient[1].replace(/\(.*?\)/g,'').trim();
+        const words=clean.split(/\s+/).filter(w=>w.length>1&&!/\d/.test(w));
+        if(words.length>=1)prenom=words.join(' ');
+      }
+      // Format écran Kezia: "Nom & Prénom   ARNOUX SOPHIE"
+      const mNom=line.match(/nom\s*[&et]+\s*pr[eé]nom\s+([A-ZÀ-Ÿ].+)/i);
+      if(!prenom&&mNom){
+        const words=mNom[1].trim().split(/\s+/).filter(w=>w.length>1&&!/\d/.test(w));
+        if(words.length>=1)prenom=words.join(' ');
+      }
+    }
+    // ── TELEPHONE ──
+    if(!tel){
+      // Ligne avec mot-clé tel
+      if(low.includes('tel')&&(low.includes('perso')||low.includes('pro')||low.includes('portable')||low.includes('mobile'))){
+        const digits=line.replace(/[^0-9]/g,'');
+        const m=digits.match(/0[6-9]\d{8}/);
+        if(m)tel=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+      }
+    }
+  }
+  // Fallback tel : cherche 06/07/09 n'importe où
+  if(!tel){
+    const digits=text.replace(/[^0-9]/g,'');
+    const m=digits.match(/0[6-9]\d{8}/);
+    if(m)tel=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+  }
+  return{prenom,tel};
+}
+
 async function analyserPhotos(){
   if(!scanPhotos.length)return;
   const status=document.getElementById('scanner-status');
@@ -1491,25 +1586,22 @@ async function analyserPhotos(){
   for(let i=0;i<scanPhotos.length;i++){
     status.textContent='🔍 Photo '+(i+1)+'/'+scanPhotos.length+'...';
     try{
-      const {data:{text}}=await Tesseract.recognize(scanPhotos[i],'fra+eng');
-      const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
-      for(const line of lines){
-        const low=line.toLowerCase();
-        if(!prenomFinal&&(low.includes('client')||low.includes('nom &'))){
-          const after=line.replace(/^.*(client|nom\s*[&]+\s*pr[eé]nom)\s*[:\-=]?\s*/i,'').replace(/\(.*?\)/g,'').trim();
-          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
-          if(words.length>=1)prenomFinal=words.join(' ');
-        }
-        if(!telFinal&&(low.includes('tel perso')||low.includes('tel.perso')||low.includes('tel pers')||low.includes('portable'))){
-          const digits=line.replace(/[^0-9]/g,'');
-          const m=digits.match(/0[67]\d{8}/);
-          if(m)telFinal=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
-        }
-      }
-      if(!telFinal){
-        const digits=text.replace(/[^0-9]/g,'');
-        const m=digits.match(/0[67]\d{8}/);
-        if(m)telFinal=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+      // Version originale
+      const {data:{text:text1}}=await Tesseract.recognize(scanPhotos[i],'fra+eng',{
+        tessedit_pageseg_mode:'6',
+      });
+      let r=extraireInfos(text1);
+      if(r.prenom&&!prenomFinal)prenomFinal=r.prenom;
+      if(r.tel&&!telFinal)telFinal=r.tel;
+      // Si pas trouvé, essayer avec image prétraitée
+      if(!prenomFinal||!telFinal){
+        const enhanced=preprocessCanvas(scanPhotos[i]);
+        const {data:{text:text2}}=await Tesseract.recognize(enhanced,'fra+eng',{
+          tessedit_pageseg_mode:'6',
+        });
+        const r2=extraireInfos(text2);
+        if(r2.prenom&&!prenomFinal)prenomFinal=r2.prenom;
+        if(r2.tel&&!telFinal)telFinal=r2.tel;
       }
     }catch(e){}
   }
@@ -1521,8 +1613,8 @@ async function analyserPhotos(){
     showFlash('✓ '+(prenomFinal?prenomFinal+' ':'')+(telFinal?telFinal:''));
   }else{
     status.style.display='block';
-    status.textContent='❌ Rien trouvé. Reprends les photos en cadrant bien Client: et TEL PERSO';
-    setTimeout(()=>status.style.display='none',3000);
+    status.textContent='❌ Pas détecté. Recadre exactement sur "Client:" et "TEL PERSO" — texte bien visible';
+    setTimeout(()=>status.style.display='none',4000);
   }
 }
 function showFlash(msg){
@@ -1741,44 +1833,4 @@ async function saveProfile(){
   const indicatif=document.getElementById('edit-indicatif')?.value||'+33';
   const whatsappNum=document.getElementById('edit-whatsapp').value.trim().replace(/^0/,'');
   const whatsappFull=whatsappNum?(indicatif+whatsappNum):'';
-  const updated={...profile,boutique:document.getElementById('edit-boutique').value.trim()||profile.boutique,gerant:document.getElementById('edit-gerant').value.trim()||profile.gerant,whatsapp:whatsappFull||profile.whatsapp,google_link:document.getElementById('edit-google').value.trim()||profile.google_link,fact_siret:document.getElementById('edit-siret').value.trim(),couleur:document.getElementById('edit-couleur').value||profile.couleur};
-  showLoading(true);const {error}=await sb.from('profiles').upsert({...updated,id:currentUser.id});showLoading(false);
-  if(error){alert('Erreur: '+error.message);return;}
-  profile=updated;document.getElementById('profile-edit').style.display='none';document.getElementById('profile-view').style.display='block';showHome();alert('Profil sauvegarde !');
-}
-function renderTplSettings(){
-  document.getElementById('tpl-count').textContent=templates.length;
-  const list=document.getElementById('tpl-setting-list');list.innerHTML='';
-  templates.forEach(t=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #F0F0F0';row.innerHTML='<div class="dot" style="background:'+t.color+';width:12px;height:12px"></div><span style="flex:1;font-size:14px;font-weight:600">'+t.label+'</span><button class="btn-sm" onclick="editTpl(\''+t.id+'\')">Editer</button><button class="btn-sm" style="color:#E8202A;border-color:#E8202A" onclick="deleteTpl(\''+t.id+'\')">Sup</button>';list.appendChild(row);});
-}
-function showAddTpl(){if(!canUseFeature('templates_custom')){showPlanAlert('templates_custom');return;}editingTplId=null;document.getElementById('tpl-edit-label').value='';document.getElementById('tpl-edit-content').value='';document.getElementById('tpl-edit-preview').textContent='';initColorPicker('tpl-edit-colors','tpl-edit-color','#F5C518');document.getElementById('tpl-edit-form').style.display='block';}
-function editTpl(id){const t=templates.find(x=>x.id===id);if(!t)return;editingTplId=id;document.getElementById('tpl-edit-label').value=t.label;document.getElementById('tpl-edit-content').value=t.content;document.getElementById('tpl-edit-preview').textContent=fillMsg(t.content,'[Client]');initColorPicker('tpl-edit-colors','tpl-edit-color',t.color);document.getElementById('tpl-edit-form').style.display='block';}
-async function saveTplEdit(){
-  const label=document.getElementById('tpl-edit-label').value.trim();
-  const content=document.getElementById('tpl-edit-content').value.trim();
-  const color=document.getElementById('tpl-edit-color').value||'#F5C518';
-  if(!label||!content){alert('Remplissez le nom et le contenu.');return;}
-  if(editingTplId){
-    const idx=templates.findIndex(t=>t.id===editingTplId);
-    if(idx>=0){
-      templates[idx]={...templates[idx],label,content,color};
-      if(currentUser){await sb.from('templates').update({label,content,color}).eq('id',editingTplId).eq('user_id',currentUser.id);}
-    }
-  }else{
-    if(currentUser){
-      const {data}=await sb.from('templates').insert({user_id:currentUser.id,label,content,color}).select().single();
-      if(data){templates.push({id:data.id.toString(),label,content,color});}
-      else{templates.push({id:'tpl_'+Date.now(),label,content,color});}
-    }else{
-      templates.push({id:'tpl_'+Date.now(),label,content,color});
-    }
-  }
-  document.getElementById('tpl-edit-form').style.display='none';
-  editingTplId=null;
-  renderTplList();
-  renderTplSettings();
-}
-async function deleteTpl(id){if(!confirm('Supprimer ce template ?'))return;templates=templates.filter(t=>t.id!==id);if(currentUser){await sb.from('templates').delete().eq('id',id).eq('user_id',currentUser.id);}renderTplList();renderTplSettings();}
-</script>
-</body>
-</html>
+  const updated={...profile,boutiqu
