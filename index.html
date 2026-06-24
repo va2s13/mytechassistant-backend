@@ -389,12 +389,8 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div id="saved-chips" class="chips-row"></div>
     </div>
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <span class="sec-title" style="margin:0">Client <span id="liste-badge" style="display:none;background:#1565C0;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px">0</span></span>
-        <div style="display:flex;gap:8px">
-          <button class="btn-sm" style="background:#1565C0;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-weight:700;display:flex;align-items:center;gap:5px" onclick="document.getElementById('ocr-input').click()">📷 Photo</button>
-          <button class="btn-sm" onclick="saveCurrentClient()">+ Sauvegarder</button>
-        </div>
+      <div style="margin-bottom:12px">
+        <span class="sec-title">Client</span>
       </div>
       <!-- SCANNER MODAL -->
       <div id="scanner-modal" style="display:none;position:fixed;inset:0;background:#000;z-index:9999;flex-direction:column">
@@ -987,27 +983,48 @@ const DEFAULT_TEMPLATES=[
 ];
 const SECTOR_TEMPLATES={
   'Telephonie / Reparation':[
-    {id:'pret',label:'📱 Téléphone prêt !',color:'#25D366',content:"Bonjour {prenom},\n\nBonne nouvelle ! Votre téléphone est prêt à être récupéré chez {boutique} 🎉\n\nNous sommes ouverts du lundi au samedi.\n\nA tout à l'heure !\n- {gerant}"},
+    {id:'pret',label:'📱 Telephone pret !',color:'#25D366',content:"Bonjour {prenom},\n\nBonne nouvelle ! Votre telephone est pret a etre recupere chez {boutique}\n\nA tout a l heure !\n- {gerant}"},
     {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci pour votre passage chez {boutique} !\n\nVotre avis compte enormement. Laissez-nous 5 etoiles sur Google\n-> {lien_google}\n\nMerci !\n- {gerant}"},
     {id:'reparation',label:'Reparation',color:'#E8202A',content:"Bonjour {prenom},\n\nOn espere que votre reparation vous satisfait !\n\nUn avis Google nous ferait plaisir :\n-> {lien_google}\n\nBonne journee !\n- {boutique}"},
     {id:'achat',label:'Achat telephone',color:'#3CB849',content:"Bonjour {prenom},\n\nOn espere que votre telephone vous plait !\n\nVotre avis nous aide a nous faire connaitre :\n-> {lien_google}\n\nMerci !\n- {gerant}"},
     {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci pour votre visite chez {boutique} !\nUn avis Google nous aiderait enormement :\n-> {lien_google}"},
   ],
   'Restaurant / Cafe':[
-    {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci d avoir choisi {boutique} !\n\nVotre avis nous aide enormement a nous faire connaitre.\nLaissez-nous 5 etoiles sur Google :\n-> {lien_google}\n\nA bientot !\n- {gerant}"},
-    {id:'repas',label:'Apres repas',color:'#FF6B35',content:"Bonjour {prenom},\n\nOn espere que votre repas chez {boutique} vous a plu !\n\nUn petit avis Google nous ferait vraiment plaisir :\n-> {lien_google}\n\nMerci et a bientot !"},
-    {id:'cafe',label:'Cafe / Boisson',color:'#7B2D8B',content:"Bonjour {prenom}, merci pour votre passage chez {boutique} !\nVotre avis compte beaucoup pour nous :\n-> {lien_google}"},
-    {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci de nous avoir choisis !\nUn avis Google rapide nous aiderait beaucoup :\n-> {lien_google}"},
+    {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci d avoir choisi {boutique} !\n\nVotre avis nous aide a nous faire connaitre :\n-> {lien_google}\n\nA bientot !\n- {gerant}"},
+    {id:'repas',label:'Apres le repas',color:'#FF6B35',content:"Bonjour {prenom},\n\nOn espere que votre repas chez {boutique} vous a plu !\n\nUn petit avis Google nous ferait vraiment plaisir :\n-> {lien_google}\n\nMerci et a bientot !"},
+    {id:'reservation',label:'Reservation',color:'#7B2D8B',content:"Bonjour {prenom}, merci pour votre reservation chez {boutique} !\nVotre avis compte beaucoup pour nous :\n-> {lien_google}"},
+    {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci de nous avoir choisis !\nUn avis Google nous aiderait beaucoup :\n-> {lien_google}"},
   ],
   'Coiffure / Beaute':[
     {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci pour votre confiance chez {boutique} !\n\nVotre avis nous aide a nous faire connaitre :\n-> {lien_google}\n\nA tres bientot !\n- {gerant}"},
     {id:'coiffure',label:'Apres coiffure',color:'#E8202A',content:"Bonjour {prenom},\n\nOn espere que votre coiffure vous plait !\n\nUn avis Google nous ferait tres plaisir :\n-> {lien_google}\n\nPrenez soin de vous !\n- {boutique}"},
+    {id:'beaute',label:'Soin / Beaute',color:'#FF6B35',content:"Bonjour {prenom},\n\nOn espere que votre soin chez {boutique} vous a fait du bien !\n\nVotre avis nous aide a grandir :\n-> {lien_google}\n\nA bientot !"},
     {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci pour votre visite chez {boutique} !\nVotre avis compte pour nous :\n-> {lien_google}"},
   ],
   'Automobile / Garage':[
     {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci pour votre confiance chez {boutique} !\n\nVotre avis nous aide a developper notre garage :\n-> {lien_google}\n\nBonne route !\n- {gerant}"},
+    {id:'pret',label:'Vehicule pret !',color:'#25D366',content:"Bonjour {prenom},\n\nVotre vehicule est pret a etre recupere chez {boutique} !\n\nBonne route !\n- {gerant}"},
     {id:'reparation',label:'Apres reparation',color:'#E8202A',content:"Bonjour {prenom},\n\nOn espere que votre vehicule est en parfait etat !\n\nUn avis Google nous aiderait beaucoup :\n-> {lien_google}\n\nBonne route !\n- {boutique}"},
     {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci de nous avoir fait confiance !\nVotre avis compte :\n-> {lien_google}"},
+  ],
+  'Sante / Bien-etre':[
+    {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci pour votre visite chez {boutique} !\n\nVotre avis nous aide a nous faire connaitre :\n-> {lien_google}\n\nPrenez soin de vous !\n- {gerant}"},
+    {id:'consultation',label:'Apres consultation',color:'#3CB849',content:"Bonjour {prenom},\n\nOn espere que votre consultation chez {boutique} vous a satisfait !\n\nVotre avis compte beaucoup pour nous :\n-> {lien_google}\n\nA bientot !"},
+    {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci pour votre confiance chez {boutique} !\nVotre avis nous aide a grandir :\n-> {lien_google}"},
+  ],
+  'Commerce de detail':[
+    {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci pour votre achat chez {boutique} !\n\nVotre avis nous aide a nous faire connaitre :\n-> {lien_google}\n\nA bientot !\n- {gerant}"},
+    {id:'achat',label:'Apres achat',color:'#3CB849',content:"Bonjour {prenom},\n\nOn espere que votre achat chez {boutique} vous satisfait !\n\nUn avis Google nous ferait vraiment plaisir :\n-> {lien_google}\n\nMerci !"},
+    {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci pour votre visite chez {boutique} !\nVotre avis compte pour nous :\n-> {lien_google}"},
+  ],
+  'Immobilier':[
+    {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci pour votre confiance chez {boutique} !\n\nVotre avis nous aide a developper notre activite :\n-> {lien_google}\n\nCordialement,\n- {gerant}"},
+    {id:'visite',label:'Apres visite',color:'#1565C0',content:"Bonjour {prenom},\n\nMerci d avoir visite nos biens avec {boutique} !\n\nVotre avis est tres precieux pour nous :\n-> {lien_google}\n\nA bientot !"},
+    {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci de votre confiance !\nVotre avis nous aide a grandir :\n-> {lien_google}"},
+  ],
+  'Autre':[
+    {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci pour votre passage chez {boutique} !\n\nVotre avis compte enormement pour nous :\n-> {lien_google}\n\nMerci !\n- {gerant}"},
+    {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci pour votre visite chez {boutique} !\nUn avis Google nous aiderait enormement :\n-> {lien_google}"},
   ],
 };
 function getTemplatesForSector(secteur){
@@ -1207,11 +1224,14 @@ async function doForgotSendCode(resend){
   if(!email){showErr('forgot-err','Entrez votre email.');return;}
   forgotEmail=email;
   showLoading(true);
-  const {error}=await sb.auth.resetPasswordForEmail(email,{
-    redirectTo:window.location.origin+window.location.pathname+'?type=recovery'
-  });
+  let error=null;
+  try{
+    const redirectTo=window.location.origin+window.location.pathname;
+    const result=await sb.auth.resetPasswordForEmail(email,{redirectTo});
+    error=result.error;
+  }catch(e){error={message:e.message};}
   showLoading(false);
-  if(error){showErr('forgot-err','Erreur: '+error.message);return;}
+  if(error){showErr('forgot-err','Erreur envoi: '+error.message);return;}
   const form=safe('forgot-form');
   if(form){form.innerHTML=`
     <div style="text-align:center;padding:20px 0">
@@ -1839,7 +1859,16 @@ function renderStats(){
   else{[...templates].sort((a,b)=>history.filter(h=>h.template_id===b.id).length-history.filter(h=>h.template_id===a.id).length).forEach(t=>{const cnt=history.filter(h=>h.template_id===t.id).length;const pct=history.length?Math.round(cnt/history.length*100):0;ts.innerHTML+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px">'+t.label+'</span><span style="font-size:13px;font-weight:700">'+cnt+'</span></div><div style="height:6px;background:#F0F0F0;border-radius:4px"><div style="height:100%;width:'+pct+'%;background:'+t.color+';border-radius:4px"></div></div></div>';});}
   const hl=document.getElementById('hist-list');hl.innerHTML='';
   if(!history.length){hl.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px">Aucun envoi</div>';return;}
-  history.slice(0,5).forEach(item=>{const d=new Date(item.sent_at||item.at);hl.innerHTML+='<div class="hist-row"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+(item.canal==='whatsapp'?'WhatsApp':'SMS')+' - '+d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div><button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')">Re</button></div>';});
+  history.slice(0,10).forEach((item,idx)=>{const d=new Date(item.sent_at||item.at);hl.innerHTML+='<div class="hist-row"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+(item.canal==='whatsapp'?'WhatsApp':'SMS')+' - '+d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')" style="color:#1565C0;border-color:#1565C0">Re</button><button class="btn-sm" onclick="deleteHistItem(\''+item.id+'\')" style="color:#E8202A;border-color:#E8202A">🗑</button></div></div>';});
+}
+async function deleteHistItem(id){
+  if(!id||!currentUser)return;
+  if(!confirm('Supprimer cet envoi de l historique ?'))return;
+  try{
+    await sb.from('envois').delete().eq('id',id).eq('user_id',currentUser.id);
+    history=history.filter(h=>h.id!=id);
+    renderStats();
+  }catch(e){alert('Erreur suppression');}
 }
 function resend(id,prenom,phone,tplId){selTpl=tplId;document.getElementById('send-prenom').value=prenom;document.getElementById('send-phone').value=phone;showTab('send',document.querySelector('.tab-btn'));}
 
@@ -1854,23 +1883,13 @@ function renderSettings(){
     }
     sl.value=currentLang;
   }
-  if(profile&&profile.whatsapp){
-    let wa=profile.whatsapp;
-    const indSel=document.getElementById('settings-indicatif');
-    const numInp=document.getElementById('settings-whatsapp-num');
-    if(indSel&&numInp){
-      // Normaliser : si commence par 0, c'est un numéro français sans indicatif
-      if(wa.startsWith('0')&&!wa.startsWith('00')){
-        indSel.value='+33';
-        numInp.value=wa; // garder tel quel avec le 0
-      } else {
-        const allOpts=Array.from(indSel.options).map(o=>o.value).sort((a,b)=>b.length-a.length);
-        let matched='+33';
-        for(const ind of allOpts){if(wa.startsWith(ind)){matched=ind;break;}}
-        indSel.value=matched;
-        numInp.value=wa.slice(matched.length);
-      }
-    }
+  // WhatsApp settings - toujours vide pour saisie propre
+  const indSel=document.getElementById('settings-indicatif');
+  const numInp=document.getElementById('settings-whatsapp-num');
+  if(indSel&&numInp){
+    indSel.value='+33';
+    numInp.value=''; // Champ vide - l'utilisateur tape son numéro
+    numInp.placeholder='Ex: 0612345678';
   }
 }
 async function saveWhatsappSettings(){
