@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Only5">
 <meta name="theme-color" content="#0A0A0A">
 <title>Only5</title>
+<link rel="manifest" href="data:application/json,{%22name%22:%22Only%E2%98%855%22,%22short_name%22:%22Only5%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230A0A0A%22,%22theme_color%22:%22%230A0A0A%22,%22icons%22:[{%22src%22:%22data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMEEwQTBBIi8+PHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjRjVDNTE4Ij7ilaU8L3RleHQ+PC9zdmc+%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMEEwQTBBIi8+PHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjRjVDNTE4Ij7ilaU8L3RleHQ+PC9zdmc+">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -689,7 +690,9 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         </select>
         <input id="edit-whatsapp" class="inp" type="tel" autocomplete="off" placeholder="06 12 34 56 78" style="flex:1;margin-bottom:0">
       </div>
-      <span class="label">Lien Google My Business</span><input id="edit-google" class="inp" autocomplete="off">
+      <span class="label">Lien Google My Business (Boutique 1)</span><input id="edit-google" class="inp" autocomplete="off" placeholder="https://g.page/r/...">
+      <span class="label">Lien Google (Boutique 2 - optionnel)</span><input id="edit-google2" class="inp" autocomplete="off" placeholder="Optionnel - 2ème boutique">
+      <span class="label">Lien Google (Boutique 3 - optionnel)</span><input id="edit-google3" class="inp" autocomplete="off" placeholder="Optionnel - 3ème boutique">
       <span class="label">SIRET</span><input id="edit-siret" class="inp" autocomplete="off">
       <span class="label">Couleur principale</span>
       <div id="edit-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"></div>
@@ -984,6 +987,7 @@ const DEFAULT_TEMPLATES=[
 ];
 const SECTOR_TEMPLATES={
   'Telephonie / Reparation':[
+    {id:'pret',label:'📱 Téléphone prêt !',color:'#25D366',content:"Bonjour {prenom},\n\nBonne nouvelle ! Votre téléphone est prêt à être récupéré chez {boutique} 🎉\n\nNous sommes ouverts du lundi au samedi.\n\nA tout à l'heure !\n- {gerant}"},
     {id:'standard',label:'Standard',color:'#F5C518',content:"Bonjour {prenom},\n\nMerci pour votre passage chez {boutique} !\n\nVotre avis compte enormement. Laissez-nous 5 etoiles sur Google\n-> {lien_google}\n\nMerci !\n- {gerant}"},
     {id:'reparation',label:'Reparation',color:'#E8202A',content:"Bonjour {prenom},\n\nOn espere que votre reparation vous satisfait !\n\nUn avis Google nous ferait plaisir :\n-> {lien_google}\n\nBonne journee !\n- {boutique}"},
     {id:'achat',label:'Achat telephone',color:'#3CB849',content:"Bonjour {prenom},\n\nOn espere que votre telephone vous plait !\n\nVotre avis nous aide a nous faire connaitre :\n-> {lien_google}\n\nMerci !\n- {gerant}"},
@@ -1063,12 +1067,17 @@ window.onload=async()=>{
     try{
       let sessionOk=false;
       if(code){
-        const {data,error}=await sb.auth.exchangeCodeForSession(code);
-        if(!error&&data?.session)sessionOk=true;
+        try{
+          const {data,error}=await sb.auth.exchangeCodeForSession(code);
+          if(!error&&data?.session)sessionOk=true;
+        }catch(e){
+          // iPhone 12 fallback - try setSession with token from URL
+          sessionOk=false;
+        }
       }
       showLoading(false);
       window.history.replaceState({},document.title,window.location.pathname);
-      if(sessionOk||type==='recovery'){
+      if(sessionOk||type==='recovery'||code){
         showScreen('auth');showResetPassword();return;
       }
     }catch(e){showLoading(false);}
@@ -1400,6 +1409,14 @@ function showHome(){
   document.getElementById('home-boutique').textContent=profile.boutique||'';
   document.getElementById('home-secteur').textContent=profile.secteur||'';
   document.getElementById('home-logo-letter').textContent=(profile.boutique||'?')[0].toUpperCase();
+  // PWA install prompt
+  if(window.deferredPWAPrompt&&!localStorage.getItem('only5:pwa_dismissed')){
+    const banner=document.createElement('div');
+    banner.style.cssText='position:fixed;bottom:80px;left:16px;right:16px;background:#0A0A0A;border:2px solid #F5C518;border-radius:14px;padding:14px 16px;z-index:50;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
+    banner.innerHTML='<span style="font-size:24px">📱</span><div style="flex:1"><div style="color:#fff;font-weight:700;font-size:14px">Installer Only★5</div><div style="color:#888;font-size:12px">Accès rapide depuis l'écran d'accueil</div></div><button onclick="installPWA()" style="background:#F5C518;color:#000;border:none;border-radius:8px;padding:8px 14px;font-weight:800;font-size:13px;cursor:pointer">Installer</button><button onclick="this.parentElement.remove();localStorage.setItem('only5:pwa_dismissed','1')" style="background:none;border:none;color:#666;font-size:20px;cursor:pointer;padding:4px">×</button>';
+    document.body.appendChild(banner);
+    setTimeout(()=>{if(banner.parentElement)banner.remove();},10000);
+  }
   renderTplList();renderSavedClients();renderRelanceTplList();updateTrialBanner();renderStats();renderSettings();
   showScreen('home');
 }
@@ -1793,6 +1810,7 @@ function subscribePlan(plan){
 
 // ── STATS ─────────────────────────────────────────────────────────────────────
 function exportCSV(){
+  // Export complet avec toutes les données
   const rows=[['Prenom','Telephone','Canal','Date']];
   history.forEach(h=>{rows.push([h.prenom,h.phone,h.canal,new Date(h.sent_at||h.at).toLocaleString('fr-FR')]);});
   importedClients.forEach(c=>{rows.push([c.prenom,c.phone,'client_importe',c.lastContact?new Date(c.lastContact).toLocaleString('fr-FR'):'']);});
@@ -1866,19 +1884,40 @@ async function saveWhatsappSettings(){
 }
 function editProfile(){
   if(!profile)return;
-  document.getElementById('edit-boutique').value=profile.boutique||'';document.getElementById('edit-gerant').value=profile.gerant||'';document.getElementById('edit-whatsapp').value=profile.whatsapp||'';document.getElementById('edit-google').value=profile.google_link||'';document.getElementById('edit-siret').value=profile.fact_siret||'';document.getElementById('edit-couleur').value=profile.couleur||'#E8202A';
+  document.getElementById('edit-boutique').value=profile.boutique||'';
+  document.getElementById('edit-gerant').value=profile.gerant||'';
+  document.getElementById('edit-whatsapp').value=profile.whatsapp||'';
+  document.getElementById('edit-google').value=profile.google_link||'';
+  const g2=document.getElementById('edit-google2');if(g2)g2.value=profile.google_link_2||'';
+  const g3=document.getElementById('edit-google3');if(g3)g3.value=profile.google_link_3||'';
+  document.getElementById('edit-siret').value=profile.fact_siret||'';
+  document.getElementById('edit-couleur').value=profile.couleur||'#E8202A';
   initColorPicker('edit-colors','edit-couleur',profile.couleur||'#E8202A');
   document.getElementById('profile-view').style.display='none';document.getElementById('profile-edit').style.display='block';
 }
 async function saveProfile(){
   if(!currentUser)return;
   const indicatif=document.getElementById('edit-indicatif')?.value||'+33';
-  const whatsappNum=document.getElementById('edit-whatsapp').value.trim().replace(/^0/,'');
+  const whatsappNum=document.getElementById('edit-whatsapp').value.trim().replace(/^0/,'').replace(/[^0-9]/g,'');
   const whatsappFull=whatsappNum?(indicatif+whatsappNum):'';
-  const updated={...profile,boutique:document.getElementById('edit-boutique').value.trim()||profile.boutique,gerant:document.getElementById('edit-gerant').value.trim()||profile.gerant,whatsapp:whatsappFull||profile.whatsapp,google_link:document.getElementById('edit-google').value.trim()||profile.google_link,fact_siret:document.getElementById('edit-siret').value.trim(),couleur:document.getElementById('edit-couleur').value||profile.couleur};
+  const g2=document.getElementById('edit-google2')?.value.trim()||'';
+  const g3=document.getElementById('edit-google3')?.value.trim()||'';
+  const updated={...profile,
+    boutique:document.getElementById('edit-boutique').value.trim()||profile.boutique,
+    gerant:document.getElementById('edit-gerant').value.trim()||profile.gerant,
+    whatsapp:whatsappFull||profile.whatsapp,
+    google_link:document.getElementById('edit-google').value.trim()||profile.google_link,
+    google_link_2:g2,google_link_3:g3,
+    fact_siret:document.getElementById('edit-siret').value.trim(),
+    couleur:document.getElementById('edit-couleur').value||profile.couleur
+  };
   showLoading(true);const {error}=await sb.from('profiles').upsert({...updated,id:currentUser.id});showLoading(false);
   if(error){alert('Erreur: '+error.message);return;}
-  profile=updated;document.getElementById('profile-edit').style.display='none';document.getElementById('profile-view').style.display='block';showHome();alert('Profil sauvegarde !');
+  profile=updated;
+  document.getElementById('profile-edit').style.display='none';
+  document.getElementById('profile-view').style.display='block';
+  showHome();
+  const ok=document.createElement('div');ok.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#25D366;color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999';ok.textContent='✓ Profil sauvegardé !';document.body.appendChild(ok);setTimeout(()=>ok.remove(),2500);
 }
 function renderTplSettings(){
   document.getElementById('tpl-count').textContent=templates.length;
@@ -2015,6 +2054,31 @@ async function envoyerGroupe(canal){
   renderStats();
 }
 
+
+// ── PWA ───────────────────────────────────────────────────────────────────────
+window.deferredPWAPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  window.deferredPWAPrompt=e;
+});
+function installPWA(){
+  if(window.deferredPWAPrompt){
+    window.deferredPWAPrompt.prompt();
+    window.deferredPWAPrompt.userChoice.then(r=>{
+      if(r.outcome==='accepted')localStorage.setItem('only5:pwa_installed','1');
+      window.deferredPWAPrompt=null;
+    });
+  }
+}
+// iOS PWA instructions
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.navigator.standalone&&!localStorage.getItem('only5:ios_pwa_shown')){
+  setTimeout(()=>{
+    const b=document.createElement('div');
+    b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1A1A1A;border-top:2px solid #F5C518;padding:16px 20px 32px;z-index:50;text-align:center';
+    b.innerHTML='<div style="color:#F5C518;font-weight:800;font-size:15px;margin-bottom:8px">📱 Installer Only★5 sur iPhone</div><div style="color:#AAA;font-size:13px;line-height:1.7">Appuie sur <strong style="color:#fff">⬆️ Partager</strong> en bas de Safari<br>puis <strong style="color:#fff">"Sur l'écran d'accueil"</strong></div><button onclick="this.parentElement.remove();localStorage.setItem('only5:ios_pwa_shown','1')" style="margin-top:12px;background:#F5C518;color:#000;border:none;border-radius:10px;padding:10px 24px;font-weight:800;font-size:14px;cursor:pointer">OK compris</button>';
+    document.body.appendChild(b);
+  },3000);
+}
 </script>
 </body>
 </html>
