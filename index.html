@@ -160,7 +160,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     <span style="display:inline-flex;align-items:baseline;gap:1px;font-weight:900">
       <span style="color:#fff;font-size:40px">Only</span><span style="color:#F5C518;font-size:26px;position:relative;top:-3px">&#9733;</span><span style="color:#F5C518;font-size:40px">5</span>
     </span>
-    <div style="color:#888;font-size:14px;margin-top:8px">Demandes d avis Google en 1 tap</div>
+    <div style="color:#888;font-size:14px;margin-top:8px" data-t="tagline">Demandes d avis Google en 1 tap</div>
   </div>
   <div id="login-form" style="width:100%;max-width:340px">
     <div style="color:#F5C518;font-weight:700;font-size:20px;margin-bottom:20px;text-align:center">Connexion</div>
@@ -449,7 +449,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <span class="sec-title" style="margin:0">Base clients (<span id="import-count">0</span>)</span>
-        <button class="btn-sm btn-black" style="background:#0A0A0A;color:#F5C518;border:none;padding:7px 12px;border-radius:8px;font-weight:700" onclick="document.getElementById('file-input').click()">+ Importer Excel</button>
+        <button class="btn-sm btn-black" style="background:#0A0A0A;color:#F5C518;border:none;padding:7px 12px;border-radius:8px;font-weight:700" onclick="document.getElementById('file-input').click()" data-t="importer_excel">+ Importer Excel</button>
         <input id="file-input" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFile(this)">
       </div>
       <div id="mapping-box" style="display:none;border:1.5px solid #F5C518;border-radius:10px;padding:14px;margin-top:10px">
@@ -471,16 +471,16 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       </div>
       <input id="client-search" class="inp" placeholder="Rechercher..." autocomplete="off" oninput="renderClients()" style="margin-bottom:10px">
       <div style="display:flex;gap:8px;margin-bottom:12px">
-        <button class="tab-btn active" style="flex:1;border:1.5px solid #E0E0E0;border-radius:8px;padding:8px 4px" data-filter="all" onclick="setFilter('all',this)">Tous</button>
-        <button class="tab-btn" style="flex:1;border:1.5px solid #E0E0E0;border-radius:8px;padding:8px 4px" data-filter="not_contacted" onclick="setFilter('not_contacted',this)">A contacter</button>
-        <button class="tab-btn" style="flex:1;border:1.5px solid #E0E0E0;border-radius:8px;padding:8px 4px" data-filter="contacted" onclick="setFilter('contacted',this)">Contactes</button>
+        <button class="tab-btn active" style="flex:1;border:1.5px solid #E0E0E0;border-radius:8px;padding:8px 4px" data-filter="all" onclick="setFilter('all',this)" data-t="tous">Tous</button>
+        <button class="tab-btn" style="flex:1;border:1.5px solid #E0E0E0;border-radius:8px;padding:8px 4px" data-filter="not_contacted" onclick="setFilter('not_contacted',this)" data-t="a_contacter">A contacter</button>
+        <button class="tab-btn" style="flex:1;border:1.5px solid #E0E0E0;border-radius:8px;padding:8px 4px" data-filter="contacted" onclick="setFilter('contacted',this)" data-t="contactes">Contactes</button>
       </div>
       <div id="client-list"></div>
     </div>
     <div id="no-clients" style="text-align:center;padding:50px 20px;color:#AAA">
       <div style="font-size:40px;margin-bottom:12px">&#128203;</div>
-      <div style="font-weight:700;color:#666;margin-bottom:6px">Aucun client importe</div>
-      <div style="font-size:13px">Importez votre liste Excel.</div>
+      <div style="font-weight:700;color:#666;margin-bottom:6px" data-t="aucun_client">Aucun client importe</div>
+      <div style="font-size:13px" data-t="import_excel_hint">Importez votre liste Excel.</div>
     </div>
   </div>
   <div id="tab-stats" class="tab-content">
@@ -493,16 +493,16 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div class="stat-card"><div class="stat-num" style="color:#666" id="stat-sms">0</div><div class="stat-lbl">SMS</div></div>
       <div class="stat-card"><div class="stat-num" style="color:#0070F3" id="stat-clients">0</div><div class="stat-lbl">Clients imports</div></div>
     </div>
-    <div class="card"><div class="sec-title">7 derniers jours</div><div id="bar-chart" class="bar-chart"></div></div>
-    <div class="card"><div class="sec-title">Templates utilises</div><div id="tpl-stats"></div></div>
-    <div class="card"><div class="sec-title">Historique recent</div><div id="hist-list"></div></div>
+    <div class="card"><div class="sec-title" data-t="last7">7 derniers jours</div><div id="bar-chart" class="bar-chart"></div></div>
+    <div class="card"><div class="sec-title" data-t="templates_utilises">Templates utilises</div><div id="tpl-stats"></div></div>
+    <div class="card"><div class="sec-title" data-t="historique_recent">Historique recent</div><div id="hist-list"></div></div>
   </div>
   <!-- TAB MESSAGES -->
   <div id="tab-messages" class="tab-content">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span class="sec-title" style="margin:0">Mes messages (<span id="tpl-count">0</span>)</span>
-        <button class="btn-sm" style="background:#0A0A0A;color:#F5C518;border:none;padding:7px 12px;border-radius:8px;font-weight:700" onclick="showAddTpl()">+ Nouveau</button>
+        <span class="sec-title" style="margin:0" data-t="mes_messages_titre">Mes messages (<span id="tpl-count">0</span>)</span>
+        <button class="btn-sm" style="background:#0A0A0A;color:#F5C518;border:none;padding:7px 12px;border-radius:8px;font-weight:700" onclick="showAddTpl()" data-t="nouveau">+ Nouveau</button>
       </div>
       <div style="background:#F9F9F9;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:#666;line-height:1.7">Variables : <code>{prenom}</code> <code>{boutique}</code> <code>{gerant}</code> <code>{lien_google}</code></div>
       <div id="tpl-edit-form" style="display:none">
@@ -815,6 +815,18 @@ const TRANSLATIONS={
     voir_abonnements:'Voir les abonnements →',
     fermer:'Fermer',
     chargement:'Chargement...',
+    tagline:'Demandes d\'avis Google en 1 tap',
+    total_envois:'Total envois',last7:'7 derniers jours',
+    templates_utilises:'Templates utilisés',historique_recent:'Historique récent',
+    aucun_envoi:'Aucun envoi',
+    base_clients:'Base clients',importer_excel:'+ Importer Excel',
+    aucun_client:'Aucun client importé',import_excel_hint:'Importez votre liste Excel.',
+    tous:'Tous',a_contacter:'À contacter',contactes:'Contactés',
+    relancer:'Relancer',
+    mes_messages_titre:'Mes messages',
+    plan_actuel_ok:'Plan actuel ✓',
+    exporter_csv:'↓ Exporter les données (CSV)',
+    clients_imports:'Clients importés',
   },
   en:{
     connexion:'Login',creer_compte:'Create account',email:'Email address',
@@ -858,6 +870,16 @@ const TRANSLATIONS={
     voir_abonnements:'View subscriptions →',
     fermer:'Close',
     chargement:'Loading...',
+    tagline:'Google review requests in 1 tap',
+    total_envois:'Total sends',last7:'Last 7 days',
+    templates_utilises:'Templates used',historique_recent:'Recent history',
+    aucun_envoi:'No sends yet',
+    base_clients:'Customer base',importer_excel:'+ Import Excel',
+    aucun_client:'No customers imported',import_excel_hint:'Import your Excel list.',
+    tous:'All',a_contacter:'To contact',contactes:'Contacted',
+    relancer:'Follow up',mes_messages_titre:'My messages',
+    plan_actuel_ok:'Current plan ✓',exporter_csv:'↓ Export data (CSV)',
+    clients_imports:'Imported clients',
   },
   es:{
     connexion:'Iniciar sesión',creer_compte:'Crear cuenta',email:'Correo electrónico',
@@ -1009,6 +1031,16 @@ const TRANSLATIONS={
     voir_abonnements:'سبسکرپشن دیکھیں ←',
     fermer:'بند کریں',chargement:'لوڈ ہو رہا ہے...',
     num_whatsapp:'کاروباری واٹس ایپ نمبر',
+    tagline:'گوگل ریویو درخواست 1 ٹیپ میں',
+    total_envois:'کل پیغامات',last7:'آخری 7 دن',
+    templates_utilises:'استعمال شدہ ٹیمپلیٹس',historique_recent:'حالیہ تاریخ',
+    aucun_envoi:'کوئی پیغام نہیں',
+    base_clients:'گاہکوں کی فہرست',importer_excel:'+ Excel درآمد کریں',
+    aucun_client:'کوئی گاہک درآمد نہیں',import_excel_hint:'اپنی Excel فہرست درآمد کریں۔',
+    tous:'سب',a_contacter:'رابطہ کرنا ہے',contactes:'رابطہ ہوا',
+    relancer:'دوبارہ بھیجیں',mes_messages_titre:'میرے پیغامات',
+    plan_actuel_ok:'موجودہ پلان ✓',exporter_csv:'↓ ڈیٹا برآمد کریں (CSV)',
+    clients_imports:'درآمد شدہ گاہک',
   },
 };
 // Pour les autres langues, on copie l'anglais par défaut
@@ -1022,8 +1054,12 @@ function setLang(code){
   currentLang=code;
   localStorage.setItem('only5:lang',code);
   applyTranslations();
-  // Re-render les éléments dynamiques avec les nouveaux labels
+  // Re-render tous les éléments dynamiques
   renderSettings();
+  renderStats();
+  renderTplSettings();
+  renderClients();
+  renderAbonnement();
   // Sauvegarder en BDD si connecté
   if(currentUser&&profile){
     sb.from('profiles').update({langue:code}).eq('id',currentUser.id).then(()=>{});
@@ -1054,9 +1090,7 @@ function applyTranslations(){
   // Titre connexion
   const loginTitle=document.querySelector('#login-form > div[style*="color:#F5C518"]');
   if(loginTitle)loginTitle.textContent=t('connexion');
-  // Sous-titre app
-  const appSub=document.querySelector('#screen-auth > div > div[style*="color:#888"]');
-  if(appSub)appSub.textContent=t('tagline')||appSub.textContent;
+  // Sous-titre app géré par data-t="tagline"
   // Inputs connexion
   const loginEmail=document.getElementById('login-email');if(loginEmail)loginEmail.placeholder=t('email');
   const loginPwd=document.getElementById('login-password');if(loginPwd)loginPwd.placeholder=t('mot_de_passe');
@@ -2114,21 +2148,42 @@ function exportCSV(){
   const a=document.createElement('a');a.href=url;a.download='only5_export.csv';a.click();URL.revokeObjectURL(url);
 }
 function renderStats(){
-  const exportRow=document.getElementById('export-btn-row');if(exportRow)exportRow.style.display=getPlan()==='business'?'block':'none';
-  document.getElementById('stat-total').textContent=history.length;document.getElementById('stat-total').style.color=profile?.couleur||'#0A0A0A';
+  const exportRow=document.getElementById('export-btn-row');
+  if(exportRow){
+    exportRow.style.display=getPlan()==='business'?'block':'none';
+    const exportBtn=exportRow.querySelector('button');
+    if(exportBtn)exportBtn.textContent=t('exporter_csv')||exportBtn.textContent;
+  }
+  document.getElementById('stat-total').textContent=history.length;
+  document.getElementById('stat-total').style.color=profile?.couleur||'#0A0A0A';
   document.getElementById('stat-wa').textContent=history.filter(h=>h.canal==='whatsapp').length;
   document.getElementById('stat-sms').textContent=history.filter(h=>h.canal==='sms').length;
   document.getElementById('stat-clients').textContent=importedClients.length;
+  // Labels traduits
+  const lblTotal=document.querySelector('#stat-total+.stat-lbl');if(lblTotal)lblTotal.textContent=t('total_envois')||lblTotal.textContent;
+  const lblWA=document.querySelector('#stat-wa+.stat-lbl');if(lblWA)lblWA.textContent='WhatsApp';
+  const lblSMS=document.querySelector('#stat-sms+.stat-lbl');if(lblSMS)lblSMS.textContent='SMS';
+  const lblCli=document.querySelector('#stat-clients+.stat-lbl');if(lblCli)lblCli.textContent=t('clients_imports')||lblCli.textContent;
+  // Titre 7 jours
+  const card7=document.querySelector('#bar-chart')?.closest('.card')?.querySelector('.sec-title');
+  if(card7)card7.textContent=t('last7')||card7.textContent;
+  // Titre templates
+  const cardTpl=document.querySelector('#tpl-stats')?.closest('.card')?.querySelector('.sec-title');
+  if(cardTpl)cardTpl.textContent=t('templates_utilises')||cardTpl.textContent;
+  // Titre historique
+  const cardHist=document.querySelector('#hist-list')?.closest('.card')?.querySelector('.sec-title');
+  if(cardHist)cardHist.textContent=t('historique_recent')||cardHist.textContent;
+  // Graphique
   const last7=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));const ds=d.toLocaleDateString('fr-FR');return{label:d.toLocaleDateString('fr-FR',{weekday:'short'}),count:history.filter(h=>new Date(h.sent_at||h.at).toLocaleDateString('fr-FR')===ds).length};});
   const maxD=Math.max(...last7.map(d=>d.count),1);
   const chart=document.getElementById('bar-chart');chart.innerHTML='';
   last7.forEach(d=>{const col=document.createElement('div');col.className='bar-col';col.innerHTML=(d.count?'<div class="bar-val">'+d.count+'</div>':'')+'<div class="bar" style="background:'+(d.count?(profile?.couleur||'#0A0A0A'):'#F0F0F0')+';height:'+((d.count/maxD)*56+(d.count?4:0))+'px"></div><div class="bar-lbl">'+d.label+'</div>';chart.appendChild(col);});
   const ts=document.getElementById('tpl-stats');ts.innerHTML='';
-  if(!history.length){ts.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px">Aucun envoi</div>';}
-  else{[...templates].sort((a,b)=>history.filter(h=>h.template_id===b.id).length-history.filter(h=>h.template_id===a.id).length).forEach(t=>{const cnt=history.filter(h=>h.template_id===t.id).length;const pct=history.length?Math.round(cnt/history.length*100):0;ts.innerHTML+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px">'+t.label+'</span><span style="font-size:13px;font-weight:700">'+cnt+'</span></div><div style="height:6px;background:#F0F0F0;border-radius:4px"><div style="height:100%;width:'+pct+'%;background:'+t.color+';border-radius:4px"></div></div></div>';});}
+  if(!history.length){ts.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px">'+t('aucun_envoi')+'</div>';}
+  else{[...templates].sort((a,b)=>history.filter(h=>h.template_id===b.id).length-history.filter(h=>h.template_id===a.id).length).forEach(tp=>{const cnt=history.filter(h=>h.template_id===tp.id).length;const pct=history.length?Math.round(cnt/history.length*100):0;ts.innerHTML+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px">'+tp.label+'</span><span style="font-size:13px;font-weight:700">'+cnt+'</span></div><div style="height:6px;background:#F0F0F0;border-radius:4px"><div style="height:100%;width:'+pct+'%;background:'+tp.color+';border-radius:4px"></div></div></div>';});}
   const hl=document.getElementById('hist-list');hl.innerHTML='';
-  if(!history.length){hl.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px">Aucun envoi</div>';return;}
-  history.slice(0,10).forEach((item,idx)=>{const d=new Date(item.sent_at||item.at);hl.innerHTML+='<div class="hist-row"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+(item.canal==='whatsapp'?'WhatsApp':'SMS')+' - '+d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')" style="color:#1565C0;border-color:#1565C0">Re</button><button class="btn-sm" onclick="deleteHistItem(\''+item.id+'\')" style="color:#E8202A;border-color:#E8202A">🗑</button></div></div>';});
+  if(!history.length){hl.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px">'+t('aucun_envoi')+'</div>';return;}
+  history.slice(0,10).forEach((item)=>{const d=new Date(item.sent_at||item.at);hl.innerHTML+='<div class="hist-row"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+(item.canal==='whatsapp'?'WhatsApp':'SMS')+' - '+d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')" style="color:#1565C0;border-color:#1565C0">Re</button><button class="btn-sm" onclick="deleteHistItem(\''+item.id+'\')" style="color:#E8202A;border-color:#E8202A">🗑</button></div></div>';});
 }
 async function deleteHistItem(id){
   if(!id||!currentUser)return;
