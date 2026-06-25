@@ -588,10 +588,10 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div id="profile-rows"></div>
     </div>
     <div class="card" id="profile-edit" style="display:none">
-      <div class="sec-title">Modifier le profil</div>
-      <span class="label">Nom de la boutique</span><input id="edit-boutique" class="inp" autocomplete="off">
-      <span class="label">Prenom du gerant</span><input id="edit-gerant" class="inp" autocomplete="off">
-      <span class="label">WhatsApp boutique</span>
+      <div class="sec-title" data-t="modifier_profil">Modifier le profil</div>
+      <span class="label" data-t="boutique">Nom de la boutique</span><input id="edit-boutique" class="inp" autocomplete="off">
+      <span class="label" data-t="gerant">Prenom du gerant</span><input id="edit-gerant" class="inp" autocomplete="off">
+      <span class="label" data-t="whatsapp">WhatsApp boutique</span>
       <div style="display:flex;gap:8px;margin-bottom:14px">
         <select id="edit-indicatif" style="width:130px;min-width:130px;padding:10px 8px;border:1.5px solid #E0E0E0;border-radius:10px;background:#fff;color:#333;font-size:13px;font-family:inherit;outline:none">
           <option value="+33">🇫🇷 +33</option>
@@ -637,16 +637,16 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         </select>
         <input id="edit-whatsapp" class="inp" type="tel" autocomplete="off" placeholder="06 12 34 56 78" style="flex:1;margin-bottom:0">
       </div>
-      <span class="label">Lien Google My Business (Boutique 1)</span><input id="edit-google" class="inp" autocomplete="off" placeholder="https://g.page/r/...">
-      <span class="label">Lien Google (Boutique 2 - optionnel)</span><input id="edit-google2" class="inp" autocomplete="off" placeholder="Optionnel - 2ème boutique">
-      <span class="label">Lien Google (Boutique 3 - optionnel)</span><input id="edit-google3" class="inp" autocomplete="off" placeholder="Optionnel - 3ème boutique">
-      <span class="label">SIRET</span><input id="edit-siret" class="inp" autocomplete="off">
-      <span class="label">Couleur principale</span>
+      <span class="label" data-t="google">Lien Google My Business (Boutique 1)</span><input id="edit-google" class="inp" autocomplete="off" placeholder="https://g.page/r/...">
+      <span class="label" data-t="google2">Lien Google (Boutique 2 - optionnel)</span><input id="edit-google2" class="inp" autocomplete="off" placeholder="Optionnel - 2ème boutique">
+      <span class="label" data-t="google3">Lien Google (Boutique 3 - optionnel)</span><input id="edit-google3" class="inp" autocomplete="off" placeholder="Optionnel - 3ème boutique">
+      <span class="label" data-t="siret">SIRET</span><input id="edit-siret" class="inp" autocomplete="off">
+      <span class="label" data-t="couleur_principale">Couleur principale</span>
       <div id="edit-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"></div>
       <input type="hidden" id="edit-couleur">
       <div style="display:flex;gap:8px">
-        <button class="btn btn-outline" style="flex:1;margin:0" onclick="document.getElementById('profile-edit').style.display='none';document.getElementById('profile-view').style.display='block'">Annuler</button>
-        <button class="btn btn-black" style="flex:2" onclick="saveProfile()">Enregistrer</button>
+        <button class="btn btn-outline" style="flex:1;margin:0" onclick="document.getElementById('profile-edit').style.display='none';document.getElementById('profile-view').style.display='block'" data-t="annuler">Annuler</button>
+        <button class="btn btn-black" style="flex:2" onclick="saveProfile()" data-t="enregistrer">Enregistrer</button>
       </div>
     </div>
     <div class="card">
@@ -797,6 +797,10 @@ const TRANSLATIONS={
     num_whatsapp:'Numéro WhatsApp boutique',enregistrer_num:'Enregistrer le numéro',
     msg_client:'Message pour ce client',nouveau_cl:'🗑 Nouveau client',
     apercu_msg:'Aperçu',historique:'Historique récent',templates_util:'Templates utilisés',
+    modifier_profil:'Modifier le profil',
+    couleur_principale:'Couleur principale',
+    google2:'Lien Google (Boutique 2 - optionnel)',
+    google3:'Lien Google (Boutique 3 - optionnel)',
     cgu_titre:'CGU',
     cgu_accept:'J\'ai lu et j\'accepte les CGU',
     cgu_accept_html:'J\'ai lu et j\'accepte les <strong style="color:#F5C518">CGU</strong>',
@@ -836,6 +840,10 @@ const TRANSLATIONS={
     num_whatsapp:'WhatsApp business number',enregistrer_num:'Save number',
     msg_client:'Message for this client',nouveau_cl:'🗑 New client',
     apercu_msg:'Preview',historique:'Recent history',templates_util:'Templates used',
+    modifier_profil:'Edit profile',
+    couleur_principale:'Main color',
+    google2:'Google link (Shop 2 - optional)',
+    google3:'Google link (Shop 3 - optional)',
     cgu_titre:'Terms & Conditions',
     cgu_accept:'I have read and accept the Terms',
     cgu_accept_html:'I have read and accept the <strong style="color:#F5C518">Terms & Conditions</strong>',
@@ -864,12 +872,31 @@ const TRANSLATIONS={
     nouveau_mdp:'Nueva contraseña',confirmer_nouveau_mdp:'Confirmar nueva contraseña',
     changer_mdp:'Cambiar contraseña →',plan_actuel:'PLAN ACTUAL',essai_gratuit:'Prueba gratis',
     envois_offerts:'3 envíos gratis',choisir:'Elegir',bonjour:'Hola',
-    prenom_client:'Nombre del cliente',telephone:'Teléfono',apercu:'Vista previa',
+    prenom_client:'Apellido + Nombre',telephone:'Teléfono',apercu:'Vista previa',
     sauvegarder:'+ Guardar',nouveau_client:'Nuevo cliente',
     version_demo:'Versión demo',envois_restants:'envíos restantes',
     whatsapp_btn:'WhatsApp',sms_btn:'SMS',mes_messages:'Mis mensajes',
     nouveau:'+ Nuevo',variables:'Variables',annuler:'Cancelar',supprimer:'Elim',
     editer:'Editar',nom_modele:'Nombre plantilla',
+    votre_profil:'Tu perfil',boutique:'Tienda',secteur:'Sector',gerant:'Gerente',
+    whatsapp:'WhatsApp',google:'Google',siret:'ID empresa',
+    num_whatsapp:'Número WhatsApp del negocio',enregistrer_num:'Guardar número',
+    msg_client:'Mensaje para este cliente',nouveau_cl:'🗑 Nuevo cliente',
+    apercu_msg:'Vista previa',historique:'Historial reciente',templates_util:'Plantillas usadas',
+    modifier_profil:'Editar perfil',couleur_principale:'Color principal',
+    google2:'Google (Tienda 2 - opcional)',google3:'Google (Tienda 3 - opcional)',
+    cgu_titre:'Términos y condiciones',
+    cgu_accept_html:'He leído y acepto los <strong style="color:#F5C518">Términos</strong>',
+    pol_accept_html:'He leído y acepto la <strong style="color:#F5C518">Política de privacidad</strong>',
+    accepter_continuer:'✓ Aceptar y continuar →',
+    veuillez_accepter:'Por favor acepta ambos documentos',
+    confidentialite:'Política de privacidad',
+    envoyer_lien:'Enviar enlace →',
+    paywall_titre:'Actualiza a Only★5 Pro',
+    paywall_sub:'Tu prueba gratuita de 3 envíos ha terminado.',
+    voir_abonnements:'Ver suscripciones →',
+    fermer:'Cerrar',chargement:'Cargando...',
+    se_connecter:'Entrar',mdp_oublie:'¿Olvidaste tu contraseña?',
   },
   ar:{
     connexion:'تسجيل الدخول',creer_compte:'إنشاء حساب',email:'البريد الإلكتروني',
@@ -884,12 +911,29 @@ const TRANSLATIONS={
     nouveau_mdp:'كلمة مرور جديدة',confirmer_nouveau_mdp:'تأكيد كلمة المرور الجديدة',
     changer_mdp:'تغيير كلمة المرور ←',plan_actuel:'الخطة الحالية',essai_gratuit:'تجربة مجانية',
     envois_offerts:'3 رسائل مجانية',choisir:'اختر',bonjour:'مرحباً',
-    prenom_client:'اسم العميل',telephone:'هاتف',apercu:'معاينة',
+    prenom_client:'الاسم الأخير + الاسم الأول',telephone:'هاتف',apercu:'معاينة',
     sauvegarder:'+ حفظ',nouveau_client:'عميل جديد',
     version_demo:'نسخة تجريبية',envois_restants:'رسائل متبقية',
     whatsapp_btn:'واتساب',sms_btn:'رسالة',mes_messages:'رسائلي',
     nouveau:'+ جديد',variables:'متغيرات',annuler:'إلغاء',supprimer:'حذف',
     editer:'تعديل',nom_modele:'اسم النموذج',
+    votre_profil:'ملفك الشخصي',boutique:'المتجر',secteur:'القطاع',gerant:'المدير',
+    whatsapp:'واتساب',google:'جوجل',siret:'معرف الشركة',
+    num_whatsapp:'رقم واتساب العمل',enregistrer_num:'حفظ الرقم',
+    msg_client:'رسالة لهذا العميل',nouveau_cl:'🗑 عميل جديد',
+    modifier_profil:'تعديل الملف الشخصي',couleur_principale:'اللون الرئيسي',
+    google2:'جوجل (متجر 2 - اختياري)',google3:'جوجل (متجر 3 - اختياري)',
+    cgu_titre:'الشروط والأحكام',
+    cgu_accept_html:'قرأت وأوافق على <strong style="color:#F5C518">الشروط والأحكام</strong>',
+    pol_accept_html:'قرأت وأوافق على <strong style="color:#F5C518">سياسة الخصوصية</strong>',
+    accepter_continuer:'✓ قبول والمتابعة ←',
+    veuillez_accepter:'يرجى قبول الوثيقتين',
+    confidentialite:'سياسة الخصوصية',
+    envoyer_lien:'إرسال الرابط ←',
+    paywall_titre:'ترقية إلى Only★5 Pro',
+    paywall_sub:'انتهت تجربتك المجانية من 3 رسائل.',
+    voir_abonnements:'عرض الاشتراكات ←',
+    fermer:'إغلاق',chargement:'جار التحميل...',
   },
   pt:{
     connexion:'Entrar',creer_compte:'Criar conta',email:'Endereço de email',
@@ -904,16 +948,71 @@ const TRANSLATIONS={
     nouveau_mdp:'Nova senha',confirmer_nouveau_mdp:'Confirmar nova senha',
     changer_mdp:'Mudar senha →',plan_actuel:'PLANO ATUAL',essai_gratuit:'Teste grátis',
     envois_offerts:'3 envios grátis',choisir:'Escolher',bonjour:'Olá',
-    prenom_client:'Nome do cliente',telephone:'Telefone',apercu:'Pré-visualização',
+    prenom_client:'Sobrenome + Nome',telephone:'Telefone',apercu:'Pré-visualização',
     sauvegarder:'+ Salvar',nouveau_client:'Novo cliente',
     version_demo:'Versão demo',envois_restants:'envios restantes',
     whatsapp_btn:'WhatsApp',sms_btn:'SMS',mes_messages:'Minhas mensagens',
     nouveau:'+ Novo',variables:'Variáveis',annuler:'Cancelar',supprimer:'Excl',
     editer:'Editar',nom_modele:'Nome do modelo',
+    votre_profil:'Seu perfil',boutique:'Loja',secteur:'Setor',gerant:'Gerente',
+    whatsapp:'WhatsApp',google:'Google',siret:'CNPJ',
+    num_whatsapp:'Número WhatsApp do negócio',enregistrer_num:'Salvar número',
+    msg_client:'Mensagem para este cliente',nouveau_cl:'🗑 Novo cliente',
+    modifier_profil:'Editar perfil',couleur_principale:'Cor principal',
+    google2:'Google (Loja 2 - opcional)',google3:'Google (Loja 3 - opcional)',
+    cgu_titre:'Termos e condições',
+    cgu_accept_html:'Li e aceito os <strong style="color:#F5C518">Termos</strong>',
+    pol_accept_html:'Li e aceito a <strong style="color:#F5C518">Política de privacidade</strong>',
+    accepter_continuer:'✓ Aceitar e continuar →',
+    veuillez_accepter:'Por favor aceite os dois documentos',
+    confidentialite:'Política de privacidade',
+    envoyer_lien:'Enviar link →',
+    paywall_titre:'Atualize para Only★5 Pro',
+    paywall_sub:'Seu teste gratuito de 3 envios terminou.',
+    voir_abonnements:'Ver assinaturas →',
+    fermer:'Fechar',chargement:'Carregando...',
+  },
+  ur:{
+    connexion:'لاگ ان',creer_compte:'اکاؤنٹ بنائیں',email:'ای میل پتہ',
+    mot_de_passe:'پاس ورڈ',se_connecter:'داخل ہوں',mdp_oublie:'پاس ورڈ بھول گئے؟',
+    pas_de_compte:'اکاؤنٹ نہیں؟',creer_lien:'اکاؤنٹ بنائیں',retour:'← واپس',
+    essai:'مفت آزمائش · 3 پیغامات',mdp_min:'پاس ورڈ (کم از کم 8 حروف)',
+    confirmer_mdp:'پاس ورڈ کی تصدیق',creer_btn:'میرا اکاؤنٹ بنائیں ←',
+    envoyer:'بھیجیں',clients:'گاہک',stats:'اعداد و شمار',messages:'پیغامات',
+    reglages:'ترتیبات',abonnement:'سبسکرپشن',langue:'زبان',
+    choisir_langue:'زبان منتخب کریں',enregistrer:'محفوظ کریں',
+    se_deconnecter:'لاگ آؤٹ',profil:'آپ کی پروفائل',modifier:'ترمیم',
+    nouveau_mdp:'نیا پاس ورڈ',confirmer_nouveau_mdp:'نئے پاس ورڈ کی تصدیق',
+    changer_mdp:'پاس ورڈ تبدیل کریں ←',plan_actuel:'موجودہ پلان',essai_gratuit:'مفت آزمائش',
+    envois_offerts:'3 مفت پیغامات',choisir:'منتخب کریں',bonjour:'سلام',
+    prenom_client:'نام + پہلا نام',telephone:'فون',apercu:'پیش نظارہ',
+    sauvegarder:'+ محفوظ',nouveau_client:'نیا گاہک',
+    version_demo:'ڈیمو ورژن',envois_restants:'باقی پیغامات',
+    whatsapp_btn:'واٹس ایپ',sms_btn:'SMS',mes_messages:'میرے پیغامات',
+    nouveau:'+ نیا',variables:'متغیرات',annuler:'منسوخ',supprimer:'حذف',
+    editer:'ترمیم',nom_modele:'ٹیمپلیٹ کا نام',
+    votre_profil:'آپ کی پروفائل',boutique:'دکان',secteur:'شعبہ',gerant:'مینیجر',
+    whatsapp:'واٹس ایپ',google:'گوگل',siret:'کمپنی ID',
+    num_whatsapp:'کاروباری واٹس ایپ نمبر',enregistrer_num:'نمبر محفوظ کریں',
+    msg_client:'اس گاہک کے لیے پیغام',nouveau_cl:'🗑 نیا گاہک',
+    modifier_profil:'پروفائل میں ترمیم',couleur_principale:'مرکزی رنگ',
+    google2:'گوگل (دکان 2 - اختیاری)',google3:'گوگل (دکان 3 - اختیاری)',
+    cgu_titre:'شرائط و ضوابط',
+    cgu_accept_html:'میں نے پڑھا اور <strong style="color:#F5C518">شرائط و ضوابط</strong> قبول کرتا ہوں',
+    pol_accept_html:'میں نے پڑھا اور <strong style="color:#F5C518">رازداری پالیسی</strong> قبول کرتا ہوں',
+    accepter_continuer:'✓ قبول کریں اور جاری رکھیں ←',
+    veuillez_accepter:'براہ کرم دونوں دستاویزات قبول کریں',
+    confidentialite:'رازداری پالیسی',
+    envoyer_lien:'لنک بھیجیں ←',
+    paywall_titre:'Only★5 Pro میں اپگریڈ کریں',
+    paywall_sub:'آپ کی 3 پیغامات کی مفت آزمائش ختم ہو گئی۔',
+    voir_abonnements:'سبسکرپشن دیکھیں ←',
+    fermer:'بند کریں',chargement:'لوڈ ہو رہا ہے...',
+    num_whatsapp:'کاروباری واٹس ایپ نمبر',
   },
 };
 // Pour les autres langues, on copie l'anglais par défaut
-['de','it','zh','ru','ja','ko','tr','nl','pl','sv','da','fi','no','cs','hu','ro','el','he','hi','bn','ur','fa','th','vi','id','ms','tl','sw','wo','ha','yo','ig','am','so','uk','ca','hr','sk','bg','lt','lv','et','sr','mk','sq','hy','ka','az','kk','uz','mn','my','km','lo','si','ne','pa','gu','mr','ta','te','kn','ml','zu','xh','af'].forEach(code=>{
+['de','it','zh','ru','ja','ko','tr','nl','pl','sv','da','fi','no','cs','hu','ro','el','he','hi','bn','fa','th','vi','id','ms','tl','sw','wo','ha','yo','ig','am','so','uk','ca','hr','sk','bg','lt','lv','et','sr','mk','sq','hy','ka','az','kk','uz','mn','my','km','lo','si','ne','pa','gu','mr','ta','te','kn','ml','zu','xh','af'].forEach(code=>{
   if(!TRANSLATIONS[code])TRANSLATIONS[code]={...TRANSLATIONS['en']};
 });
 
@@ -923,6 +1022,8 @@ function setLang(code){
   currentLang=code;
   localStorage.setItem('only5:lang',code);
   applyTranslations();
+  // Re-render les éléments dynamiques avec les nouveaux labels
+  renderSettings();
   // Sauvegarder en BDD si connecté
   if(currentUser&&profile){
     sb.from('profiles').update({langue:code}).eq('id',currentUser.id).then(()=>{});
@@ -2043,7 +2144,18 @@ function resend(id,prenom,phone,tplId){selTpl=tplId;document.getElementById('sen
 // ── SETTINGS ──────────────────────────────────────────────────────────────────
 function renderSettings(){
   const rows=document.getElementById('profile-rows');rows.innerHTML='';if(!profile)return;
-  [[t('boutique')||'Boutique',profile.boutique],[t('secteur')||'Secteur',profile.secteur],[t('gerant')||'Gérant',profile.gerant],[t('whatsapp')||'WhatsApp',profile.whatsapp],[t('google')||'Google',profile.google_link],[t('siret')||'SIRET',profile.fact_siret]].filter(([,v])=>v).forEach(([k,v])=>{rows.innerHTML+='<div class="profile-row"><div class="profile-key">'+k+'</div><div class="profile-val">'+v+'</div></div>';});
+  // Labels traduits
+  const labels=[
+    [t('boutique')||'Boutique', profile.boutique],
+    [t('secteur')||'Secteur',   profile.secteur],
+    [t('gerant')||'Gérant',     profile.gerant],
+    [t('whatsapp')||'WhatsApp', profile.whatsapp],
+    [t('google')||'Google',     profile.google_link],
+    [t('siret')||'SIRET',       profile.fact_siret],
+  ];
+  labels.filter(([,v])=>v).forEach(([k,v])=>{
+    rows.innerHTML+='<div class="profile-row"><div class="profile-key">'+k+'</div><div class="profile-val">'+v+'</div></div>';
+  });
   const sl=document.getElementById('settings-lang');
   if(sl){
     if(!sl.options.length){
@@ -2051,13 +2163,12 @@ function renderSettings(){
     }
     sl.value=currentLang;
   }
-  // WhatsApp settings - toujours vide pour saisie propre
   const indSel=document.getElementById('settings-indicatif');
   const numInp=document.getElementById('settings-whatsapp-num');
   if(indSel&&numInp){
     indSel.value='+33';
-    numInp.value=''; // Champ vide - l'utilisateur tape son numéro
-    numInp.placeholder='Ex: 0612345678';
+    numInp.value='';
+    numInp.placeholder=t('telephone')||'Ex: 0612345678';
   }
 }
 async function saveWhatsappSettings(){
