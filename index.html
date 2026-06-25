@@ -148,7 +148,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     </button>
     <button id="btn-politique" onclick="toggleCheck('politique')" style="width:100%;padding:20px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:18px;min-height:64px;font-family:inherit;-webkit-tap-highlight-color:rgba(245,197,24,0.2)">
       <div id="box-politique" style="min-width:34px;width:34px;height:34px;border-radius:8px;border:2.5px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#0A0A0A;transition:all .2s"></div>
-      <span style="line-height:1.4;flex:1;text-align:left">J'ai lu et j'accepte la <strong style="color:#F5C518">Politique de confidentialité</strong></span>
+      <span style="line-height:1.4;flex:1;text-align:left" data-t="pol_accept">J'ai lu et j'accepte la <strong style="color:#F5C518">Politique de confidentialité</strong></span>
     </button>
     <button id="btn-legal" onclick="acceptLegal()" style="width:100%;padding:20px;background:#2A2A2A;color:#666;border:none;border-radius:14px;font-size:16px;font-weight:800;text-align:center;cursor:not-allowed;min-height:64px;font-family:inherit;transition:all .3s">Veuillez accepter les deux documents</button>
   </div>
@@ -195,56 +195,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     <select id="reg-lang" onchange="setLang(this.value)" style="width:100%;padding:12px 14px;border:1.5px solid #333;border-radius:12px;background:#1A1A1A;color:#fff;font-size:14px;margin-bottom:10px;font-family:inherit;outline:none">
       <option value="" disabled>🌍 Choisir votre langue</option>
     </select>
-    <div style="display:flex;gap:8px;margin-bottom:14px">
-      <select id="reg-indicatif" style="width:140px;min-width:140px;padding:12px 8px;border:1.5px solid #333;border-radius:12px;background:#1A1A1A;color:#fff;font-size:13px;font-family:inherit;outline:none">
-        <option value="+33">🇫🇷 +33</option>
-        <option value="+92">🇵🇰 +92</option>
-        <option value="+44">🇬🇧 +44</option>
-        <option value="+1">🇺🇸 +1</option>
-        <option value="+213">🇩🇿 +213</option>
-        <option value="+212">🇲🇦 +212</option>
-        <option value="+216">🇹🇳 +216</option>
-        <option value="+221">🇸🇳 +221</option>
-        <option value="+225">🇨🇮 +225</option>
-        <option value="+226">🇧🇫 +226</option>
-        <option value="+223">🇲🇱 +223</option>
-        <option value="+237">🇨🇲 +237</option>
-        <option value="+243">🇨🇩 +243</option>
-        <option value="+234">🇳🇬 +234</option>
-        <option value="+254">🇰🇪 +254</option>
-        <option value="+251">🇪🇹 +251</option>
-        <option value="+91">🇮🇳 +91</option>
-        <option value="+880">🇧🇩 +880</option>
-        <option value="+62">🇮🇩 +62</option>
-        <option value="+60">🇲🇾 +60</option>
-        <option value="+63">🇵🇭 +63</option>
-        <option value="+84">🇻🇳 +84</option>
-        <option value="+66">🇹🇭 +66</option>
-        <option value="+86">🇨🇳 +86</option>
-        <option value="+81">🇯🇵 +81</option>
-        <option value="+82">🇰🇷 +82</option>
-        <option value="+7">🇷🇺 +7</option>
-        <option value="+380">🇺🇦 +380</option>
-        <option value="+49">🇩🇪 +49</option>
-        <option value="+34">🇪🇸 +34</option>
-        <option value="+39">🇮🇹 +39</option>
-        <option value="+351">🇵🇹 +351</option>
-        <option value="+31">🇳🇱 +31</option>
-        <option value="+32">🇧🇪 +32</option>
-        <option value="+41">🇨🇭 +41</option>
-        <option value="+90">🇹🇷 +90</option>
-        <option value="+966">🇸🇦 +966</option>
-        <option value="+971">🇦🇪 +971</option>
-        <option value="+20">🇪🇬 +20</option>
-        <option value="+55">🇧🇷 +55</option>
-        <option value="+52">🇲🇽 +52</option>
-        <option value="+54">🇦🇷 +54</option>
-        <option value="+57">🇨🇴 +57</option>
-        <option value="+27">🇿🇦 +27</option>
-        <option value="+61">🇦🇺 +61</option>
-      </select>
-      <input id="reg-phone" type="tel" inputmode="tel" placeholder="Votre numero" class="auth-input" style="flex:1;margin-bottom:0">
-    </div>
+
     <div id="reg-err" style="color:#E8202A;font-size:13px;text-align:center;margin-bottom:10px;display:none"></div>
     <button class="btn btn-gold" onclick="doRegister()">Creer mon compte &#8594;</button>
     <div style="text-align:center;margin-top:16px">
@@ -446,7 +397,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div id="ocr-loading" style="display:none;text-align:center;padding:8px;color:#1565C0;font-size:13px;font-weight:700">🔍 Analyse...</div>
       <!-- Saisie client -->
       <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
-        <input id="send-prenom" class="inp" placeholder="Prénom + Nom" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words" style="flex:1;margin-bottom:0">
+        <input id="send-prenom" class="inp" placeholder="Nom + Prénom" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words" style="flex:1;margin-bottom:0">
         <button onclick="openScanner('nom')" style="padding:10px 12px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">📷 Nom</button>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
@@ -476,7 +427,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         <button onclick="openScanner('tel')" style="padding:10px 12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">📷 Tél</button>
       </div>
       <!-- Choix message pour ce client -->
-      <span class="label">Message pour ce client</span>
+      <span class="label" data-t="msg_client">Message pour ce client</span>
       <div id="tpl-list"></div>
     </div>
 
@@ -631,8 +582,8 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
   <div id="tab-settings" class="tab-content">
     <div class="card" id="profile-view">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <span class="sec-title" style="margin:0">Votre profil</span>
-        <button class="btn-sm" style="background:#0A0A0A;color:#F5C518;border:none;padding:7px 12px;border-radius:8px;font-weight:700" onclick="editProfile()">Modifier</button>
+        <span class="sec-title" style="margin:0" data-t="votre_profil">Votre profil</span>
+        <button class="btn-sm" style="background:#0A0A0A;color:#F5C518;border:none;padding:7px 12px;border-radius:8px;font-weight:700" onclick="editProfile()" data-t="modifier">Modifier</button>
       </div>
       <div id="profile-rows"></div>
     </div>
@@ -703,7 +654,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <select id="settings-lang" onchange="setLang(this.value)" style="width:100%;padding:12px 14px;border:1.5px solid #333;border-radius:12px;background:#1A1A1A;color:#fff;font-size:14px;margin-bottom:8px;font-family:inherit;outline:none"></select>
     </div>
     <div class="card">
-      <div class="sec-title">Numéro WhatsApp boutique</div>
+      <div class="sec-title" data-t="num_whatsapp">Numéro WhatsApp boutique</div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <select id="settings-indicatif" style="width:140px;min-width:140px;padding:12px 8px;border:1.5px solid #E0E0E0;border-radius:10px;background:#fff;color:#333;font-size:13px;font-family:inherit;outline:none">
           <option value="+33">🇫🇷 +33</option>
@@ -754,7 +705,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         </select>
         <input id="settings-whatsapp-num" type="tel" inputmode="tel" placeholder="Votre numéro" class="inp" style="flex:1;margin-bottom:0">
       </div>
-      <button class="btn btn-black" onclick="saveWhatsappSettings()">Enregistrer le numéro</button>
+      <button class="btn btn-black" onclick="saveWhatsappSettings()" data-t="enregistrer_num">Enregistrer le numéro</button>
       <div id="wa-settings-ok" style="display:none;color:#25D366;font-size:13px;font-weight:700;text-align:center;margin-top:8px">✓ Numéro mis à jour !</div>
     </div>
     <button class="btn btn-red" onclick="logout()" data-t="se_deconnecter">Se deconnecter</button>
@@ -823,24 +774,43 @@ const LANGUAGES={
 
 const TRANSLATIONS={
   fr:{
-    connexion:'Connexion',creer_compte:'Creer un compte',email:'Adresse email',
-    mot_de_passe:'Mot de passe',se_connecter:'Se connecter',mdp_oublie:'Mot de passe oublie ?',
-    pas_de_compte:'Pas de compte ?',creer_lien:'Creer un compte',retour:'← Retour connexion',
+    connexion:'Connexion',creer_compte:'Créer un compte',email:'Adresse email',
+    mot_de_passe:'Mot de passe',se_connecter:'Se connecter',mdp_oublie:'Mot de passe oublié ?',
+    pas_de_compte:'Pas de compte ?',creer_lien:'Créer un compte',retour:'← Retour connexion',
     essai:'Essai gratuit · 3 envois offerts',mdp_min:'Mot de passe (8 car. min)',
-    confirmer_mdp:'Confirmer le mot de passe',creer_btn:'Creer mon compte →',
+    confirmer_mdp:'Confirmer le mot de passe',creer_btn:'Créer mon compte →',
     envoyer:'Envoyer',clients:'Clients',stats:'Stats',messages:'Messages',
-    reglages:'Reglages',abonnement:'Abonnement',langue:'Langue',
+    reglages:'Réglages',abonnement:'Abonnement',langue:'Langue',
     choisir_langue:'Choisir votre langue',enregistrer:'Enregistrer',
-    se_deconnecter:'Se deconnecter',profil:'Votre profil',modifier:'Modifier',
+    se_deconnecter:'Se déconnecter',profil:'Votre profil',modifier:'Modifier',
     nouveau_mdp:'Nouveau mot de passe',confirmer_nouveau_mdp:'Confirmer le nouveau mot de passe',
     changer_mdp:'Changer le mot de passe →',plan_actuel:'PLAN ACTUEL',essai_gratuit:'Essai gratuit',
     envois_offerts:'3 envois offerts',choisir:'Choisir',bonjour:'Bonjour',
-    prenom_client:'Prenom du client',telephone:'Telephone',apercu:'Apercu',
+    prenom_client:'Nom + Prénom du client',telephone:'Téléphone',apercu:'Aperçu',
     sauvegarder:'+ Sauvegarder',nouveau_client:'Nouveau client',
-    version_demo:'Version demo',envois_restants:'envois restants',
+    version_demo:'Version démo',envois_restants:'envois restants',
     whatsapp_btn:'WhatsApp',sms_btn:'SMS',mes_messages:'Mes messages',
     nouveau:'+ Nouveau',variables:'Variables',annuler:'Annuler',supprimer:'Sup',
-    editer:'Editer',nom_modele:'Nom du modele',
+    editer:'Éditer',nom_modele:'Nom du modèle',
+    votre_profil:'Votre profil',boutique:'Boutique',secteur:'Secteur',gerant:'Gérant',
+    whatsapp:'WhatsApp',google:'Google',siret:'SIRET',
+    num_whatsapp:'Numéro WhatsApp boutique',enregistrer_num:'Enregistrer le numéro',
+    msg_client:'Message pour ce client',nouveau_cl:'🗑 Nouveau client',
+    apercu_msg:'Aperçu',historique:'Historique récent',templates_util:'Templates utilisés',
+    cgu_titre:'CGU',
+    cgu_accept:'J\'ai lu et j\'accepte les CGU',
+    cgu_accept_html:'J\'ai lu et j\'accepte les <strong style="color:#F5C518">CGU</strong>',
+    pol_accept:'J\'ai lu et j\'accepte la Politique de confidentialité',
+    pol_accept_html:'J\'ai lu et j\'accepte la <strong style="color:#F5C518">Politique de confidentialité</strong>',
+    accepter_continuer:'✓ Accepter et continuer →',
+    veuillez_accepter:'Veuillez accepter les deux documents',
+    confidentialite:'Politique de confidentialité',
+    envoyer_lien:'Recevoir le lien →',
+    paywall_titre:'Passez à Only★5 Pro',
+    paywall_sub:'Votre essai gratuit de 3 envois est terminé.',
+    voir_abonnements:'Voir les abonnements →',
+    fermer:'Fermer',
+    chargement:'Chargement...',
   },
   en:{
     connexion:'Login',creer_compte:'Create account',email:'Email address',
@@ -855,12 +825,31 @@ const TRANSLATIONS={
     nouveau_mdp:'New password',confirmer_nouveau_mdp:'Confirm new password',
     changer_mdp:'Change password →',plan_actuel:'CURRENT PLAN',essai_gratuit:'Free trial',
     envois_offerts:'3 messages offered',choisir:'Choose',bonjour:'Hello',
-    prenom_client:'Client first name',telephone:'Phone',apercu:'Preview',
+    prenom_client:'Last name + First name',telephone:'Phone',apercu:'Preview',
     sauvegarder:'+ Save',nouveau_client:'New client',
     version_demo:'Demo version',envois_restants:'messages left',
     whatsapp_btn:'WhatsApp',sms_btn:'SMS',mes_messages:'My messages',
     nouveau:'+ New',variables:'Variables',annuler:'Cancel',supprimer:'Del',
     editer:'Edit',nom_modele:'Template name',
+    votre_profil:'Your profile',boutique:'Shop',secteur:'Sector',gerant:'Manager',
+    whatsapp:'WhatsApp',google:'Google',siret:'Company ID',
+    num_whatsapp:'WhatsApp business number',enregistrer_num:'Save number',
+    msg_client:'Message for this client',nouveau_cl:'🗑 New client',
+    apercu_msg:'Preview',historique:'Recent history',templates_util:'Templates used',
+    cgu_titre:'Terms & Conditions',
+    cgu_accept:'I have read and accept the Terms',
+    cgu_accept_html:'I have read and accept the <strong style="color:#F5C518">Terms & Conditions</strong>',
+    pol_accept:'I have read and accept the Privacy Policy',
+    pol_accept_html:'I have read and accept the <strong style="color:#F5C518">Privacy Policy</strong>',
+    accepter_continuer:'✓ Accept and continue →',
+    veuillez_accepter:'Please accept both documents',
+    confidentialite:'Privacy Policy',
+    envoyer_lien:'Send reset link →',
+    paywall_titre:'Upgrade to Only★5 Pro',
+    paywall_sub:'Your free trial of 3 sends is over.',
+    voir_abonnements:'View subscriptions →',
+    fermer:'Close',
+    chargement:'Loading...',
   },
   es:{
     connexion:'Iniciar sesión',creer_compte:'Crear cuenta',email:'Correo electrónico',
@@ -941,21 +930,98 @@ function setLang(code){
   }
 }
 function applyTranslations(){
-  const rtl=['ar','he','ur','fa'];
-  document.body.style.direction=rtl.includes(currentLang)?'rtl':'ltr';
-  // Mettre à jour les tabs avec les bons labels
+  // PAS de RTL - on garde toujours LTR
+  document.body.style.direction='ltr';
+
+  // ─── TABS ────────────────────────────────────────────────────────────────────
   const tabLabels=['envoyer','clients','stats','messages','reglages','abonnement'];
-  const tabBtns=document.querySelectorAll('.tab-bar .tab-btn');
-  tabBtns.forEach((btn,i)=>{if(tabLabels[i])btn.textContent=t(tabLabels[i]);});
-  // Mettre à jour les éléments data-t
+  document.querySelectorAll('.tab-bar .tab-btn').forEach((btn,i)=>{if(tabLabels[i])btn.textContent=t(tabLabels[i]);});
+
+  // ─── data-t (tous écrans) ────────────────────────────────────────────────────
   document.querySelectorAll('[data-t]').forEach(el=>{
     const key=el.getAttribute('data-t');
     if(key)el.textContent=t(key);
   });
+
+  // ─── data-ph (placeholders) ──────────────────────────────────────────────────
   document.querySelectorAll('[data-ph]').forEach(el=>{
     const key=el.getAttribute('data-ph');
     if(key)el.placeholder=t(key);
   });
+
+  // ─── ÉCRAN AUTH ──────────────────────────────────────────────────────────────
+  // Titre connexion
+  const loginTitle=document.querySelector('#login-form > div[style*="color:#F5C518"]');
+  if(loginTitle)loginTitle.textContent=t('connexion');
+  // Sous-titre app
+  const appSub=document.querySelector('#screen-auth > div > div[style*="color:#888"]');
+  if(appSub)appSub.textContent=t('tagline')||appSub.textContent;
+  // Inputs connexion
+  const loginEmail=document.getElementById('login-email');if(loginEmail)loginEmail.placeholder=t('email');
+  const loginPwd=document.getElementById('login-password');if(loginPwd)loginPwd.placeholder=t('mot_de_passe');
+  // Bouton connexion
+  const loginBtn=document.querySelector('#login-form .btn-gold');if(loginBtn)loginBtn.innerHTML=t('se_connecter')+' &#8594;';
+  // Mot de passe oublié
+  const forgotBtn=document.querySelector('#login-form button[onclick="showForgot()"]');if(forgotBtn)forgotBtn.textContent=t('mdp_oublie');
+  // Pas de compte
+  const noAccountSpan=document.querySelector('#login-form span[style*="color:#666"]');if(noAccountSpan)noAccountSpan.textContent=t('pas_de_compte')+' ';
+  const createLinkBtn=document.querySelector('#login-form button[onclick="showRegister()"]');if(createLinkBtn)createLinkBtn.textContent=t('creer_lien');
+  // Formulaire inscription
+  const regTitle=document.querySelector('#register-form > div[style*="color:#F5C518"]');if(regTitle)regTitle.textContent=t('creer_compte');
+  const regSub=document.querySelector('#register-form > div[style*="color:#666"]');if(regSub)regSub.textContent=t('essai');
+  const regEmail=document.getElementById('reg-email');if(regEmail)regEmail.placeholder=t('email');
+  const regPwd=document.getElementById('reg-password');if(regPwd)regPwd.placeholder=t('mdp_min');
+  const regPwd2=document.getElementById('reg-password2');if(regPwd2)regPwd2.placeholder=t('confirmer_mdp');
+  const regLangSel=document.getElementById('reg-lang');if(regLangSel)regLangSel.options[0].text='🌍 '+t('choisir_langue');
+  const regBtn=document.querySelector('#register-form .btn-gold');if(regBtn)regBtn.innerHTML=t('creer_btn');
+  const backLoginBtn=document.querySelector('#register-form button[onclick="showLogin()"]');if(backLoginBtn)backLoginBtn.textContent=t('retour');
+  // Formulaire mot de passe oublié
+  const forgotTitle=document.querySelector('#forgot-form div[style*="font-size:22px"]');if(forgotTitle)forgotTitle.textContent=t('mdp_oublie')||'Mot de passe oublié';
+  const forgotEmail=document.getElementById('forgot-email');if(forgotEmail)forgotEmail.placeholder=t('email');
+  const forgotSendBtn=document.querySelector('#forgot-form .btn-gold');if(forgotSendBtn)forgotSendBtn.innerHTML=t('envoyer_lien')||'Recevoir le lien &#8594;';
+  const backFromForgot=document.querySelector('#forgot-form button[onclick="showLogin()"]');if(backFromForgot)backFromForgot.textContent=t('retour');
+  // Formulaire nouveau mot de passe
+  const resetPwd=document.getElementById('reset-password');if(resetPwd)resetPwd.placeholder=t('nouveau_mdp');
+  const resetPwd2=document.getElementById('reset-password2');if(resetPwd2)resetPwd2.placeholder=t('confirmer_mdp');
+  const resetBtn=document.querySelector('#reset-form .btn-gold');if(resetBtn)resetBtn.innerHTML=t('enregistrer')+' &#8594;';
+
+  // ─── ÉCRAN LÉGAL ─────────────────────────────────────────────────────────────
+  const cguAccept=document.querySelector('#btn-cgu span');
+  const polAccept=document.querySelector('#btn-politique span');
+  const btnLegal=document.getElementById('btn-legal');
+  if(cguAccept)cguAccept.innerHTML=t('cgu_accept_html')||('J\'ai lu et j\'accepte les <strong style="color:#F5C518">'+t('cgu_titre')+'</strong>');
+  if(polAccept)polAccept.innerHTML=t('pol_accept_html')||('J\'ai lu et j\'accepte la <strong style="color:#F5C518">'+t('confidentialite')+'</strong>');
+  // Ne pas écraser le bouton légal si déjà coché (il affiche "Accepter et continuer")
+  const legalOk=checkedCgu&&checkedPolitique;
+  if(btnLegal&&!legalOk)btnLegal.textContent=t('veuillez_accepter');
+
+  // ─── ÉCRAN ENVOI ────────────────────────────────────────────────────────────
+  const sendPrenom=document.getElementById('send-prenom');if(sendPrenom)sendPrenom.placeholder=t('prenom_client');
+  const sendPhone=document.getElementById('send-phone');if(sendPhone)sendPhone.placeholder=t('telephone');
+  // Boutons WA / SMS
+  const btnWA=document.querySelector('.btn-green');if(btnWA)btnWA.textContent=t('whatsapp_btn');
+  const btnSMS=document.getElementById('btn-sms');if(btnSMS)btnSMS.textContent=t('sms_btn');
+  // Bouton Nouveau client
+  const clearBtn=document.querySelector('button[onclick="clearForm()"]');if(clearBtn)clearBtn.textContent=t('nouveau_cl');
+
+  // ─── PAYWALL ─────────────────────────────────────────────────────────────────
+  const paywallTitle=document.querySelector('.paywall-inner > div[style*="font-weight:900"]');
+  if(paywallTitle)paywallTitle.textContent=t('paywall_titre')||paywallTitle.textContent;
+  const paywallSub=document.querySelector('.paywall-inner > div[style*="font-size:14px"]');
+  if(paywallSub)paywallSub.textContent=t('paywall_sub')||paywallSub.textContent;
+  const paywallBtn1=document.querySelector('.paywall-inner .btn-gold');
+  if(paywallBtn1)paywallBtn1.innerHTML=t('voir_abonnements')||'Voir les abonnements &#8594;';
+  const paywallBtn2=document.querySelector('.paywall-inner .btn-outline');
+  if(paywallBtn2)paywallBtn2.textContent=t('fermer')||paywallBtn2.textContent;
+
+  // ─── SETTINGS ────────────────────────────────────────────────────────────────
+  const btnDecoSel=document.querySelector('button[onclick="logout()"]');if(btnDecoSel)btnDecoSel.textContent=t('se_deconnecter');
+  const btnSaveWA=document.querySelector('button[onclick="saveWhatsappSettings()"]');if(btnSaveWA)btnSaveWA.textContent=t('enregistrer_num');
+  const settingsWAInput=document.getElementById('settings-whatsapp-num');if(settingsWAInput)settingsWAInput.placeholder=t('telephone');
+
+  // ─── CHARGEMENT ──────────────────────────────────────────────────────────────
+  const loadingTxt=document.querySelector('#loading > div[style*="color:#F5C518"]');
+  if(loadingTxt)loadingTxt.textContent=t('chargement')||loadingTxt.textContent;
 }
 const SUPA_URL='https://lxydusbhaulrnwgkwpmt.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4eWR1c2JoYXVscm53Z2t3cG10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODAwNzQsImV4cCI6MjA5NzI1NjA3NH0.e0meQz86SBAIAhHxgoD0CfHxncylirBnAyIbDA6crXs';
@@ -1043,7 +1109,19 @@ let trialCount=0,isPaid=false,previewOpen=false,editingTplId=null,importRawData=
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 const fillMsg=(tpl,prenom)=>tpl.replace(/{prenom}/g,prenom||'Client').replace(/{boutique}/g,profile?.boutique||'notre boutique').replace(/{gerant}/g,profile?.gerant||'L equipe').replace(/{lien_google}/g,profile?.google_link||'https://g.page/r/...');
-const fmtPhone=raw=>{const d=raw.replace(/\D/g,'');if(d.startsWith('33'))return'+'+d;if(d.startsWith('0'))return'+33'+d.slice(1);if(d.length===9)return'+33'+d;return'+'+d;};
+const fmtPhone=raw=>{
+  const d=raw.replace(/\D/g,'');
+  // Déjà un + dans le raw original
+  if(raw.trim().startsWith('+'))return raw.trim().replace(/\s/g,'');
+  // Commence par 0 → supposer France
+  if(d.startsWith('0'))return'+33'+d.slice(1);
+  // 9 chiffres sans indicatif connu → ajouter l'indicatif sélectionné
+  if(d.length>=9&&d.length<=12){
+    const sel=document.getElementById('send-indicatif')?.value||'+33';
+    return sel+d;
+  }
+  return'+'+d;
+};
 const FLEX_SCREENS=['auth','legal'];
 const showScreen=id=>{
   document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
@@ -1200,7 +1278,7 @@ function toggleCheck(which){
     btnLegal.style.background=ok?'#F5C518':'#2A2A2A';
     btnLegal.style.color=ok?'#0A0A0A':'#666';
     btnLegal.style.cursor=ok?'pointer':'not-allowed';
-    btnLegal.textContent=ok?'✓ Accepter et continuer →':'Veuillez accepter les deux documents';
+    btnLegal.textContent=ok?t('accepter_continuer'):t('veuillez_accepter');
   }
 }
 function acceptLegal(){
@@ -1407,7 +1485,7 @@ async function obFinish(){
   if(!document.getElementById('ob-factnom').value.trim()){alert('Remplissez le nom de facturation.');return;}
   if(!currentUser){alert('Erreur : pas de compte connecte.');return;}
   showLoading(true);
-  const prof={id:currentUser.id,boutique:document.getElementById('ob-boutique').value.trim(),secteur:document.getElementById('ob-secteur').value,gerant:document.getElementById('ob-gerant').value.trim(),whatsapp:document.getElementById('ob-whatsapp').value.trim(),google_link:document.getElementById('ob-google').value.trim(),couleur:document.getElementById('ob-couleur').value||'#E8202A',logo:document.getElementById('ob-logo').value.trim(),fact_nom:document.getElementById('ob-factnom').value.trim(),fact_adresse:document.getElementById('ob-factadresse').value.trim(),fact_cp:document.getElementById('ob-factcp').value.trim(),fact_ville:document.getElementById('ob-factville').value.trim(),fact_siret:document.getElementById('ob-factsiret').value.trim()};
+  const prof={id:currentUser.id,boutique:document.getElementById('ob-boutique').value.trim(),secteur:document.getElementById('ob-secteur').value,gerant:document.getElementById('ob-gerant').value.trim(),whatsapp:document.getElementById('ob-whatsapp').value.trim(),google_link:document.getElementById('ob-google').value.trim(),couleur:document.getElementById('ob-couleur').value||'#E8202A',logo:document.getElementById('ob-logo').value.trim(),fact_nom:document.getElementById('ob-factnom').value.trim(),fact_adresse:document.getElementById('ob-factadresse').value.trim(),fact_cp:document.getElementById('ob-factcp').value.trim(),fact_ville:document.getElementById('ob-factville').value.trim(),fact_siret:document.getElementById('ob-factsiret').value.trim(),langue:currentLang};
   const {error}=await sb.from('profiles').upsert(prof);
   showLoading(false);
   if(error){alert('Erreur sauvegarde: '+error.message);return;}
@@ -1426,7 +1504,12 @@ async function obFinish(){
 // ── HOME ──────────────────────────────────────────────────────────────────────
 function showHome(){
   if(!profile){showScreen('onboarding');return;}
-  currentLang=profile.langue||localStorage.getItem('only5:lang')||'fr';
+  // Restaurer la langue : profil BDD en priorité, sinon localStorage
+  const langToUse=profile.langue||localStorage.getItem('only5:lang')||'en';
+  if(currentLang!==langToUse){
+    currentLang=langToUse;
+    localStorage.setItem('only5:lang',langToUse);
+  }
   applyTranslations();
   const acc=profile.couleur||'#E8202A';
   document.documentElement.style.setProperty('--accent',acc);
@@ -1618,15 +1701,18 @@ function preprocessCanvas(src){
 function extraireInfos(text){
   const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
   let prenom='';let tel='';
+  // Indicatif sélectionné dans le sélecteur (ex: "+92" pour Pakistan)
+  const indicatif=(document.getElementById('send-indicatif')?.value||'+33').replace('+','');
   for(const line of lines){
     const low=line.toLowerCase().replace(/[^a-z0-9àâäéèêëîïôùûüç&:.\s]/g,' ');
-    // ── PRENOM ──
+    // ── NOM (priorité Nom puis Prénom car format Kezia = NOM PRENOM) ──
     if(!prenom){
-      // Format ticket: "Client: NOM PRENOM" ou "client : NOM PRENOM"
+      // Format ticket: "Client: NOM PRENOM"
       const mClient=line.match(/client\s*[:\-=]?\s*([A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ\-]+(?:\s+[A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ\-]+)*)/i);
       if(mClient){
         const clean=mClient[1].replace(/\(.*?\)/g,'').trim();
         const words=clean.split(/\s+/).filter(w=>w.length>1&&!/\d/.test(w));
+        // Kezia = NOM PRENOM → on garde tout mais l'ordre est NOM PRENOM
         if(words.length>=1)prenom=words.join(' ');
       }
       // Format écran Kezia: "Nom & Prénom   ARNOUX SOPHIE"
@@ -1638,19 +1724,27 @@ function extraireInfos(text){
     }
     // ── TELEPHONE ──
     if(!tel){
-      // Ligne avec mot-clé tel
       if(low.includes('tel')&&(low.includes('perso')||low.includes('pro')||low.includes('portable')||low.includes('mobile'))){
         const digits=line.replace(/[^0-9]/g,'');
-        const m=digits.match(/0[6-9]\d{8}/);
-        if(m)tel=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+        // France 06/07
+        const mFR=digits.match(/0[6-9]\d{8}/);
+        if(mFR){tel=mFR[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');continue;}
+        // International: indicatif + 9-11 chiffres
+        const mInt=digits.match(new RegExp('^'+indicatif+'(\\d{9,11})'));
+        if(mInt){tel='+'+indicatif+mInt[1];}
       }
     }
   }
-  // Fallback tel : cherche 06/07/09 n'importe où
+  // Fallback tel FR 06/07
   if(!tel){
     const digits=text.replace(/[^0-9]/g,'');
-    const m=digits.match(/0[6-9]\d{8}/);
-    if(m)tel=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+    const mFR=digits.match(/0[6-9]\d{8}/);
+    if(mFR){tel=mFR[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');}
+    // Fallback international avec indicatif
+    else{
+      const mInt=digits.match(new RegExp(indicatif+'(\\d{9,11})'));
+      if(mInt)tel='+'+indicatif+mInt[1];
+    }
   }
   return{prenom,tel};
 }
@@ -1736,20 +1830,30 @@ async function extractFromPhoto(input,mode){
     }
 
     if(!mode||mode==='tel'||mode==='all'){
-      // Cherche "TEL PERSO 06.78.66.85.33"
+      // Cherche "TEL PERSO 06.78.66.85.33" ou numéro international
       for(const line of lines){
         const low=line.toLowerCase();
         if(low.includes('tel perso')||low.includes('tel.perso')||low.includes('telperso')||low.includes('tel pers')||low.includes('portable')){
           const digits=line.replace(/[^0-9]/g,'');
-          const m=digits.match(/0[67]\d{8}/);
-          if(m){telephone=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');break;}
+          // France 06/07
+          const mFR=digits.match(/0[67]\d{8}/);
+          if(mFR){telephone=mFR[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');break;}
+          // International : indicatif du sélecteur
+          const ind=(document.getElementById('send-indicatif')?.value||'+33').replace('+','');
+          const mInt=digits.match(new RegExp('^'+ind+'(\\d{9,11})'));
+          if(mInt){telephone='+'+ind+mInt[1];break;}
         }
       }
-      // Fallback: 06/07 n'importe où dans le texte
+      // Fallback: 06/07 n'importe où
       if(!telephone){
         const digits=text.replace(/[^0-9]/g,'');
-        const m=digits.match(/0[67]\d{8}/);
-        if(m)telephone=m[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+        const mFR=digits.match(/0[67]\d{8}/);
+        if(mFR)telephone=mFR[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+        else{
+          const ind=(document.getElementById('send-indicatif')?.value||'+33').replace('+','');
+          const mInt=digits.match(new RegExp(ind+'(\\d{9,11})'));
+          if(mInt)telephone='+'+ind+mInt[1];
+        }
       }
     }
 
@@ -1875,7 +1979,7 @@ function resend(id,prenom,phone,tplId){selTpl=tplId;document.getElementById('sen
 // ── SETTINGS ──────────────────────────────────────────────────────────────────
 function renderSettings(){
   const rows=document.getElementById('profile-rows');rows.innerHTML='';if(!profile)return;
-  [['Boutique',profile.boutique],['Secteur',profile.secteur],['Gerant',profile.gerant],['WhatsApp',profile.whatsapp],['Google',profile.google_link],['SIRET',profile.fact_siret]].filter(([,v])=>v).forEach(([k,v])=>{rows.innerHTML+='<div class="profile-row"><div class="profile-key">'+k+'</div><div class="profile-val">'+v+'</div></div>';});
+  [[t('boutique')||'Boutique',profile.boutique],[t('secteur')||'Secteur',profile.secteur],[t('gerant')||'Gérant',profile.gerant],[t('whatsapp')||'WhatsApp',profile.whatsapp],[t('google')||'Google',profile.google_link],[t('siret')||'SIRET',profile.fact_siret]].filter(([,v])=>v).forEach(([k,v])=>{rows.innerHTML+='<div class="profile-row"><div class="profile-key">'+k+'</div><div class="profile-val">'+v+'</div></div>';});
   const sl=document.getElementById('settings-lang');
   if(sl){
     if(!sl.options.length){
