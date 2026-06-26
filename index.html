@@ -69,7 +69,7 @@ input{-webkit-user-select:text;user-select:text}
 .loading{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px}
 .loading.show{display:flex}
 .spinner{width:40px;height:40px;border:3px solid #333;border-top-color:#F5C518;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -341,7 +341,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     </div>
     <div class="card">
       <div style="margin-bottom:12px">
-        <span class="sec-title">Client</span>
+        <span class="sec-title" data-t="client_label">Client</span>
       </div>
       <!-- SCANNER MODAL -->
       <div id="scanner-modal" style="display:none;position:fixed;inset:0;background:#000;z-index:9999;flex-direction:column">
@@ -488,10 +488,10 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <button onclick="exportCSV()" style="width:100%;padding:12px;background:#1565C0;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">&#8595; Exporter les donnees (CSV)</button>
     </div>
     <div class="stat-grid">
-      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total envois</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:#25D366" id="stat-wa">0</div><div class="stat-lbl">WhatsApp</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:#666" id="stat-sms">0</div><div class="stat-lbl">SMS</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:#0070F3" id="stat-clients">0</div><div class="stat-lbl">Clients imports</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl" data-t="total_envois_lbl">Total envois</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#25D366" id="stat-wa">0</div><div class="stat-lbl" data-t="whatsapp_lbl">WhatsApp</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#666" id="stat-sms">0</div><div class="stat-lbl" data-t="sms_lbl">SMS</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#0070F3" id="stat-clients">0</div><div class="stat-lbl" data-t="clients_imports">Clients imports</div></div>
     </div>
     <div class="card"><div class="sec-title" data-t="last7">7 derniers jours</div><div id="bar-chart" class="bar-chart"></div></div>
     <div class="card"><div class="sec-title" data-t="templates_utilises">Templates utilises</div><div id="tpl-stats"></div></div>
@@ -523,60 +523,60 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
   <div id="tab-abonnement" class="tab-content" style="padding:0">
     <div style="padding:16px 16px 40px;background:#F0F0F5;min-height:calc(100vh - 90px)">
       <div style="background:linear-gradient(135deg,#0A0A0A,#1A1A2E);border-radius:16px;padding:18px;margin-bottom:18px;text-align:center;border:1px solid #2A2A4A">
-        <div style="color:#888;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Plan actuel</div>
+        <div style="color:#888;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px" data-t="plan_actuel">Plan actuel</div>
         <div id="current-plan-name" style="color:#F5C518;font-size:24px;font-weight:900">Essai gratuit</div>
         <div id="current-plan-desc" style="color:#888;font-size:13px;margin-top:4px">3 envois offerts</div>
       </div>
       <!-- LITE -->
       <div style="background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <div><div style="font-weight:900;font-size:19px">Only<span style="color:#F5C518">&#9733;</span>5 Lite</div><div style="font-size:13px;color:#888;margin-top:2px">Pour decouvrir</div></div>
+          <div><div style="font-weight:900;font-size:19px">Only<span style="color:#F5C518">&#9733;</span>5 Lite</div><div style="font-size:13px;color:#888;margin-top:2px" data-t="lite_desc">Pour decouvrir</div></div>
           <div style="text-align:right;background:#F9F9F9;padding:8px 14px;border-radius:12px"><div style="font-size:26px;font-weight:900;line-height:1">3,99&#8364;</div><div style="font-size:11px;color:#AAA">/mois</div></div>
         </div>
         <div style="margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> Envoi avis WhatsApp + SMS</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> 3 templates de messages fixes</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> Historique 30 derniers envois</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> 1 lien Google My Business</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#CCC"><span style="color:#CCC;font-size:18px">&#10007;</span> Import clients Excel</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#CCC"><span style="color:#CCC;font-size:18px">&#10007;</span> Templates personnalises</div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> <span data-t="lite_f1">Envoi avis WhatsApp + SMS</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> <span data-t="lite_f2">3 templates de messages fixes</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> <span data-t="lite_f3">Historique 30 derniers envois</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> <span data-t="lite_f4">1 lien Google My Business</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#CCC"><span style="color:#CCC;font-size:18px">&#10007;</span> <span data-t="lite_x1">Import clients Excel</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#CCC"><span style="color:#CCC;font-size:18px">&#10007;</span> <span data-t="lite_x2">Templates personnalises</span></div>
         </div>
-        <button onclick="subscribePlan('lite')" id="btn-lite" style="width:100%;padding:14px;background:#0A0A0A;color:#F5C518;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit">Choisir Lite &#8594;</button>
+        <button onclick="subscribePlan('lite')" id="btn-lite" style="width:100%;padding:14px;background:#0A0A0A;color:#F5C518;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit" data-t="choisir_lite">Choisir Lite &#8594;</button>
       </div>
       <!-- PRO -->
       <div style="background:linear-gradient(145deg,#0A0A0A,#1A1A1A);border-radius:18px;padding:20px;margin-bottom:14px;border:2px solid #F5C518;position:relative;box-shadow:0 4px 20px rgba(245,197,24,0.2)">
-        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#F5C518;color:#0A0A0A;font-size:11px;font-weight:900;padding:4px 16px;border-radius:20px;white-space:nowrap">&#9733; LE PLUS POPULAIRE</div>
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#F5C518;color:#0A0A0A;font-size:11px;font-weight:900;padding:4px 16px;border-radius:20px;white-space:nowrap" data-t="plus_populaire">&#9733; LE PLUS POPULAIRE</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;margin-top:6px">
-          <div><div style="font-weight:900;font-size:19px;color:#fff">Only<span style="color:#F5C518">&#9733;</span>5 Pro</div><div style="font-size:13px;color:#888;margin-top:2px">Pour les professionnels</div></div>
+          <div><div style="font-weight:900;font-size:19px;color:#fff">Only<span style="color:#F5C518">&#9733;</span>5 Pro</div><div style="font-size:13px;color:#888;margin-top:2px" data-t="pro_desc">Pour les professionnels</div></div>
           <div style="text-align:right;background:rgba(245,197,24,0.15);padding:8px 14px;border-radius:12px;border:1px solid rgba(245,197,24,0.3)"><div style="font-size:26px;font-weight:900;color:#F5C518;line-height:1">9,99&#8364;</div><div style="font-size:11px;color:#888">/mois</div></div>
         </div>
         <div style="margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> Tout Only5 Lite inclus</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> Templates illimites et personnalisables</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> Clients frequents sauvegardes</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> Tableau de bord statistiques</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> Import Excel clients</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> Relances commerciales</div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> <span data-t="pro_f1">Tout Only5 Lite inclus</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> <span data-t="pro_f2">Templates illimites et personnalisables</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> <span data-t="pro_f3">Clients frequents sauvegardes</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> <span data-t="pro_f4">Tableau de bord statistiques</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> <span data-t="pro_f5">Import Excel clients</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> <span data-t="pro_f6">Relances commerciales</span></div>
         </div>
-        <button onclick="subscribePlan('pro')" id="btn-pro" style="width:100%;padding:14px;background:#F5C518;color:#0A0A0A;border:none;border-radius:12px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit">Choisir Pro &#8594;</button>
+        <button onclick="subscribePlan('pro')" id="btn-pro" style="width:100%;padding:14px;background:#F5C518;color:#0A0A0A;border:none;border-radius:12px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit" data-t="choisir_pro">Choisir Pro &#8594;</button>
       </div>
       <!-- BUSINESS -->
       <div style="background:#fff;border-radius:18px;padding:20px;margin-bottom:20px;border:2px solid #1565C0;box-shadow:0 2px 16px rgba(21,101,192,0.12)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <div><div style="font-weight:900;font-size:19px">Only<span style="color:#1565C0">&#9733;</span>5 Business</div><div style="font-size:13px;color:#888;margin-top:2px">Pour les entreprises</div></div>
+          <div><div style="font-weight:900;font-size:19px">Only<span style="color:#1565C0">&#9733;</span>5 Business</div><div style="font-size:13px;color:#888;margin-top:2px" data-t="biz_desc">Pour les entreprises</div></div>
           <div style="text-align:right;background:#EEF4FF;padding:8px 14px;border-radius:12px"><div style="font-size:26px;font-weight:900;color:#1565C0;line-height:1">19,99&#8364;</div><div style="font-size:11px;color:#AAA">/mois</div></div>
         </div>
         <div style="margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> Tout Only5 Pro inclus</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> Multi-boutiques (plusieurs liens Google)</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> Funnel satisfaction pre-screening</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> Export des donnees</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> Support prioritaire</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> Acces pour 3 utilisateurs</div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> <span data-t="biz_f1">Tout Only5 Pro inclus</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> <span data-t="biz_f2">Multi-boutiques (plusieurs liens Google)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> <span data-t="biz_f3">Funnel satisfaction pre-screening</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> <span data-t="biz_f4">Export des donnees</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> <span data-t="biz_f5">Support prioritaire</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> <span data-t="biz_f6">Acces pour 3 utilisateurs</span></div>
         </div>
-        <button onclick="subscribePlan('business')" id="btn-business" style="width:100%;padding:14px;background:#1565C0;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit">Choisir Business &#8594;</button>
+        <button onclick="subscribePlan('business')" id="btn-business" style="width:100%;padding:14px;background:#1565C0;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit" data-t="choisir_biz">Choisir Business &#8594;</button>
       </div>
-      <div style="text-align:center;font-size:12px;color:#AAA;line-height:1.8">Paiement 100% securise par Stripe<br>Sans engagement · Resiliable a tout moment<br><br>&#169; 2025 B2TF Prod</div>
+      <div style="text-align:center;font-size:12px;color:#AAA;line-height:1.8" data-t="stripe_footer">Paiement 100% securise par Stripe<br>Sans engagement · Resiliable a tout moment<br><br>&#169; 2025 B2TF Prod</div>
     </div>
   </div>
   <div id="tab-settings" class="tab-content">
@@ -713,6 +713,20 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
   </div>
 </div>
 
+<!-- MODALE CONFIRMATION ENVOI -->
+<div id="modal-confirm" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:500px;animation:slideUp .25s ease">
+    <div style="font-weight:900;font-size:17px;margin-bottom:4px" id="confirm-title">Confirmer l'envoi ?</div>
+    <div style="font-size:13px;color:#666;margin-bottom:14px" id="confirm-subtitle"></div>
+    <!-- Aperçu message -->
+    <div style="background:#F9F9F9;border-radius:12px;padding:12px;margin-bottom:16px;font-size:13px;color:#333;line-height:1.6;white-space:pre-wrap;max-height:160px;overflow-y:auto;border:1px solid #E8E8E8" id="confirm-preview"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeConfirm()" style="flex:1;padding:14px;background:#F0F0F0;color:#333;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit" data-t="annuler" id="confirm-cancel-btn">Annuler</button>
+      <button id="confirm-send-btn" style="flex:2;padding:14px;background:#25D366;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit" data-t="confirmer">✓ Confirmer et envoyer</button>
+    </div>
+  </div>
+</div>
+
 <!-- PAYWALL -->
 <div id="paywall" class="paywall">
   <div class="paywall-inner">
@@ -827,6 +841,35 @@ const TRANSLATIONS={
     plan_actuel_ok:'Plan actuel ✓',
     exporter_csv:'↓ Exporter les données (CSV)',
     clients_imports:'Clients importés',
+    // Abonnement
+    lite_desc:'Pour découvrir',pro_desc:'Pour les professionnels',biz_desc:'Pour les entreprises',
+    plus_populaire:'★ LE PLUS POPULAIRE',
+    lite_f1:'Envoi avis WhatsApp + SMS',lite_f2:'3 templates de messages fixes',
+    lite_f3:'Historique 30 derniers envois',lite_f4:'1 lien Google My Business',
+    lite_x1:'Import clients Excel',lite_x2:'Templates personnalisés',
+    pro_f1:'Tout Only5 Lite inclus',pro_f2:'Templates illimités et personnalisables',
+    pro_f3:'Clients fréquents sauvegardés',pro_f4:'Tableau de bord statistiques',
+    pro_f5:'Import Excel clients',pro_f6:'Relances commerciales',
+    biz_f1:'Tout Only5 Pro inclus',biz_f2:'Multi-boutiques (plusieurs liens Google)',
+    biz_f3:'Funnel satisfaction pre-screening',biz_f4:'Export des données',
+    biz_f5:'Support prioritaire',biz_f6:'Accès pour 3 utilisateurs',
+    choisir_lite:'Choisir Lite →',choisir_pro:'Choisir Pro →',choisir_biz:'Choisir Business →',
+    stripe_footer:'Paiement 100% sécurisé par Stripe\nSans engagement · Résiliable à tout moment\n\n© 2025 B2TF Prod',
+    // Confirmation envoi
+    confirmer_envoi:'Confirmer l\'envoi ?',
+    envoyer_a:'Envoyer à',
+    via:'via',
+    confirmer:'✓ Confirmer et envoyer',
+    // Label client
+    client_label:'Client',
+    // Prévisualisation
+    apercu_message:'Aperçu du message',
+    // Boutons template
+    editer_btn:'Éditer',supprimer_btn:'Supprimer',
+    // Messages form
+    nom_modele_ph:'Nom du modèle',
+    // Stat labels
+    total_envois_lbl:'Total envois',whatsapp_lbl:'WhatsApp',sms_lbl:'SMS',
   },
   en:{
     connexion:'Login',creer_compte:'Create account',email:'Email address',
@@ -880,6 +923,24 @@ const TRANSLATIONS={
     relancer:'Follow up',mes_messages_titre:'My messages',
     plan_actuel_ok:'Current plan ✓',exporter_csv:'↓ Export data (CSV)',
     clients_imports:'Imported clients',
+    lite_desc:'To get started',pro_desc:'For professionals',biz_desc:'For businesses',
+    plus_populaire:'★ MOST POPULAR',
+    lite_f1:'WhatsApp + SMS review requests',lite_f2:'3 fixed message templates',
+    lite_f3:'Last 30 sends history',lite_f4:'1 Google My Business link',
+    lite_x1:'Excel client import',lite_x2:'Custom templates',
+    pro_f1:'Everything in Lite included',pro_f2:'Unlimited custom templates',
+    pro_f3:'Frequent clients saved',pro_f4:'Statistics dashboard',
+    pro_f5:'Excel client import',pro_f6:'Commercial follow-ups',
+    biz_f1:'Everything in Pro included',biz_f2:'Multi-shops (multiple Google links)',
+    biz_f3:'Pre-screening satisfaction funnel',biz_f4:'Data export',
+    biz_f5:'Priority support',biz_f6:'Access for 3 users',
+    choisir_lite:'Choose Lite →',choisir_pro:'Choose Pro →',choisir_biz:'Choose Business →',
+    stripe_footer:'100% secure payment by Stripe\nNo commitment · Cancel anytime\n\n© 2025 B2TF Prod',
+    confirmer_envoi:'Confirm send?',envoyer_a:'Send to',via:'via',
+    confirmer:'✓ Confirm and send',client_label:'Client',
+    apercu_message:'Message preview',editer_btn:'Edit',supprimer_btn:'Delete',
+    nom_modele_ph:'Template name',
+    total_envois_lbl:'Total sends',whatsapp_lbl:'WhatsApp',sms_lbl:'SMS',
   },
   es:{
     connexion:'Iniciar sesión',creer_compte:'Crear cuenta',email:'Correo electrónico',
@@ -1041,6 +1102,23 @@ const TRANSLATIONS={
     relancer:'دوبارہ بھیجیں',mes_messages_titre:'میرے پیغامات',
     plan_actuel_ok:'موجودہ پلان ✓',exporter_csv:'↓ ڈیٹا برآمد کریں (CSV)',
     clients_imports:'درآمد شدہ گاہک',
+    lite_desc:'شروع کرنے کے لیے',pro_desc:'پیشہ وروں کے لیے',biz_desc:'کاروبار کے لیے',
+    plus_populaire:'★ سب سے مقبول',
+    lite_f1:'WhatsApp + SMS ریویو',lite_f2:'3 ٹیمپلیٹس',
+    lite_f3:'آخری 30 پیغامات',lite_f4:'1 گوگل لنک',
+    lite_x1:'Excel درآمد',lite_x2:'اپنی مرضی کے ٹیمپلیٹس',
+    pro_f1:'Lite سب شامل',pro_f2:'لامحدود ٹیمپلیٹس',
+    pro_f3:'گاہک محفوظ',pro_f4:'اعداد و شمار',
+    pro_f5:'Excel درآمد',pro_f6:'فالو اپ',
+    biz_f1:'Pro سب شامل',biz_f2:'کئی دکانیں',
+    biz_f3:'پری اسکریننگ',biz_f4:'ڈیٹا برآمد',
+    biz_f5:'ترجیحی سپورٹ',biz_f6:'3 صارفین',
+    choisir_lite:'Lite منتخب →',choisir_pro:'Pro منتخب →',choisir_biz:'Business منتخب →',
+    stripe_footer:'Stripe کے ذریعے محفوظ ادائیگی\nکسی بھی وقت منسوخ کریں',
+    confirmer_envoi:'بھیجنے کی تصدیق؟',envoyer_a:'بھیجیں',via:'کے ذریعے',
+    confirmer:'✓ تصدیق کریں اور بھیجیں',client_label:'گاہک',
+    apercu_message:'پیغام کا پیش نظارہ',editer_btn:'ترمیم',supprimer_btn:'حذف',
+    nom_modele_ph:'ٹیمپلیٹ کا نام',total_envois_lbl:'کل',
   },
 };
 // Pour les autres langues, on copie l'anglais par défaut
@@ -1702,15 +1780,45 @@ function canUseFeature(feature){
 function goToAbonnement(){const tabs=document.querySelectorAll('.tab-btn');let aboBtn=null;tabs.forEach(btn=>{if(btn.textContent.trim()==='Abonnement')aboBtn=btn;});showTab('abonnement',aboBtn);}
 function showPlanAlert(feature){const msgs={templates_custom:'Les templates personnalises sont disponibles a partir du plan Pro (9,99EUR/mois).',clients:'L import de clients est disponible a partir du plan Pro (9,99EUR/mois).',stats:'Les statistiques sont disponibles a partir du plan Pro (9,99EUR/mois).',relance:'Les relances commerciales sont disponibles a partir du plan Pro (9,99EUR/mois).'};if(confirm((msgs[feature]||'Cette fonction necessite un abonnement.')+'\n\nVoir les abonnements ?')){goToAbonnement();}}
 
-async function sendMsg(canal){
+// ── MODALE CONFIRMATION ────────────────────────────────────────────────────────
+let pendingCanal=null;
+function showConfirm(canal){
   const prenom=document.getElementById('send-prenom').value.trim();
   const phone=document.getElementById('send-phone').value.trim();
-  if(!prenom||phone.length<8){alert('Remplissez le prenom et le telephone.');return;}
+  if(!prenom||phone.length<8){alert(t('remplir_champs')||'Remplissez le prénom et le téléphone.');return;}
   if(!canUseFeature('send')){document.getElementById('paywall').classList.add('show');return;}
+  const tpl=templates.find(tp=>tp.id===selTpl)||templates[0];
+  if(!tpl){alert('Aucun message sélectionné.');return;}
+  const msg=fillMsg(tpl.content,prenom);
+  // Remplir la modale
+  document.getElementById('confirm-title').textContent=t('confirmer_envoi')||'Confirmer l\'envoi ?';
+  document.getElementById('confirm-subtitle').textContent=(t('envoyer_a')||'Envoyer à')+' '+prenom+' ('+phone+') '+((t('via')||'via')+' '+(canal==='whatsapp'?'WhatsApp':'SMS'));
+  document.getElementById('confirm-preview').textContent=msg;
+  // Couleur bouton selon canal
+  const sendBtn=document.getElementById('confirm-send-btn');
+  sendBtn.style.background=canal==='whatsapp'?'#25D366':'#E8202A';
+  sendBtn.textContent=(canal==='whatsapp'?'WhatsApp':'SMS')+' → '+t('confirmer_envoi');
+  pendingCanal=canal;
+  const modal=document.getElementById('modal-confirm');
+  modal.style.display='flex';
+}
+function closeConfirm(){
+  document.getElementById('modal-confirm').style.display='none';
+  pendingCanal=null;
+}
+document.getElementById('confirm-send-btn').onclick=()=>{
+  closeConfirm();
+  doSendMsg(pendingCanal);
+};
+async function doSendMsg(canal){
+  const prenom=document.getElementById('send-prenom').value.trim();
+  const phone=document.getElementById('send-phone').value.trim();
   const plan=getPlan();
-  if(plan==='business'){const satisfied=confirm('Avant d envoyer, verifiez que '+prenom+' est satisfait.\n\nLe client est-il satisfait de sa visite ?');if(!satisfied){alert('Pas de demande d avis envoyee. Pensez a regler le probleme avec '+prenom+'.');return;}}
-  const tpl=templates.find(t=>t.id===selTpl)||templates[0];
-  if(!tpl){alert('Aucun message selectionne.');return;}
+  if(plan==='business'){
+    const satisfied=confirm((t('satisfaction_check')||'Avant d\'envoyer, vérifiez que')+' '+prenom+' '+(t('est_satisfait')||'est satisfait.\n\nLe client est-il satisfait ?'));
+    if(!satisfied){alert((t('pas_envoye')||'Pas d\'avis envoyé. Réglez le problème avec')+' '+prenom+'.');return;}
+  }
+  const tpl=templates.find(tp=>tp.id===selTpl)||templates[0];
   const msg=fillMsg(tpl.content,prenom);const fph=fmtPhone(phone);const enc=encodeURIComponent(msg);
   window.open(canal==='whatsapp'?'https://wa.me/'+fph.replace('+','')+'?text='+enc:'sms:'+fph+'?body='+enc,'_blank');
   const entry={user_id:currentUser?.id||null,prenom,phone:fph,canal,template_id:selTpl,template_label:tpl.label,sent_at:new Date().toISOString()};
@@ -1719,11 +1827,12 @@ async function sendMsg(canal){
   }
   if(!isPaid){trialCount++;lss('only5:trial:'+(currentUser?.id||'demo'),trialCount);updateTrialBanner();if(trialCount>=TRIAL_LIMIT)setTimeout(()=>document.getElementById('paywall').classList.add('show'),1500);}
   const f=document.getElementById('flash-sent');if(f){f.style.display='block';setTimeout(()=>f.style.display='none',2500);}
-  // Effacer seulement prenom et telephone, garder les templates
   document.getElementById('send-prenom').value='';
   document.getElementById('send-phone').value='';
-  // Rafraichir stats sans toucher aux templates
   renderStats();
+}
+async function sendMsg(canal){
+  showConfirm(canal);
 }
 // ── OCR PHOTO ─────────────────────────────────────────────────────────────────
 
@@ -2281,7 +2390,20 @@ async function saveProfile(){
 function renderTplSettings(){
   document.getElementById('tpl-count').textContent=templates.length;
   const list=document.getElementById('tpl-setting-list');list.innerHTML='';
-  templates.forEach(t=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #F0F0F0';row.innerHTML='<div class="dot" style="background:'+t.color+';width:12px;height:12px"></div><span style="flex:1;font-size:14px;font-weight:600">'+t.label+'</span><button class="btn-sm" onclick="editTpl(\''+t.id+'\')">Editer</button><button class="btn-sm" style="color:#E8202A;border-color:#E8202A" onclick="deleteTpl(\''+t.id+'\')">Sup</button>';list.appendChild(row);});
+  templates.forEach(tp=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #F0F0F0';
+    row.innerHTML='<div class="dot" style="background:'+tp.color+';width:12px;height:12px"></div><span style="flex:1;font-size:14px;font-weight:600">'+tp.label+'</span><button class="btn-sm" onclick="editTpl(\''+tp.id+'\')">'+(t('editer_btn')||'Éditer')+'</button><button class="btn-sm" style="color:#E8202A;border-color:#E8202A" onclick="deleteTpl(\''+tp.id+'\')">'+(t('supprimer_btn')||'Sup')+'</button>';
+    list.appendChild(row);
+  });
+  // Traduire le placeholder du champ nom modèle
+  const tplLabel=document.getElementById('tpl-edit-label');
+  if(tplLabel)tplLabel.placeholder=t('nom_modele_ph')||'Nom du modèle';
+  // Boutons Annuler/Enregistrer dans le form template
+  const tplAnnuler=document.querySelector('#tpl-edit-form .btn-outline');
+  if(tplAnnuler)tplAnnuler.textContent=t('annuler')||'Annuler';
+  const tplSave=document.querySelector('#tpl-edit-form .btn-black');
+  if(tplSave)tplSave.textContent=t('enregistrer')||'Enregistrer';
 }
 function showAddTpl(){if(!canUseFeature('templates_custom')){showPlanAlert('templates_custom');return;}editingTplId=null;document.getElementById('tpl-edit-label').value='';document.getElementById('tpl-edit-content').value='';document.getElementById('tpl-edit-preview').textContent='';initColorPicker('tpl-edit-colors','tpl-edit-color','#F5C518');document.getElementById('tpl-edit-form').style.display='block';}
 function editTpl(id){const t=templates.find(x=>x.id===id);if(!t)return;editingTplId=id;document.getElementById('tpl-edit-label').value=t.label;document.getElementById('tpl-edit-content').value=t.content;document.getElementById('tpl-edit-preview').textContent=fillMsg(t.content,'[Client]');initColorPicker('tpl-edit-colors','tpl-edit-color',t.color);document.getElementById('tpl-edit-form').style.display='block';}
