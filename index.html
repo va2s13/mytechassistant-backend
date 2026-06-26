@@ -370,8 +370,8 @@ No tracking cookies. Authentication token stored locally to maintain session.</d
             <div style="flex:1;text-align:center;color:#F5C518;font-size:13px;font-weight:700">Vise Client: ou TEL PERSO</div>
             <div id="scan-photo-count" style="background:#F5C518;color:#000;font-size:12px;font-weight:900;padding:4px 10px;border-radius:12px;display:none">0 photo</div>
           </div>
-          <!-- Video -->
-          <video id="scanner-video" autoplay playsinline style="width:100%;height:100%;object-fit:cover"></video>
+          <!-- Video - muted obligatoire pour autoplay sans icône pause sur iOS -->
+          <video id="scanner-video" autoplay playsinline muted webkit-playsinline style="width:100%;height:100%;object-fit:cover;background:#000"></video>
           <!-- Masque noir + cadre jaune -->
           <div style="position:absolute;inset:0;pointer-events:none">
             <div style="position:absolute;top:0;left:0;right:0;height:calc(50% - 50px);background:rgba(0,0,0,0.7)"></div>
@@ -2155,7 +2155,7 @@ function openScanner(mode){
   modal.style.flexDirection='column';
   const video=document.getElementById('scanner-video');
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}})
-    .then(stream=>{scannerStream=stream;video.srcObject=stream;})
+    .then(stream=>{scannerStream=stream;video.srcObject=stream;video.muted=true;video.play().catch(()=>{});})
     .catch(e=>{closeScanner();alert('Caméra non accessible.');});
 }
 
@@ -2331,24 +2331,26 @@ async function analyserPhotos(){
     try{
       const b64=scanPhotos[i].toDataURL('image/jpeg',0.95).split(',')[1];
       // Prompt ultra-précis pour tout type de ticket/écran
-      const prompt=`Tu es un OCR spécialisé pour les logiciels de caisse.
-Regarde cette image et extrait:
-1. Le NOM et PRÉNOM du client. Cherche les patterns:
-   - "Client: NOM PRENOM" ou "Client : NOM PRENOM"
-   - "Nom & Prénom PRENOM NOM" (sur les écrans Kezia)
-   - Une ligne avec juste "NOM PRENOM" en majuscules
-2. Le numéro de TÉLÉPHONE. Cherche:
-   - "TEL PERSO 06.78.66.85.33" ou "Tel Perso 0678668533"
-   - "TEL PRO", "PORTABLE", "MOBILE"
-   - N'importe quel numéro de téléphone visible
+      const prompt=`Tu es un expert OCR pour tickets de caisse et écrans de logiciel de caisse.
 
-IMPORTANT: 
-- Si "Client: ANDRZEJEWSKI REBECCA" → prenom="ANDRZEJEWSKI REBECCA"
-- Si "TEL PERSO 06.78.66.85.33" → tel="06.78.66.85.33"
-- Donne le numéro EXACTEMENT comme écrit (avec points ou tirets)
+REGARDE CETTE IMAGE et trouve:
+1. Le NOM COMPLET du client
+2. Le NUMÉRO DE TÉLÉPHONE
 
-Réponds UNIQUEMENT en JSON valide, rien d'autre:
-{"prenom":"valeur ou vide","tel":"valeur ou vide"}`;
+RÈGLES STRICTES:
+- Cherche "Client:" ou "Client :" suivi du nom → prends TOUT ce qui suit (ex: "Client: ANDRZEJEWSKI REBECCA" → "ANDRZEJEWSKI REBECCA")
+- Cherche "TEL PERSO" ou "TEL." ou "TEL " suivi du numéro → prends le numéro (ex: "TEL PERSO 06.78.66.85.33" → "06.78.66.85.33")
+- Le numéro peut avoir des points: "06.78.66.85.33" = numéro valide, garde-le tel quel
+- Si tu vois "Nom & Prénom" sur écran bleu: le texte après = "PRÉNOM NOM" → inverse pour donner "NOM PRÉNOM"
+- Si le ticket est froissé ou flou, fais de ton mieux
+
+EXEMPLES:
+- "Client: ABIHEILA GEORGES" + "TEL PERSO 06.28.67.76.48" → {"prenom":"ABIHEILA GEORGES","tel":"06.28.67.76.48"}
+- "Client: ANDRZEJEWSKI REBECCA" + "TEL PERSO 06.78.66.85.33" → {"prenom":"ANDRZEJEWSKI REBECCA","tel":"06.78.66.85.33"}
+- "Nom & Prénom LOUISE VANONI" → {"prenom":"VANONI LOUISE","tel":""}
+
+Réponds UNIQUEMENT avec ce JSON, rien d'autre:
+{"prenom":"nom trouvé ou vide si pas trouvé","tel":"numéro trouvé ou vide si pas trouvé"}`;
 
       const resp=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
@@ -2593,32 +2595,32 @@ function exportCSV(){
   const modal=document.createElement('div');
   modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;display:flex;align-items:flex-end;justify-content:center';
 
-  const helpSteps=isIOS
-    ?`1. Appuyez "📁 Enregistrer dans Fichiers"\n2. L'app Fichiers s'ouvre → choisissez "Téléchargements"\n3. Appuyez "Enregistrer" en haut à droite\n4. Le fichier est dans Fichiers → Sur mon iPhone → Téléchargements`
-    :t('help_export_android')||`1. Appuyez "📥 Télécharger"\n2. Le fichier va automatiquement dans vos Téléchargements\n3. Ouvrez votre appli "Fichiers" ou "Mes fichiers" pour le retrouver`;
+  const helpFile=isIOS
+    ?`📱 iOS - Enregistrer dans Fichiers:\n1. Appuyez "📁 Enregistrer dans Fichiers"\n2. L'app Fichiers s'ouvre\n3. Choisissez "Téléchargements"\n4. Appuyez "Enregistrer" → c'est fait !`
+    :`📱 Android - Télécharger:\n1. Appuyez "📥 Télécharger"\n2. Le fichier va dans Téléchargements\n3. Ouvrez "Mes fichiers" pour le retrouver`;
+
+  const helpDrive=`☁️ Google Drive:\n1. Appuyez "☁️ Enregistrer sur Drive"\n2. Google Drive s'ouvre automatiquement\n3. Appuyez le bouton + puis "Importer un fichier"\n4. Sélectionnez le fichier téléchargé`;
 
   modal.innerHTML=`<div style="background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px">
     <div style="font-weight:900;font-size:16px;margin-bottom:4px">📤 ${t('exporter_csv')||'Exporter les données (CSV)'}</div>
     <div style="font-size:12px;color:#888;margin-bottom:16px">${nb} ${t('enregistrements')||'enregistrement(s)'}</div>
 
-    ${isIOS
-      // iOS : lien direct qui déclenche "Enregistrer dans Fichiers" → Downloads
-      ?`<a id="csv-dl-link" href="${url}" download="only5_export.csv"
-          style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:#1565C0;color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box">
-          📁 Enregistrer dans Fichiers
-        </a>`
-      // Android : téléchargement direct dans Downloads
-      :`<a id="csv-dl-link" href="${url}" download="only5_export.csv"
-          style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:#1565C0;color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box">
-          📥 ${t('telecharger')||'Télécharger dans Downloads'}
-        </a>`
-    }
+    <a id="csv-dl-link" href="${url}" download="only5_export.csv"
+      style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:#1565C0;color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box">
+      📁 ${isIOS?'Enregistrer dans Fichiers':'Télécharger dans Downloads'}
+    </a>
+
+    <button onclick="window.open('https://drive.google.com','_blank')" 
+      style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:#fff;color:#333;border:2px solid #E0E0E0;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:14px;box-sizing:border-box">
+      ☁️ Enregistrer sur Drive
+    </button>
 
     <details style="margin-bottom:14px;background:#F5F5F5;border-radius:12px;padding:12px">
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#1565C0;list-style:none">
         ❓ ${t('aide')||'Aide'} — Comment enregistrer ?
       </summary>
-      <pre style="font-size:12px;color:#444;margin:10px 0 0;white-space:pre-wrap;font-family:inherit;line-height:1.6">${helpSteps}</pre>
+      <pre style="font-size:12px;color:#444;margin:10px 0 4px;white-space:pre-wrap;font-family:inherit;line-height:1.6">${helpFile}</pre>
+      <pre style="font-size:12px;color:#444;margin:4px 0 0;white-space:pre-wrap;font-family:inherit;line-height:1.6">${helpDrive}</pre>
     </details>
 
     <button onclick="this.closest('[style*=fixed]').remove();URL.revokeObjectURL('${url}')"
