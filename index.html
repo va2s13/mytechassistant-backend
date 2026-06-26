@@ -206,15 +206,15 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
   <div id="forgot-form" style="width:100%;max-width:340px;display:none">
     <div style="text-align:center;margin-bottom:20px">
       <div style="font-size:40px;margin-bottom:8px">&#128272;</div>
-      <div style="color:#F5C518;font-weight:700;font-size:22px;margin-bottom:6px">Mot de passe oublie</div>
-      <div style="color:#666;font-size:13px;line-height:1.5">Entrez votre email. Nous vous envoyons un code a 6 chiffres.</div>
+      <div style="color:#F5C518;font-weight:700;font-size:22px;margin-bottom:6px" data-t="mdp_oublie">Mot de passe oublie</div>
+      <div style="color:#666;font-size:13px;line-height:1.5" data-t="forgot_sub">Entrez votre email. Nous vous envoyons un lien.</div>
     </div>
     <input id="forgot-email" type="email" inputmode="email" autocomplete="email" placeholder="Votre adresse email" class="auth-input" onkeydown="if(event.key==='Enter')doForgotSendCode()">
     <div id="forgot-err" style="color:#E8202A;font-size:13px;text-align:center;margin-bottom:10px;display:none"></div>
-    <button class="btn btn-gold" onclick="doForgotSendCode()" style="margin-bottom:12px">Recevoir le lien &#8594;</button>
-    <div style="background:#FFFBE6;border:1px solid #F5C518;border-radius:10px;padding:10px 14px;font-size:12px;color:#666;line-height:1.6">📧 Un lien sera envoyé à votre email. Ouvrez-le depuis votre téléphone pour réinitialiser.</div>
+    <button class="btn btn-gold" onclick="doForgotSendCode()" style="margin-bottom:12px" data-t="envoyer_lien">Recevoir le lien &#8594;</button>
+    <div style="background:#FFFBE6;border:1px solid #F5C518;border-radius:10px;padding:10px 14px;font-size:12px;color:#666;line-height:1.6" data-t="forgot_info">📧 Un lien sera envoyé à votre email. Ouvrez-le depuis votre téléphone pour réinitialiser.</div>
     <div style="text-align:center;margin-top:16px">
-      <button onclick="showLogin()" style="background:none;border:none;color:#888;font-size:13px;cursor:pointer;font-family:inherit">&#8592; Retour connexion</button>
+      <button onclick="showLogin()" style="background:none;border:none;color:#888;font-size:13px;cursor:pointer;font-family:inherit" data-t="retour">&#8592; Retour connexion</button>
     </div>
   </div>
   <div id="otp-form" style="width:100%;max-width:340px;display:none">
@@ -322,7 +322,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
     <div id="home-logo-letter" style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:18px;flex-shrink:0">P</div>
     <div style="flex:1">
       <div id="home-boutique" style="color:#fff;font-weight:800;font-size:17px">Boutique</div>
-      <div id="home-secteur" style="color:rgba(255,255,255,.7);font-size:12px">Secteur</div>
+      <div id="home-secteur" style="color:rgba(255,255,255,.7);font-size:12px"> </div>
     </div>
     <span style="display:inline-flex;align-items:baseline;gap:1px;font-weight:900"><span style="color:#fff;font-size:16px">Only</span><span style="color:#F5C518;font-size:11px;position:relative;top:-1px">&#9733;</span><span style="color:#F5C518;font-size:16px">5</span></span>
   </div>
@@ -398,7 +398,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <!-- Saisie client -->
       <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
         <input id="send-prenom" class="inp" placeholder="Nom + Prénom" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words" style="flex:1;margin-bottom:0">
-        <button onclick="openScanner('nom')" style="padding:10px 12px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">📷 Nom</button>
+        <button onclick="openScanner('nom')" style="padding:10px 12px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap" data-t="btn_nom">📷 Nom</button>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
         <div style="display:flex;gap:6px;flex:1">
@@ -424,7 +424,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
           </select>
           <input id="send-phone" class="inp" type="tel" inputmode="tel" placeholder="Numéro" autocomplete="off" style="flex:1;margin-bottom:0">
         </div>
-        <button onclick="openScanner('tel')" style="padding:10px 12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">📷 Tél</button>
+        <button onclick="openScanner('tel')" style="padding:10px 12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap" data-t="btn_tel">📷 Tél</button>
       </div>
       <!-- Choix message pour ce client -->
       <span class="label" data-t="msg_client">Message pour ce client</span>
@@ -448,7 +448,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
   <div id="tab-clients" class="tab-content">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span class="sec-title" style="margin:0">Base clients (<span id="import-count">0</span>)</span>
+        <span class="sec-title" style="margin:0" data-t="base_clients">Base clients (<span id="import-count">0</span>)</span>
         <button class="btn-sm btn-black" style="background:#0A0A0A;color:#F5C518;border:none;padding:7px 12px;border-radius:8px;font-weight:700" onclick="document.getElementById('file-input').click()" data-t="importer_excel">+ Importer Excel</button>
         <input id="file-input" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFile(this)">
       </div>
@@ -504,7 +504,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         <span class="sec-title" style="margin:0" data-t="mes_messages_titre">Mes messages (<span id="tpl-count">0</span>)</span>
         <button class="btn-sm" style="background:#0A0A0A;color:#F5C518;border:none;padding:7px 12px;border-radius:8px;font-weight:700" onclick="showAddTpl()" data-t="nouveau">+ Nouveau</button>
       </div>
-      <div style="background:#F9F9F9;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:#666;line-height:1.7">Variables : <code>{prenom}</code> <code>{boutique}</code> <code>{gerant}</code> <code>{lien_google}</code></div>
+      <div style="background:#F9F9F9;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:#666;line-height:1.7"><span data-t="variables_label">Variables</span> : <code>{prenom}</code> <code>{boutique}</code> <code>{gerant}</code> <code>{lien_google}</code></div>
       <div id="tpl-edit-form" style="display:none">
         <input id="tpl-edit-label" class="inp" placeholder="Nom du modele" autocomplete="off">
         <div id="tpl-edit-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>
@@ -531,7 +531,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div style="background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
           <div><div style="font-weight:900;font-size:19px">Only<span style="color:#F5C518">&#9733;</span>5 Lite</div><div style="font-size:13px;color:#888;margin-top:2px" data-t="lite_desc">Pour decouvrir</div></div>
-          <div style="text-align:right;background:#F9F9F9;padding:8px 14px;border-radius:12px"><div style="font-size:26px;font-weight:900;line-height:1">3,99&#8364;</div><div style="font-size:11px;color:#AAA">/mois</div></div>
+          <div style="text-align:right;background:#F9F9F9;padding:8px 14px;border-radius:12px"><div style="font-size:26px;font-weight:900;line-height:1">3,99&#8364;</div><div style="font-size:11px;color:#AAA" data-t="par_mois">/mois</div></div>
         </div>
         <div style="margin-bottom:16px">
           <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#3CB849;font-weight:900;font-size:18px">&#10003;</span> <span data-t="lite_f1">Envoi avis WhatsApp + SMS</span></div>
@@ -548,7 +548,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#F5C518;color:#0A0A0A;font-size:11px;font-weight:900;padding:4px 16px;border-radius:20px;white-space:nowrap" data-t="plus_populaire">&#9733; LE PLUS POPULAIRE</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;margin-top:6px">
           <div><div style="font-weight:900;font-size:19px;color:#fff">Only<span style="color:#F5C518">&#9733;</span>5 Pro</div><div style="font-size:13px;color:#888;margin-top:2px" data-t="pro_desc">Pour les professionnels</div></div>
-          <div style="text-align:right;background:rgba(245,197,24,0.15);padding:8px 14px;border-radius:12px;border:1px solid rgba(245,197,24,0.3)"><div style="font-size:26px;font-weight:900;color:#F5C518;line-height:1">9,99&#8364;</div><div style="font-size:11px;color:#888">/mois</div></div>
+          <div style="text-align:right;background:rgba(245,197,24,0.15);padding:8px 14px;border-radius:12px;border:1px solid rgba(245,197,24,0.3)"><div style="font-size:26px;font-weight:900;color:#F5C518;line-height:1">9,99&#8364;</div><div style="font-size:11px;color:#888" data-t="par_mois">/mois</div></div>
         </div>
         <div style="margin-bottom:16px">
           <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#ddd"><span style="color:#F5C518;font-weight:900;font-size:18px">&#10003;</span> <span data-t="pro_f1">Tout Only5 Lite inclus</span></div>
@@ -564,7 +564,7 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div style="background:#fff;border-radius:18px;padding:20px;margin-bottom:20px;border:2px solid #1565C0;box-shadow:0 2px 16px rgba(21,101,192,0.12)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
           <div><div style="font-weight:900;font-size:19px">Only<span style="color:#1565C0">&#9733;</span>5 Business</div><div style="font-size:13px;color:#888;margin-top:2px" data-t="biz_desc">Pour les entreprises</div></div>
-          <div style="text-align:right;background:#EEF4FF;padding:8px 14px;border-radius:12px"><div style="font-size:26px;font-weight:900;color:#1565C0;line-height:1">19,99&#8364;</div><div style="font-size:11px;color:#AAA">/mois</div></div>
+          <div style="text-align:right;background:#EEF4FF;padding:8px 14px;border-radius:12px"><div style="font-size:26px;font-weight:900;color:#1565C0;line-height:1">19,99&#8364;</div><div style="font-size:11px;color:#AAA" data-t="par_mois">/mois</div></div>
         </div>
         <div style="margin-bottom:16px">
           <div style="display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;color:#333"><span style="color:#1565C0;font-weight:900;font-size:18px">&#10003;</span> <span data-t="biz_f1">Tout Only5 Pro inclus</span></div>
@@ -709,6 +709,24 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
       <div id="wa-settings-ok" style="display:none;color:#25D366;font-size:13px;font-weight:700;text-align:center;margin-top:8px">✓ Numéro mis à jour !</div>
     </div>
     <button class="btn btn-red" onclick="logout()" data-t="se_deconnecter">Se deconnecter</button>
+
+    <!-- HISTORIQUE COMPLET -->
+    <div class="card" style="margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span class="sec-title" style="margin:0" data-t="historique_complet">Historique complet</span>
+        <span style="font-size:12px;color:#AAA" id="hist-full-count"></span>
+      </div>
+      <div id="hist-full-list" style="max-height:320px;overflow-y:auto"></div>
+    </div>
+    <!-- CORBEILLE -->
+    <div class="card" style="margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span class="sec-title" style="margin:0" data-t="corbeille">Corbeille</span>
+        <button onclick="viderCorbeille()" style="font-size:11px;color:#E8202A;background:none;border:none;cursor:pointer;font-family:inherit" data-t="supprimer">Vider</button>
+      </div>
+      <div id="corbeille-list"></div>
+    </div>
+
     <div style="text-align:center;padding:20px;font-size:11px;color:#CCC">&#169; 2025 B2TF Prod · Only&#9733;5</div>
   </div>
 </div>
@@ -870,6 +888,18 @@ const TRANSLATIONS={
     nom_modele_ph:'Nom du modèle',
     // Stat labels
     total_envois_lbl:'Total envois',whatsapp_lbl:'WhatsApp',sms_lbl:'SMS',
+    btn_nom:'📷 Nom',btn_tel:'📷 Tél',
+    base_clients_titre:'Base clients',
+    variables_label:'Variables',
+    forgot_sub:'Entrez votre email. Nous vous envoyons un lien.',
+    forgot_info:'📧 Un lien sera envoyé à votre email. Ouvrez-le depuis votre téléphone pour réinitialiser.',
+    par_mois:'/mois',
+    secteur_header:'',
+    historique_complet:'Historique complet',
+    corbeille:'Corbeille',
+    restaurer:'Restaurer',
+    clients_frequents:'Clients fréquents',
+    remplir_champs:'Remplissez le prénom et le téléphone.',
   },
   en:{
     connexion:'Login',creer_compte:'Create account',email:'Email address',
@@ -941,6 +971,18 @@ const TRANSLATIONS={
     apercu_message:'Message preview',editer_btn:'Edit',supprimer_btn:'Delete',
     nom_modele_ph:'Template name',
     total_envois_lbl:'Total sends',whatsapp_lbl:'WhatsApp',sms_lbl:'SMS',
+    btn_nom:'📷 Name',btn_tel:'📷 Tel',
+    base_clients_titre:'Customer base',
+    variables_label:'Variables',
+    forgot_sub:'Enter your email. We will send you a link.',
+    forgot_info:'📧 A link will be sent to your email. Open it from your phone to reset.',
+    par_mois:'/month',
+    secteur_header:'',
+    historique_complet:'Full history',
+    corbeille:'Trash',
+    restaurer:'Restore',
+    clients_frequents:'Frequent clients',
+    remplir_champs:'Fill in the name and phone number.',
   },
   es:{
     connexion:'Iniciar sesión',creer_compte:'Crear cuenta',email:'Correo electrónico',
@@ -1119,6 +1161,15 @@ const TRANSLATIONS={
     confirmer:'✓ تصدیق کریں اور بھیجیں',client_label:'گاہک',
     apercu_message:'پیغام کا پیش نظارہ',editer_btn:'ترمیم',supprimer_btn:'حذف',
     nom_modele_ph:'ٹیمپلیٹ کا نام',total_envois_lbl:'کل',
+    btn_nom:'📷 نام',btn_tel:'📷 فون',
+    base_clients_titre:'گاہکوں کی فہرست',
+    variables_label:'متغیرات',
+    forgot_sub:'ای میل درج کریں۔ ہم آپ کو لنک بھیجیں گے۔',
+    forgot_info:'📧 لنک آپ کے ای میل پر بھیجا جائے گا۔',
+    par_mois:'/ماہ',
+    historique_complet:'مکمل تاریخ',corbeille:'ردی',restaurer:'بحال',
+    clients_frequents:'بار بار آنے والے گاہک',
+    remplir_champs:'نام اور فون نمبر بھریں۔',
   },
 };
 // Pour les autres langues, on copie l'anglais par défaut
@@ -1138,6 +1189,8 @@ function setLang(code){
   renderTplSettings();
   renderClients();
   renderAbonnement();
+  renderHistFull();
+  renderCorbeille();
   // Sauvegarder en BDD si connecté
   if(currentUser&&profile){
     sb.from('profiles').update({langue:code}).eq('id',currentUser.id).then(()=>{});
@@ -1755,7 +1808,7 @@ function showTab(name,btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   if(btn)btn.classList.add('active');
-  if(name==='stats')renderStats();if(name==='clients')renderClients();if(name==='settings')renderSettings();if(name==='abonnement')renderAbonnement();if(name==='messages')renderTplSettings();
+  if(name==='stats')renderStats();if(name==='clients')renderClients();if(name==='settings'){renderSettings();renderHistFull();renderCorbeille();}if(name==='abonnement')renderAbonnement();if(name==='messages')renderTplSettings();
 }
 function renderAbonnement(){
   const plan=profile?.plan||'trial';
@@ -1813,11 +1866,6 @@ document.getElementById('confirm-send-btn').onclick=()=>{
 async function doSendMsg(canal){
   const prenom=document.getElementById('send-prenom').value.trim();
   const phone=document.getElementById('send-phone').value.trim();
-  const plan=getPlan();
-  if(plan==='business'){
-    const satisfied=confirm((t('satisfaction_check')||'Avant d\'envoyer, vérifiez que')+' '+prenom+' '+(t('est_satisfait')||'est satisfait.\n\nLe client est-il satisfait ?'));
-    if(!satisfied){alert((t('pas_envoye')||'Pas d\'avis envoyé. Réglez le problème avec')+' '+prenom+'.');return;}
-  }
   const tpl=templates.find(tp=>tp.id===selTpl)||templates[0];
   const msg=fillMsg(tpl.content,prenom);const fph=fmtPhone(phone);const enc=encodeURIComponent(msg);
   window.open(canal==='whatsapp'?'https://wa.me/'+fph.replace('+','')+'?text='+enc:'sms:'+fph+'?body='+enc,'_blank');
@@ -2029,37 +2077,26 @@ async function analyserPhotos(){
   if(!scanPhotos.length)return;
   const status=document.getElementById('scanner-status');
   status.style.display='block';
-  status.textContent='🔍 Analyse en cours...';
   let prenomFinal='';let telFinal='';
   for(let i=0;i<scanPhotos.length;i++){
-    status.textContent='🔍 Photo '+(i+1)+'/'+scanPhotos.length+'...';
+    status.textContent='🤖 IA Photo '+(i+1)+'/'+scanPhotos.length+'...';
     try{
-      // Version originale
-      const {data:{text:text1}}=await Tesseract.recognize(scanPhotos[i],'fra+eng',{
-        tessedit_pageseg_mode:'6',
-      });
-      let r=extraireInfos(text1);
-      if(r.prenom&&!prenomFinal)prenomFinal=r.prenom;
-      if(r.tel&&!telFinal)telFinal=r.tel;
-      // Si pas trouvé, essayer avec image prétraitée (auto-détection fond sombre)
-      if(!prenomFinal||!telFinal){
-        const enhanced=preprocessCanvas(scanPhotos[i]);
-        const {data:{text:text2}}=await Tesseract.recognize(enhanced,'fra+eng',{
-          tessedit_pageseg_mode:'6',
-        });
-        const r2=extraireInfos(text2);
-        if(r2.prenom&&!prenomFinal)prenomFinal=r2.prenom;
-        if(r2.tel&&!telFinal)telFinal=r2.tel;
+      // Convertir le canvas en base64
+      const b64=scanPhotos[i].toDataURL('image/jpeg',0.9).split(',')[1];
+      // Déterminer le mode selon ce qu'on cherche encore
+      const mode=(!prenomFinal&&!telFinal)?'all':(!prenomFinal?'nom':'tel');
+      const aiResult=await extractWithAI(b64,'image/jpeg',mode);
+      if(aiResult){
+        if(aiResult.prenom&&aiResult.prenom!=='vide'&&!prenomFinal)prenomFinal=aiResult.prenom.trim();
+        if(aiResult.tel&&aiResult.tel!=='vide'&&!telFinal)telFinal=aiResult.tel.trim();
       }
-      // Si toujours pas trouvé, tester avec inversion forcée (fond sombre texte blanc)
+      // Fallback Tesseract si IA rate
       if(!prenomFinal||!telFinal){
-        const inverted=preprocessCanvas(scanPhotos[i],true);
-        const {data:{text:text3}}=await Tesseract.recognize(inverted,'fra+eng',{
-          tessedit_pageseg_mode:'6',
-        });
-        const r3=extraireInfos(text3);
-        if(r3.prenom&&!prenomFinal)prenomFinal=r3.prenom;
-        if(r3.tel&&!telFinal)telFinal=r3.tel;
+        const enhanced=preprocessCanvas(scanPhotos[i],false);
+        const {data:{text}}=await Tesseract.recognize(enhanced,'fra+eng',{tessedit_pageseg_mode:'6'});
+        const r=extraireInfos(text);
+        if(r.prenom&&!prenomFinal)prenomFinal=r.prenom;
+        if(r.tel&&!telFinal)telFinal=r.tel;
       }
     }catch(e){}
   }
@@ -2071,7 +2108,7 @@ async function analyserPhotos(){
     showFlash('✓ '+(prenomFinal?prenomFinal+' ':'')+(telFinal?telFinal:''));
   }else{
     status.style.display='block';
-    status.textContent='❌ Pas détecté. Recadre exactement sur "Client:" et "TEL PERSO" — texte bien visible';
+    status.textContent='❌ Pas détecté. Recadre exactement sur "Client:" et "TEL PERSO"';
     setTimeout(()=>status.style.display='none',4000);
   }
 }
@@ -2080,90 +2117,60 @@ function showFlash(msg){
   if(f){f.textContent=msg;f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
 }
 
+// ── OCR IA ANTHROPIC (puissant, multi-format) ──────────────────────────────────
+async function extractWithAI(imageBase64,mediaType,mode){
+  try{
+    const prompt=mode==='nom'
+      ? 'Sur cette image, trouve le NOM et PRÉNOM de la personne. Cherche des labels comme "Nom & Prénom", "Client:", "NOM:", "Prénom:", ou une ligne avec prénom et nom en majuscules. Réponds UNIQUEMENT en JSON: {"prenom":"NOM PRENOM trouvé ou vide"}'
+      : mode==='tel'
+      ? 'Sur cette image, trouve le NUMÉRO DE TÉLÉPHONE. Cherche des labels comme "Tel. Perso", "TEL PERSO", "Téléphone", "Mobile", "Portable", ou un numéro au format 06/07/+33/+92 etc. Réponds UNIQUEMENT en JSON: {"tel":"numéro trouvé ou vide"}'
+      : 'Sur cette image, trouve le NOM+PRÉNOM et le NUMÉRO DE TÉLÉPHONE. Cherche "Nom & Prénom", "Client:", "Tel. Perso", "TEL PERSO" ou équivalents. Réponds UNIQUEMENT en JSON: {"prenom":"NOM PRENOM ou vide","tel":"numéro ou vide"}';
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',max_tokens:200,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:mediaType,data:imageBase64}},
+          {type:'text',text:prompt}
+        ]}]
+      })
+    });
+    if(!resp.ok)return null;
+    const data=await resp.json();
+    const txt=data.content?.find(c=>c.type==='text')?.text||'';
+    const clean=txt.replace(/```json|```/g,'').trim();
+    return JSON.parse(clean);
+  }catch(e){return null;}
+}
+
 async function extractFromPhoto(input,mode){
   const file=input.files[0];if(!file)return;
   const ocrLoading=document.getElementById('ocr-loading');
   ocrLoading.style.display='block';
-  ocrLoading.textContent='🔍 Analyse en cours...';
+  ocrLoading.textContent='🤖 Analyse IA...';
   input.value='';
-
-  // Convertir le fichier en canvas pour le prétraitement
-  const imgBitmap=await createImageBitmap(file);
-  const srcCanvas=document.createElement('canvas');
-  srcCanvas.width=imgBitmap.width;srcCanvas.height=imgBitmap.height;
-  srcCanvas.getContext('2d').drawImage(imgBitmap,0,0);
-
-  function parseOcrText(text,mode){
-    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
-    let telephone='';let prenom='';
-    const ind=(document.getElementById('send-indicatif')?.value||'+33').replace('+','');
-    if(!mode||mode==='nom'||mode==='all'){
-      for(const line of lines){
-        const low=line.toLowerCase();
-        // Écran Kezia bleu: "Nom & Prénom  LOUISE VANONI" → LOUISE=prénom, VANONI=nom
-        // → afficher NOM PRÉNOM = VANONI LOUISE
-        if(low.includes('nom')&&(low.includes('pr'))){
-          const after=line.replace(/nom\s*[&et\s]+\s*pr[eé]nom\s*/i,'').trim();
-          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
-          if(words.length>=2){
-            // Écran : PRENOM NOM → inverser → NOM PRENOM
-            prenom=words[words.length-1]+' '+words.slice(0,words.length-1).join(' ');break;
-          }else if(words.length===1){prenom=words[0];break;}
-        }
-        // Ticket papier: "Client: NOM PRENOM"
-        if(low.includes('client')){
-          const after=line.replace(/^.*client\s*[:\-=]?\s*/i,'').replace(/\(.*?\)/g,'').trim();
-          const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
-          if(words.length>=1){prenom=words.join(' ');break;}
-        }
-      }
-    }
-    if(!mode||mode==='tel'||mode==='all'){
-      for(const line of lines){
-        const low=line.toLowerCase();
-        if(low.includes('tel')&&(low.includes('perso')||low.includes('pro')||low.includes('portable')||low.includes('mobile'))){
-          const digits=line.replace(/[^0-9]/g,'');
-          const mFR=digits.match(/0[67]\d{8}/);
-          if(mFR){telephone=mFR[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');break;}
-          const mInt=digits.match(new RegExp('^'+ind+'(\\d{9,11})'));
-          if(mInt){telephone='+'+ind+mInt[1];break;}
-        }
-      }
-      if(!telephone){
-        const digits=text.replace(/[^0-9]/g,'');
-        const mFR=digits.match(/0[67]\d{8}/);
-        if(mFR)telephone=mFR[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
-        else{const mInt=digits.match(new RegExp(ind+'(\\d{9,11})'));if(mInt)telephone='+'+ind+mInt[1];}
-      }
-    }
-    return{prenom,telephone};
-  }
-
   try{
+    // Convertir en base64
+    const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
+    const mediaType=file.type||'image/jpeg';
+    // Passe 1 : IA Anthropic
     let prenom='';let telephone='';
-    // PASSE 1 : image originale
-    ocrLoading.textContent='🔍 Passe 1/3...';
-    const {data:{text:t1}}=await Tesseract.recognize(srcCanvas,'fra+eng',{tessedit_pageseg_mode:'6'});
-    const r1=parseOcrText(t1,mode);
-    if(r1.prenom)prenom=r1.prenom;
-    if(r1.telephone)telephone=r1.telephone;
-    // PASSE 2 : auto-prétraitement (gère fond sombre automatiquement)
-    if(!prenom||!telephone){
-      ocrLoading.textContent='🔍 Passe 2/3...';
-      const enhanced=preprocessCanvas(srcCanvas,false);
-      const {data:{text:t2}}=await Tesseract.recognize(enhanced,'fra+eng',{tessedit_pageseg_mode:'6'});
-      const r2=parseOcrText(t2,mode);
-      if(r2.prenom&&!prenom)prenom=r2.prenom;
-      if(r2.telephone&&!telephone)telephone=r2.telephone;
+    const aiResult=await extractWithAI(base64,mediaType,mode);
+    if(aiResult){
+      if(aiResult.prenom&&aiResult.prenom.trim()&&aiResult.prenom!=='vide')prenom=aiResult.prenom.trim();
+      if(aiResult.tel&&aiResult.tel.trim()&&aiResult.tel!=='vide')telephone=aiResult.tel.trim();
     }
-    // PASSE 3 : inversion forcée (texte blanc sur fond sombre)
+    // Passe 2 fallback : Tesseract si IA a raté
     if(!prenom||!telephone){
-      ocrLoading.textContent='🔍 Passe 3/3...';
-      const inverted=preprocessCanvas(srcCanvas,true);
-      const {data:{text:t3}}=await Tesseract.recognize(inverted,'fra+eng',{tessedit_pageseg_mode:'6'});
-      const r3=parseOcrText(t3,mode);
-      if(r3.prenom&&!prenom)prenom=r3.prenom;
-      if(r3.telephone&&!telephone)telephone=r3.telephone;
+      ocrLoading.textContent='🔍 Analyse image...';
+      const imgBitmap=await createImageBitmap(file);
+      const srcCanvas=document.createElement('canvas');srcCanvas.width=imgBitmap.width;srcCanvas.height=imgBitmap.height;srcCanvas.getContext('2d').drawImage(imgBitmap,0,0);
+      const enhanced=preprocessCanvas(srcCanvas,false);
+      const {data:{text}}=await Tesseract.recognize(enhanced,'fra+eng',{tessedit_pageseg_mode:'6'});
+      const r=parseOcrTextLocal(text,mode);
+      if(r.prenom&&!prenom)prenom=r.prenom;
+      if(r.telephone&&!telephone)telephone=r.telephone;
     }
     ocrLoading.style.display='none';
     if(prenom)document.getElementById('send-prenom').value=prenom;
@@ -2172,12 +2179,48 @@ async function extractFromPhoto(input,mode){
       alert('Rien détecté. Cadre bien sur "Nom & Prénom" ou "Tel. Perso".');
     }else{
       const f=document.getElementById('flash-sent');
-      if(f){f.textContent='✓ '+(prenom?prenom+' ':'')+' '+(telephone?telephone:'');f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
+      if(f){f.textContent='✓ '+(prenom||'')+' '+(telephone||'');f.style.display='block';setTimeout(()=>{f.style.display='none';f.textContent='Message envoyé !';},3000);}
     }
-  }catch(e){
-    ocrLoading.style.display='none';
-    alert('Erreur analyse. Tapez manuellement.');
+  }catch(e){ocrLoading.style.display='none';alert('Erreur analyse. Tapez manuellement.');}
+}
+function parseOcrTextLocal(text,mode){
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
+  let prenom='';let telephone='';
+  const ind=(document.getElementById('send-indicatif')?.value||'+33').replace('+','');
+  if(!mode||mode==='nom'||mode==='all'){
+    for(const line of lines){
+      const low=line.toLowerCase();
+      if(low.includes('nom')&&low.includes('pr')){
+        const after=line.replace(/nom\s*[&et\s]+\s*pr[eé]nom\s*/i,'').trim();
+        const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
+        if(words.length>=2){prenom=words[words.length-1]+' '+words.slice(0,words.length-1).join(' ');break;}
+        else if(words.length===1){prenom=words[0];break;}
+      }
+      if(low.includes('client')){
+        const after=line.replace(/^.*client\s*[:\-=]?\s*/i,'').replace(/\(.*?\)/g,'').trim();
+        const words=after.split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ\-]+$/.test(w)&&w.length>1);
+        if(words.length>=1){prenom=words.join(' ');break;}
+      }
+    }
   }
+  if(!mode||mode==='tel'||mode==='all'){
+    for(const line of lines){
+      const low=line.toLowerCase();
+      if(low.includes('tel')&&(low.includes('perso')||low.includes('pro')||low.includes('portable')||low.includes('mobile'))){
+        const digits=line.replace(/[^0-9]/g,'');
+        const mFR=digits.match(/0[67]\d{8}/);
+        if(mFR){telephone=mFR[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');break;}
+        const mInt=digits.match(new RegExp('^'+ind+'(\\d{9,11})'));
+        if(mInt){telephone='+'+ind+mInt[1];break;}
+      }
+    }
+    if(!telephone){
+      const digits=text.replace(/[^0-9]/g,'');
+      const mFR=digits.match(/0[67]\d{8}/);
+      if(mFR)telephone=mFR[0].replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,'$1.$2.$3.$4.$5');
+    }
+  }
+  return{prenom,telephone};
 }
 
 function saveCurrentClient(){
@@ -2282,8 +2325,10 @@ function renderStats(){
   // Titre historique
   const cardHist=document.querySelector('#hist-list')?.closest('.card')?.querySelector('.sec-title');
   if(cardHist)cardHist.textContent=t('historique_recent')||cardHist.textContent;
-  // Graphique
-  const last7=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));const ds=d.toLocaleDateString('fr-FR');return{label:d.toLocaleDateString('fr-FR',{weekday:'short'}),count:history.filter(h=>new Date(h.sent_at||h.at).toLocaleDateString('fr-FR')===ds).length};});
+  // Graphique - jours dans la langue de l'utilisateur
+  const localeMap={fr:'fr-FR',en:'en-US',ur:'ur-PK',ar:'ar-SA',es:'es-ES',pt:'pt-PT',de:'de-DE',it:'it-IT',zh:'zh-CN',ru:'ru-RU',ja:'ja-JP',ko:'ko-KR',tr:'tr-TR',nl:'nl-NL',pl:'pl-PL'};
+  const loc=localeMap[currentLang]||'en-US';
+  const last7=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));const ds=d.toLocaleDateString('fr-FR');return{label:d.toLocaleDateString(loc,{weekday:'short'}),count:history.filter(h=>new Date(h.sent_at||h.at).toLocaleDateString('fr-FR')===ds).length};});
   const maxD=Math.max(...last7.map(d=>d.count),1);
   const chart=document.getElementById('bar-chart');chart.innerHTML='';
   last7.forEach(d=>{const col=document.createElement('div');col.className='bar-col';col.innerHTML=(d.count?'<div class="bar-val">'+d.count+'</div>':'')+'<div class="bar" style="background:'+(d.count?(profile?.couleur||'#0A0A0A'):'#F0F0F0')+';height:'+((d.count/maxD)*56+(d.count?4:0))+'px"></div><div class="bar-lbl">'+d.label+'</div>';chart.appendChild(col);});
@@ -2294,14 +2339,45 @@ function renderStats(){
   if(!history.length){hl.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px">'+t('aucun_envoi')+'</div>';return;}
   history.slice(0,10).forEach((item)=>{const d=new Date(item.sent_at||item.at);hl.innerHTML+='<div class="hist-row"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+(item.canal==='whatsapp'?'WhatsApp':'SMS')+' - '+d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')" style="color:#1565C0;border-color:#1565C0">Re</button><button class="btn-sm" onclick="deleteHistItem(\''+item.id+'\')" style="color:#E8202A;border-color:#E8202A">🗑</button></div></div>';});
 }
+// ── CORBEILLE ─────────────────────────────────────────────────────────────────
+let corbeille=JSON.parse(localStorage.getItem('only5:corbeille')||'[]');
+function renderHistFull(){
+  const list=document.getElementById('hist-full-list');if(!list)return;
+  const count=document.getElementById('hist-full-count');if(count)count.textContent=history.length+' envoi(s)';
+  if(!history.length){list.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px;padding:10px">'+t('aucun_envoi')+'</div>';return;}
+  list.innerHTML=history.map((item)=>{
+    const d=new Date(item.sent_at||item.at);
+    return'<div class="hist-row"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+(item.canal==='whatsapp'?'WhatsApp':'SMS')+' - '+d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')" style="color:#1565C0;border-color:#1565C0">Re</button><button class="btn-sm" onclick="moveToCorbeille(\''+item.id+'\')" style="color:#E8202A;border-color:#E8202A">🗑</button></div></div>';
+  }).join('');
+}
+function renderCorbeille(){
+  const list=document.getElementById('corbeille-list');if(!list)return;
+  if(!corbeille.length){list.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px;padding:10px">'+t('aucun_envoi')+'</div>';return;}
+  list.innerHTML=corbeille.map((item)=>{
+    const d=new Date(item.sent_at||item.at);
+    return'<div class="hist-row" style="opacity:0.7"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+d.toLocaleDateString('fr-FR')+'</div></div><button class="btn-sm" onclick="restaurerItem(\''+item.id+'\')" style="color:#25D366;border-color:#25D366" data-t="restaurer">↩</button></div>';
+  }).join('');
+}
+async function moveToCorbeille(id){
+  const item=history.find(h=>h.id==id);if(!item)return;
+  corbeille=[item,...corbeille].slice(0,50);
+  localStorage.setItem('only5:corbeille',JSON.stringify(corbeille));
+  history=history.filter(h=>h.id!=id);
+  if(currentUser){try{await sb.from('envois').delete().eq('id',id).eq('user_id',currentUser.id);}catch(e){}}
+  renderStats();renderHistFull();renderCorbeille();
+}
+async function restaurerItem(id){
+  const item=corbeille.find(c=>c.id==id);if(!item)return;
+  corbeille=corbeille.filter(c=>c.id!=id);
+  localStorage.setItem('only5:corbeille',JSON.stringify(corbeille));
+  history=[item,...history];
+  if(currentUser){try{await sb.from('envois').upsert({...item,user_id:currentUser.id});}catch(e){}}
+  renderStats();renderHistFull();renderCorbeille();
+}
+function viderCorbeille(){corbeille=[];localStorage.setItem('only5:corbeille','[]');renderCorbeille();}
 async function deleteHistItem(id){
-  if(!id||!currentUser)return;
-  if(!confirm('Supprimer cet envoi de l historique ?'))return;
-  try{
-    await sb.from('envois').delete().eq('id',id).eq('user_id',currentUser.id);
-    history=history.filter(h=>h.id!=id);
-    renderStats();
-  }catch(e){alert('Erreur suppression');}
+  // Déplacer vers corbeille au lieu de supprimer définitivement
+  await moveToCorbeille(id);
 }
 function resend(id,prenom,phone,tplId){selTpl=tplId;document.getElementById('send-prenom').value=prenom;document.getElementById('send-phone').value=phone;showTab('send',document.querySelector('.tab-btn'));}
 
@@ -2368,8 +2444,11 @@ async function saveProfile(){
   const indicatif=document.getElementById('edit-indicatif')?.value||'+33';
   const whatsappNum=document.getElementById('edit-whatsapp').value.trim().replace(/^0/,'').replace(/[^0-9]/g,'');
   const whatsappFull=whatsappNum?(indicatif+whatsappNum):'';
-  const g2=document.getElementById('edit-google2')?.value.trim()||'';
-  const g3=document.getElementById('edit-google3')?.value.trim()||'';
+  const g2val=document.getElementById('edit-google2')?.value.trim()||'';
+  const g3val=document.getElementById('edit-google3')?.value.trim()||'';
+  // Accepter n'importe quel lien ou texte court (pas de validation stricte)
+  const g2=g2val;
+  const g3=g3val;
   const updated={...profile,
     boutique:document.getElementById('edit-boutique').value.trim()||profile.boutique,
     gerant:document.getElementById('edit-gerant').value.trim()||profile.gerant,
