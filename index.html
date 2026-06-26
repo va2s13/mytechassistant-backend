@@ -87,73 +87,84 @@ input{-webkit-user-select:text;user-select:text}
 
 <!-- LEGAL SCREEN -->
 <div id="screen-legal" class="screen active" style="background:#0A0A0A;display:flex;flex-direction:column;height:100vh;overflow:hidden">
-  <div style="background:#0A0A0A;padding:20px 20px 16px;border-bottom:1px solid #2A2A2A">
-    <div style="margin-bottom:10px">
+  <div style="background:#0A0A0A;padding:20px 20px 10px;border-bottom:1px solid #2A2A2A">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <span style="display:inline-flex;align-items:baseline;gap:1px;font-weight:900">
         <span style="color:#fff;font-size:26px">Only</span><span style="color:#F5C518;font-size:17px;position:relative;top:-2px">&#9733;</span><span style="color:#F5C518;font-size:26px">5</span>
       </span>
+      <!-- Sélecteur de langue sur l'écran CGU -->
+      <select id="legal-lang-sel" onchange="setLegalLang(this.value)" style="background:#1A1A1A;color:#fff;border:1.5px solid #333;border-radius:10px;padding:6px 10px;font-size:13px;font-family:inherit;outline:none;max-width:160px">
+        <option value="en">🇬🇧 English</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="ar">🇸🇦 العربية</option>
+        <option value="ur">🇵🇰 اردو</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="pt">🇵🇹 Português</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="it">🇮🇹 Italiano</option>
+      </select>
     </div>
-    <div style="color:#888;font-size:13px">Avant de continuer, lisez et acceptez nos documents.</div>
+    <div style="color:#888;font-size:13px" id="legal-subtitle">Before continuing, read and accept our documents.</div>
   </div>
   <div style="display:flex;border-bottom:1px solid #2A2A2A">
-    <button onclick="showLegalTab('cgu')" id="ltab-cgu" class="tab-btn active" style="color:#F5C518;border-bottom:3px solid #F5C518">CGU</button>
-    <button onclick="showLegalTab('politique')" id="ltab-politique" class="tab-btn">Confidentialite</button>
+    <button onclick="showLegalTab('cgu')" id="ltab-cgu" class="tab-btn active" style="color:#F5C518;border-bottom:3px solid #F5C518" id="ltab-cgu-btn">Terms</button>
+    <button onclick="showLegalTab('politique')" id="ltab-politique" class="tab-btn" id="ltab-pol-btn">Privacy</button>
   </div>
-  <div id="legal-cgu" class="legal-scroll" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">CONDITIONS GENERALES D'UTILISATION - ONLY5
-Derniere mise a jour : juin 2025
+  <div id="legal-cgu" class="legal-scroll" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch" id="legal-cgu-content">TERMS AND CONDITIONS - ONLY5
+Last updated: June 2025
 
-1. OBJET
-Only5 est une application mobile permettant aux commercants d envoyer des demandes d avis Google a leurs clients via WhatsApp et SMS. Elle est editee par B2TF Prod, auto-entrepreneur.
+1. PURPOSE
+Only5 is a mobile application that allows merchants to send Google review requests to their customers via WhatsApp and SMS. It is published by B2TF Prod.
 
-2. ACCES AU SERVICE
-L acces a Only5 necessite la creation d un compte avec email et mot de passe. Trois formules : Lite (3,99 EUR/mois), Pro (9,99 EUR/mois), Business (19,99 EUR/mois).
+2. ACCESS TO SERVICE
+Access to Only5 requires creating an account with email and password. Three plans: Lite (3.99 EUR/month), Pro (9.99 EUR/month), Business (19.99 EUR/month).
 
-3. UTILISATION
-L utilisateur s engage a utiliser Only5 conformement aux lois en vigueur. L envoi de messages non sollicites est strictement interdit.
+3. USE
+The user agrees to use Only5 in compliance with applicable laws. Sending unsolicited messages is strictly prohibited.
 
-4. DONNEES
-Les donnees de profil et d historique sont stockees de maniere securisee sur nos serveurs Supabase (Europe). L editeur peut y acceder uniquement pour des raisons de support technique.
+4. DATA
+Profile and history data are stored securely on our Supabase servers (Europe). The publisher may access them only for technical support reasons.
 
-5. RESPONSABILITE
-L editeur ne saurait etre tenu responsable de l usage fait de l application ni des messages envoyes.
+5. LIABILITY
+The publisher cannot be held responsible for the use of the application or messages sent.
 
-6. RESILIATION
-L abonnement peut etre resilie a tout moment, avec effet a la fin de la periode en cours.
+6. TERMINATION
+The subscription can be cancelled at any time, effective at the end of the current period.
 
-7. DROIT APPLICABLE
-Droit francais. Litiges soumis aux tribunaux de Marseille.</div>
-  <div id="legal-politique" class="legal-scroll" style="display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">POLITIQUE DE CONFIDENTIALITE - ONLY5
-Derniere mise a jour : juin 2025
+7. APPLICABLE LAW
+French law. Disputes submitted to the courts of Marseille.</div>
+  <div id="legal-politique" class="legal-scroll" style="display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">PRIVACY POLICY - ONLY5
+Last updated: June 2025
 
-1. RESPONSABLE DU TRAITEMENT
+1. DATA CONTROLLER
 B2TF Prod - contact@b2tfprod.fr
 
-2. DONNEES COLLECTEES
-- Email et mot de passe (chiffres, stockes par Supabase Auth)
-- Informations de profil boutique
-- Historique des envois de demandes d avis
-- Listes clients importees
+2. DATA COLLECTED
+- Email and password (encrypted, stored by Supabase Auth)
+- Shop profile information
+- History of review request sends
+- Imported client lists
 
-3. HEBERGEMENT
-Toutes les donnees sont stockees sur Supabase (serveurs europeens), conforme RGPD.
+3. HOSTING
+All data is stored on Supabase (European servers), GDPR compliant.
 
-4. SECURITE
-Les mots de passe sont chiffres. Aucun mot de passe n est stocke en clair.
+4. SECURITY
+Passwords are encrypted. No password is stored in plain text.
 
-5. VOS DROITS (RGPD)
-Acces, rectification, effacement, opposition, portabilite.
-Contact : contact@b2tfprod.fr
+5. YOUR RIGHTS (GDPR)
+Access, rectification, erasure, objection, portability.
+Contact: contact@b2tfprod.fr
 
 6. COOKIES
-Aucun cookie de tracking. Token d authentification stocke localement pour maintenir la session.</div>
+No tracking cookies. Authentication token stored locally to maintain session.</div>
   <div style="padding:16px 20px 40px;border-top:1px solid #2A2A2A;background:#0A0A0A">
     <button id="btn-cgu" onclick="toggleCheck('cgu')" style="width:100%;padding:20px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:12px;min-height:64px;font-family:inherit;-webkit-tap-highlight-color:rgba(245,197,24,0.2)">
       <div id="box-cgu" style="min-width:34px;width:34px;height:34px;border-radius:8px;border:2.5px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#0A0A0A;transition:all .2s"></div>
-      <span style="line-height:1.4;flex:1;text-align:left">J'ai lu et j'accepte les <strong style="color:#F5C518">CGU</strong></span>
+      <span style="line-height:1.4;flex:1;text-align:left">I have read and accept the <strong style="color:#F5C518">Terms & Conditions</strong></span>
     </button>
     <button id="btn-politique" onclick="toggleCheck('politique')" style="width:100%;padding:20px 16px;background:#1A1A1A;border:2.5px solid #444;border-radius:14px;color:#fff;font-size:15px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;margin-bottom:18px;min-height:64px;font-family:inherit;-webkit-tap-highlight-color:rgba(245,197,24,0.2)">
       <div id="box-politique" style="min-width:34px;width:34px;height:34px;border-radius:8px;border:2.5px solid #666;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#0A0A0A;transition:all .2s"></div>
-      <span style="line-height:1.4;flex:1;text-align:left" data-t="pol_accept">J'ai lu et j'accepte la <strong style="color:#F5C518">Politique de confidentialité</strong></span>
+      <span style="line-height:1.4;flex:1;text-align:left">I have read and accept the <strong style="color:#F5C518">Privacy Policy</strong></span>
     </button>
     <button id="btn-legal" onclick="acceptLegal()" style="width:100%;padding:20px;background:#2A2A2A;color:#666;border:none;border-radius:14px;font-size:16px;font-weight:800;text-align:center;cursor:not-allowed;min-height:64px;font-family:inherit;transition:all .3s">Veuillez accepter les deux documents</button>
   </div>
@@ -1201,23 +1212,21 @@ const TRANSLATIONS={
 let currentLang=localStorage.getItem('only5:lang')||'en';
 function t(key){return(TRANSLATIONS[currentLang]||TRANSLATIONS['fr'])[key]||TRANSLATIONS['fr'][key]||key;}
 function reRenderAll(){
-  // Re-render TOUT en une seule passe, sans reload
-  applyTranslations();
-  renderTplList();
-  renderTplSettings();
-  renderStats();
-  renderSettings();
-  renderClients();
-  renderAbonnement();
-  renderHistFull();
-  renderCorbeille();
-  renderSavedClients();
-  renderRelanceTplList();
-  updateTrialBanner();
-  // Mettre à jour le header
+  try{applyTranslations();}catch(e){}
+  try{renderTplList();}catch(e){}
+  try{renderTplSettings();}catch(e){}
+  try{renderStats();}catch(e){}
+  try{renderSettings();}catch(e){}
+  try{renderClients();}catch(e){}
+  try{renderAbonnement();}catch(e){}
+  try{renderHistFull();}catch(e){}
+  try{renderCorbeille();}catch(e){}
+  try{renderSavedClients();}catch(e){}
+  try{renderRelanceTplList();}catch(e){}
+  try{updateTrialBanner();}catch(e){}
   if(profile){
-    document.getElementById('home-boutique').textContent=profile.boutique||'';
-    document.getElementById('home-secteur').textContent=translateSecteur(profile.secteur||'');
+    try{document.getElementById('home-boutique').textContent=profile.boutique||'';}catch(e){}
+    try{document.getElementById('home-secteur').textContent=translateSecteur(profile.secteur||'');}catch(e){}
   }
 }
 
@@ -1548,6 +1557,11 @@ async function detectLangByCountry(){
 window.onload=async()=>{
   await detectLangByCountry();
   initLangSelects();
+  // Initialiser l'écran légal dans la langue détectée
+  const legalLang=LEGAL_TEXTS[currentLang]?currentLang:'en';
+  setLegalLang(legalLang);
+  const legalSel=document.getElementById('legal-lang-sel');
+  if(legalSel)legalSel.value=legalLang;
   initOnboarding();
 
   const params=new URLSearchParams(window.location.search);
@@ -2546,7 +2560,77 @@ function renderStats(){
   if(!history.length){hl.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px">'+t('aucun_envoi')+'</div>';return;}
   history.slice(0,10).forEach((item)=>{const d=new Date(item.sent_at||item.at);hl.innerHTML+='<div class="hist-row"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+(item.canal==='whatsapp'?'WhatsApp':'SMS')+' - '+d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')" style="color:#1565C0;border-color:#1565C0">Re</button><button class="btn-sm" onclick="deleteHistItem(\''+item.id+'\')" style="color:#E8202A;border-color:#E8202A">🗑</button></div></div>';});
 }
-// ── CORBEILLE ─────────────────────────────────────────────────────────────────
+// ── LANGUE ÉCRAN LÉGAL ────────────────────────────────────────────────────────
+const LEGAL_TEXTS={
+  en:{
+    subtitle:'Before continuing, read and accept our documents.',
+    tab_cgu:'Terms',tab_pol:'Privacy',
+    cgu:`TERMS AND CONDITIONS - ONLY5\nLast updated: June 2025\n\n1. PURPOSE\nOnly5 is a mobile application that allows merchants to send Google review requests to their customers via WhatsApp and SMS. Published by B2TF Prod.\n\n2. ACCESS\nAccess requires an account with email and password. Plans: Lite (3.99€/month), Pro (9.99€/month), Business (19.99€/month).\n\n3. USE\nThe user agrees to use Only5 in compliance with applicable laws. Sending unsolicited messages is strictly prohibited.\n\n4. DATA\nProfile and history data are stored securely on Supabase servers (Europe).\n\n5. LIABILITY\nThe publisher cannot be held responsible for the use of the application or messages sent.\n\n6. TERMINATION\nThe subscription can be cancelled at any time, effective at the end of the current period.\n\n7. APPLICABLE LAW\nFrench law. Disputes submitted to the courts of Marseille.`,
+    pol:`PRIVACY POLICY - ONLY5\nLast updated: June 2025\n\n1. DATA CONTROLLER\nB2TF Prod - contact@b2tfprod.fr\n\n2. DATA COLLECTED\n- Email and password (encrypted, Supabase Auth)\n- Shop profile information\n- History of review request sends\n- Imported client lists\n\n3. HOSTING\nAll data stored on Supabase (European servers), GDPR compliant.\n\n4. SECURITY\nPasswords are encrypted. No password stored in plain text.\n\n5. YOUR RIGHTS (GDPR)\nAccess, rectification, erasure, objection, portability.\nContact: contact@b2tfprod.fr\n\n6. COOKIES\nNo tracking cookies. Authentication token stored locally to maintain session.`,
+    accept_cgu:'I have read and accept the Terms & Conditions',
+    accept_pol:'I have read and accept the Privacy Policy',
+  },
+  fr:{
+    subtitle:'Avant de continuer, lisez et acceptez nos documents.',
+    tab_cgu:'CGU',tab_pol:'Confidentialité',
+    cgu:`CONDITIONS GÉNÉRALES D'UTILISATION - ONLY5\nDernière mise à jour : juin 2025\n\n1. OBJET\nOnly5 est une application mobile permettant aux commerçants d'envoyer des demandes d'avis Google à leurs clients via WhatsApp et SMS. Éditée par B2TF Prod.\n\n2. ACCÈS AU SERVICE\nL'accès à Only5 nécessite la création d'un compte avec email et mot de passe. Trois formules : Lite (3,99€/mois), Pro (9,99€/mois), Business (19,99€/mois).\n\n3. UTILISATION\nL'utilisateur s'engage à utiliser Only5 conformément aux lois en vigueur. L'envoi de messages non sollicités est strictement interdit.\n\n4. DONNÉES\nLes données de profil et d'historique sont stockées de manière sécurisée sur nos serveurs Supabase (Europe).\n\n5. RESPONSABILITÉ\nL'éditeur ne saurait être tenu responsable de l'usage fait de l'application ni des messages envoyés.\n\n6. RÉSILIATION\nL'abonnement peut être résilié à tout moment, avec effet à la fin de la période en cours.\n\n7. DROIT APPLICABLE\nDroit français. Litiges soumis aux tribunaux de Marseille.`,
+    pol:`POLITIQUE DE CONFIDENTIALITÉ - ONLY5\nDernière mise à jour : juin 2025\n\n1. RESPONSABLE DU TRAITEMENT\nB2TF Prod - contact@b2tfprod.fr\n\n2. DONNÉES COLLECTÉES\n- Email et mot de passe (chiffrés, stockés par Supabase Auth)\n- Informations de profil boutique\n- Historique des envois de demandes d'avis\n- Listes clients importées\n\n3. HÉBERGEMENT\nToutes les données sont stockées sur Supabase (serveurs européens), conforme RGPD.\n\n4. SÉCURITÉ\nLes mots de passe sont chiffrés. Aucun mot de passe n'est stocké en clair.\n\n5. VOS DROITS (RGPD)\nAccès, rectification, effacement, opposition, portabilité.\nContact : contact@b2tfprod.fr\n\n6. COOKIES\nAucun cookie de tracking. Token d'authentification stocké localement pour maintenir la session.`,
+    accept_cgu:"J'ai lu et j'accepte les CGU",
+    accept_pol:"J'ai lu et j'accepte la Politique de confidentialité",
+  },
+  ur:{
+    subtitle:'جاری رکھنے سے پہلے، ہمارے دستاویزات پڑھیں اور قبول کریں۔',
+    tab_cgu:'شرائط',tab_pol:'رازداری',
+    cgu:`شرائط و ضوابط - ONLY5\nآخری تازہ کاری: جون 2025\n\n1. مقصد\nOnly5 ایک موبائل ایپ ہے جو تاجروں کو WhatsApp اور SMS کے ذریعے Google جائزہ درخواستیں بھیجنے کی اجازت دیتی ہے۔\n\n2. رسائی\nEmail اور پاس ورڈ کے ساتھ اکاؤنٹ بنانا ضروری ہے۔ پلان: Lite (3.99€/ماہ)، Pro (9.99€/ماہ)، Business (19.99€/ماہ)۔\n\n3. استعمال\nغیر مطلوبہ پیغامات بھیجنا سختی سے منع ہے۔\n\n4. ڈیٹا\nتمام ڈیٹا محفوظ طریقے سے Supabase سرورز (یورپ) پر محفوظ کیا جاتا ہے۔`,
+    pol:`رازداری پالیسی - ONLY5\nآخری تازہ کاری: جون 2025\n\n1. ڈیٹا کنٹرولر\nB2TF Prod - contact@b2tfprod.fr\n\n2. جمع کردہ ڈیٹا\n- Email اور پاس ورڈ (خفیہ کاری شدہ)\n- دکان کی پروفائل معلومات\n- پیغامات کی تاریخ\n- درآمد شدہ گاہکوں کی فہرست\n\n3. سیکیورٹی\nکوئی پاس ورڈ صاف متن میں محفوظ نہیں کیا جاتا۔`,
+    accept_cgu:'میں نے شرائط و ضوابط پڑھے اور قبول کرتا ہوں',
+    accept_pol:'میں نے رازداری پالیسی پڑھی اور قبول کرتا ہوں',
+  },
+  ar:{
+    subtitle:'قبل المتابعة، اقرأ وثائقنا وقبلها.',
+    tab_cgu:'الشروط',tab_pol:'الخصوصية',
+    cgu:`الشروط والأحكام - ONLY5\nآخر تحديث: يونيو 2025\n\n1. الغرض\nOnly5 تطبيق يتيح للتجار إرسال طلبات مراجعة Google عبر WhatsApp وSMS.\n\n2. الوصول\nيتطلب إنشاء حساب بالبريد الإلكتروني وكلمة مرور. الخطط: Lite (3.99€/شهر)، Pro (9.99€/شهر)، Business (19.99€/شهر).\n\n3. الاستخدام\nإرسال الرسائل غير المرغوب فيها محظور تمامًا.\n\n4. البيانات\nيتم تخزين البيانات بأمان على خوادم Supabase الأوروبية.`,
+    pol:`سياسة الخصوصية - ONLY5\nآخر تحديث: يونيو 2025\n\n1. مسؤول المعالجة\nB2TF Prod - contact@b2tfprod.fr\n\n2. البيانات المجمعة\n- البريد الإلكتروني وكلمة المرور (مشفرة)\n- معلومات ملف تعريف المتجر\n- سجل الإرسال\n- قوائم العملاء المستوردة\n\n3. الأمان\nلا يتم تخزين أي كلمة مرور في نص صريح.`,
+    accept_cgu:'قرأت وأوافق على الشروط والأحكام',
+    accept_pol:'قرأت وأوافق على سياسة الخصوصية',
+  },
+  es:{
+    subtitle:'Antes de continuar, lee y acepta nuestros documentos.',
+    tab_cgu:'Términos',tab_pol:'Privacidad',
+    cgu:`TÉRMINOS Y CONDICIONES - ONLY5\nÚltima actualización: junio 2025\n\n1. OBJETO\nOnly5 es una aplicación móvil que permite a los comerciantes enviar solicitudes de reseñas de Google a sus clientes vía WhatsApp y SMS.\n\n2. ACCESO\nSe requiere cuenta con email y contraseña. Planes: Lite (3,99€/mes), Pro (9,99€/mes), Business (19,99€/mes).\n\n3. USO\nEl envío de mensajes no solicitados está estrictamente prohibido.\n\n4. DATOS\nLos datos se almacenan de forma segura en servidores Supabase (Europa).`,
+    pol:`POLÍTICA DE PRIVACIDAD - ONLY5\nÚltima actualización: junio 2025\n\n1. RESPONSABLE\nB2TF Prod - contact@b2tfprod.fr\n\n2. DATOS RECOPILADOS\n- Email y contraseña (cifrados)\n- Información del perfil de tienda\n- Historial de envíos\n- Listas de clientes importadas\n\n3. SEGURIDAD\nNinguna contraseña se almacena en texto plano.`,
+    accept_cgu:'He leído y acepto los Términos y Condiciones',
+    accept_pol:'He leído y acepto la Política de Privacidad',
+  },
+};
+
+function setLegalLang(code){
+  currentLang=code;
+  localStorage.setItem('only5:lang',code);
+  const texts=LEGAL_TEXTS[code]||LEGAL_TEXTS['en'];
+  // Sous-titre
+  const sub=document.getElementById('legal-subtitle');
+  if(sub)sub.textContent=texts.subtitle;
+  // Onglets
+  const ltCgu=document.getElementById('ltab-cgu');
+  const ltPol=document.getElementById('ltab-politique');
+  if(ltCgu)ltCgu.textContent=texts.tab_cgu;
+  if(ltPol)ltPol.textContent=texts.tab_pol;
+  // Contenu CGU et Politique
+  const cguDiv=document.getElementById('legal-cgu');
+  const polDiv=document.getElementById('legal-politique');
+  if(cguDiv)cguDiv.textContent=texts.cgu;
+  if(polDiv)polDiv.textContent=texts.pol;
+  // Boutons d'acceptation
+  const btnCgu=document.querySelector('#btn-cgu span');
+  const btnPol=document.querySelector('#btn-politique span');
+  if(btnCgu)btnCgu.textContent=texts.accept_cgu;
+  if(btnPol)btnPol.textContent=texts.accept_pol;
+  // Sync sélecteur
+  const sel=document.getElementById('legal-lang-sel');
+  if(sel)sel.value=code;
+  applyTranslations();
+}
 let corbeille=JSON.parse(localStorage.getItem('only5:corbeille')||'[]');
 function renderHistFull(){
   const list=document.getElementById('hist-full-list');if(!list)return;
@@ -2697,8 +2781,11 @@ async function saveProfile(){
   const ok=document.createElement('div');ok.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#25D366;color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999';ok.textContent='✓ Profil sauvegardé !';document.body.appendChild(ok);setTimeout(()=>ok.remove(),2500);
 }
 function renderTplSettings(){
-  document.getElementById('tpl-count').textContent=templates.length;
-  const list=document.getElementById('tpl-setting-list');list.innerHTML='';
+  const countEl=document.getElementById('tpl-count');
+  if(countEl)countEl.textContent=templates.length;
+  const list=document.getElementById('tpl-setting-list');
+  if(!list)return;
+  list.innerHTML='';
   if(!templates.length){
     list.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px;padding:16px">'+t('aucun_envoi')+'</div>';
     return;
