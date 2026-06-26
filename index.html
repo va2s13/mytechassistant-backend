@@ -919,6 +919,11 @@ const TRANSLATIONS={
     clients_frequents:'Clients fréquents',
     remplir_champs:'Remplissez le prénom et le téléphone.',
     envoi_s:' envoi(s)',
+    telecharger:'Télécharger le fichier',
+    enregistrements:'enregistrements',
+    aide:'Aide',
+    help_export_ios:"1. Appuyez sur 'Télécharger'\n2. Fenêtre → appuyez 'Save to Files'\n3. Choisissez 'Downloads' → 'Save'\n4. Retrouvez le fichier dans Fichiers → Téléchargements",
+    help_export_android:"1. Appuyez 'Télécharger'\n2. Le fichier va dans Téléchargements automatiquement\n3. Ou appuyez Google Drive pour sauvegarder en ligne",
     email_envoye:'Email envoyé !',
     lien_envoye_a:'Lien envoyé à',
     important:'Important :',
@@ -1009,6 +1014,11 @@ const TRANSLATIONS={
     clients_frequents:'Frequent clients',
     remplir_champs:'Fill in the name and phone number.',
     envoi_s:' send(s)',
+    telecharger:'Download file',
+    enregistrements:'records',
+    aide:'Help',
+    help_export_ios:"1. Tap 'Download'\n2. Popup appears → tap 'Save to Files'\n3. Choose 'Downloads' → tap 'Save'\n4. Find the file in Files app → Downloads",
+    help_export_android:"1. Tap 'Download'\n2. File goes to Downloads automatically\n3. Or tap Google Drive to save online",
     email_envoye:'Email sent!',
     lien_envoye_a:'Link sent to',
     important:'Important:',
@@ -2149,27 +2159,13 @@ function takeScanPhoto(){
   const video=document.getElementById('scanner-video');
   const canvas=document.getElementById('scanner-canvas');
   canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-  const ctx0=canvas.getContext('2d');
-  ctx0.drawImage(video,0,0);
-  // Cadre jaune = exactement 50%-90px à 50%+90px en hauteur, 5%-95% en largeur
-  // On crop EXACTEMENT cette zone
-  const frameTop=Math.round(canvas.height*0.5)-90;
-  const frameH=180;
-  const frameLeft=Math.round(canvas.width*0.05);
-  const frameW=Math.round(canvas.width*0.90);
-  // Agrandir x3 pour meilleure lecture OCR
-  const crop=document.createElement('canvas');
-  crop.width=frameW*3;crop.height=frameH*3;
-  const ctx=crop.getContext('2d');
-  ctx.imageSmoothingEnabled=false;
-  ctx.drawImage(canvas,frameLeft,frameTop,frameW,frameH,0,0,frameW*3,frameH*3);
-  // Pas de seuillage - image naturelle pour meilleure lecture Tesseract
-  // Juste augmenter le contraste légèrement
-  ctx.filter='contrast(1.4) brightness(1.1)';
-  ctx.drawImage(crop,0,0);
-  ctx.filter='none';
-  currentPhotoCanvas=crop;
-  document.getElementById('scan-preview-img').src=crop.toDataURL('image/png');
+  canvas.getContext('2d').drawImage(video,0,0);
+  // Garder la photo PLEIN ÉCRAN (pas de crop) pour que l'IA voie tout
+  const full=document.createElement('canvas');
+  full.width=canvas.width;full.height=canvas.height;
+  full.getContext('2d').drawImage(canvas,0,0);
+  currentPhotoCanvas=full;
+  document.getElementById('scan-preview-img').src=full.toDataURL('image/jpeg',0.85);
   showScanView('preview');
 }
 function cancelPhoto(){
@@ -2179,17 +2175,34 @@ function cancelPhoto(){
 function keepPhoto(){
   if(!currentPhotoCanvas)return;
   scanPhotos.push(currentPhotoCanvas);
-  // Miniature
+  // Miniature SUPPRIMABLE
   const row=document.getElementById('scan-photos-row');
+  const idx=scanPhotos.length-1;
+  const wrapper=document.createElement('div');
+  wrapper.style.cssText='position:relative;display:inline-block';
   const mini=document.createElement('img');
-  mini.src=currentPhotoCanvas.toDataURL('image/jpeg',0.5);
-  mini.style.cssText='width:48px;height:32px;object-fit:cover;border-radius:6px;border:2px solid #F5C518';
-  row.appendChild(mini);
+  mini.src=currentPhotoCanvas.toDataURL('image/jpeg',0.4);
+  mini.style.cssText='width:48px;height:48px;border-radius:6px;object-fit:cover;border:2px solid #F5C518';
+  // Bouton X pour supprimer cette photo
+  const del=document.createElement('button');
+  del.textContent='✕';
+  del.style.cssText='position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#E8202A;color:#fff;border:none;font-size:10px;cursor:pointer;padding:0;line-height:18px;text-align:center;font-weight:900';
+  del.onclick=()=>{
+    const i=Array.from(row.children).indexOf(wrapper);
+    if(i>=0)scanPhotos.splice(i,1);
+    wrapper.remove();
+    const count=document.getElementById('scan-photo-count');
+    if(count){if(scanPhotos.length>0){count.textContent=scanPhotos.length+' photo'+(scanPhotos.length>1?'s':'');count.style.display='inline';}else{count.style.display='none';}}
+    const btn=document.getElementById('btn-analyser');
+    if(btn)btn.style.display=scanPhotos.length>0?'block':'none';
+  };
+  wrapper.appendChild(mini);wrapper.appendChild(del);
+  row.appendChild(wrapper);
   // Compteur
-  const cnt=document.getElementById('scan-photo-count');
-  cnt.textContent=scanPhotos.length+' photo'+(scanPhotos.length>1?'s':'');
-  cnt.style.display='block';
-  document.getElementById('btn-analyser').style.display='block';
+  const count=document.getElementById('scan-photo-count');
+  if(count){count.textContent=scanPhotos.length+' photo'+(scanPhotos.length>1?'s':'');count.style.display='inline';}
+  const btn=document.getElementById('btn-analyser');
+  if(btn)btn.style.display='block';
   currentPhotoCanvas=null;
   showScanView('camera');
 }
@@ -2299,38 +2312,81 @@ async function analyserPhotos(){
   const status=document.getElementById('scanner-status');
   status.style.display='block';
   let prenomFinal='';let telFinal='';
+
   for(let i=0;i<scanPhotos.length;i++){
-    status.textContent='🤖 IA Photo '+(i+1)+'/'+scanPhotos.length+'...';
+    status.textContent='🤖 Photo '+(i+1)+'/'+scanPhotos.length+'...';
     try{
-      // Convertir le canvas en base64
-      const b64=scanPhotos[i].toDataURL('image/jpeg',0.9).split(',')[1];
-      // Déterminer le mode selon ce qu'on cherche encore
-      const mode=(!prenomFinal&&!telFinal)?'all':(!prenomFinal?'nom':'tel');
-      const aiResult=await extractWithAI(b64,'image/jpeg',mode);
-      if(aiResult){
-        if(aiResult.prenom&&aiResult.prenom!=='vide'&&!prenomFinal)prenomFinal=aiResult.prenom.trim();
-        if(aiResult.tel&&aiResult.tel!=='vide'&&!telFinal)telFinal=aiResult.tel.trim();
+      const b64=scanPhotos[i].toDataURL('image/jpeg',0.95).split(',')[1];
+      // Prompt ultra-précis pour tout type de ticket/écran
+      const prompt=`Tu es un OCR spécialisé pour les logiciels de caisse.
+Regarde cette image et extrait:
+1. Le NOM et PRÉNOM du client. Cherche les patterns:
+   - "Client: NOM PRENOM" ou "Client : NOM PRENOM"
+   - "Nom & Prénom PRENOM NOM" (sur les écrans Kezia)
+   - Une ligne avec juste "NOM PRENOM" en majuscules
+2. Le numéro de TÉLÉPHONE. Cherche:
+   - "TEL PERSO 06.78.66.85.33" ou "Tel Perso 0678668533"
+   - "TEL PRO", "PORTABLE", "MOBILE"
+   - N'importe quel numéro de téléphone visible
+
+IMPORTANT: 
+- Si "Client: ANDRZEJEWSKI REBECCA" → prenom="ANDRZEJEWSKI REBECCA"
+- Si "TEL PERSO 06.78.66.85.33" → tel="06.78.66.85.33"
+- Donne le numéro EXACTEMENT comme écrit (avec points ou tirets)
+
+Réponds UNIQUEMENT en JSON valide, rien d'autre:
+{"prenom":"valeur ou vide","tel":"valeur ou vide"}`;
+
+      const resp=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-6',max_tokens:150,
+          messages:[{role:'user',content:[
+            {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
+            {type:'text',text:prompt}
+          ]}]
+        })
+      });
+
+      if(resp.ok){
+        const data=await resp.json();
+        const txt=data.content?.find(c=>c.type==='text')?.text||'';
+        try{
+          const clean=txt.replace(/```json|```/g,'').trim();
+          const result=JSON.parse(clean);
+          if(result.prenom&&result.prenom!=='vide'&&result.prenom.length>1&&!prenomFinal)
+            prenomFinal=result.prenom.trim();
+          if(result.tel&&result.tel!=='vide'&&result.tel.length>5&&!telFinal)
+            telFinal=result.tel.trim();
+        }catch(e){}
       }
+
       // Fallback Tesseract si IA rate
       if(!prenomFinal||!telFinal){
-        const enhanced=preprocessCanvas(scanPhotos[i],false);
-        const {data:{text}}=await Tesseract.recognize(enhanced,'fra+eng',{tessedit_pageseg_mode:'6'});
-        const r=extraireInfos(text);
-        if(r.prenom&&!prenomFinal)prenomFinal=r.prenom;
-        if(r.tel&&!telFinal)telFinal=r.tel;
+        try{
+          const enhanced=preprocessCanvas(scanPhotos[i],false);
+          const {data:{text}}=await Tesseract.recognize(enhanced,'fra+eng',{tessedit_pageseg_mode:'6'});
+          const r=extraireInfos(text);
+          if(r.prenom&&!prenomFinal)prenomFinal=r.prenom;
+          if(r.tel&&!telFinal)telFinal=r.tel;
+        }catch(e2){}
       }
     }catch(e){}
   }
+
   status.style.display='none';
   if(prenomFinal)document.getElementById('send-prenom').value=prenomFinal;
   if(telFinal)document.getElementById('send-phone').value=telFinal;
+
   if(prenomFinal||telFinal){
     closeScanner();
-    showFlash('✓ '+(prenomFinal?prenomFinal+' ':'')+(telFinal?telFinal:''));
+    showFlash('✓ '+(prenomFinal||'')+' '+(telFinal||''));
   }else{
     status.style.display='block';
-    status.textContent='❌ Pas détecté. Recadre exactement sur "Client:" et "TEL PERSO"';
-    setTimeout(()=>status.style.display='none',4000);
+    status.style.background='rgba(232,32,42,0.9)';
+    status.textContent='❌ Rien détecté. Prends une photo plus nette avec "Client:" et "TEL PERSO" visibles.';
+    setTimeout(()=>{status.style.display='none';status.style.background='';},4000);
   }
 }
 function showFlash(msg){
@@ -2512,13 +2568,44 @@ function subscribePlan(plan){
 
 // ── STATS ─────────────────────────────────────────────────────────────────────
 function exportCSV(){
-  // Export complet avec toutes les données
+  // Générer le CSV
   const rows=[['Prenom','Telephone','Canal','Date']];
   history.forEach(h=>{rows.push([h.prenom,h.phone,h.canal,new Date(h.sent_at||h.at).toLocaleString('fr-FR')]);});
   importedClients.forEach(c=>{rows.push([c.prenom,c.phone,'client_importe',c.lastContact?new Date(c.lastContact).toLocaleString('fr-FR'):'']);});
-  const csv=rows.map(r=>r.join(',')).join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='only5_export.csv';a.click();URL.revokeObjectURL(url);
+  const csv='\uFEFF'+rows.map(r=>r.map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  // Modale de choix
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:flex-end;justify-content:center';
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const helpText=isIOS
+    ? (t('help_export_ios')||"1. Appuyez sur 'Télécharger'\n2. Une fenêtre apparaît → appuyez 'Save to Files'\n3. Choisissez 'Downloads' et appuyez 'Save'\n4. Retrouvez le fichier dans l'app Fichiers → Téléchargements")
+    : (t('help_export_android')||"1. Appuyez sur 'Télécharger'\n2. Le fichier va dans vos Téléchargements automatiquement\n3. Ou appuyez 'Google Drive' pour sauvegarder sur votre Drive");
+  modal.innerHTML=`<div style="background:#fff;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:500px">
+    <div style="font-weight:900;font-size:17px;margin-bottom:6px">📤 ${t('exporter_csv')||'Exporter les données'}</div>
+    <div style="font-size:13px;color:#666;margin-bottom:16px">${rows.length-1} ${t('enregistrements')||'enregistrements'}</div>
+    <a id="csv-dl-btn" href="${url}" download="only5_export.csv" style="display:block;width:100%;padding:14px;background:#1565C0;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box">
+      📥 ${t('telecharger')||'Télécharger le fichier'}
+    </a>
+    ${!isIOS?`<button onclick="exportToDrive('${url}')" style="width:100%;padding:14px;background:#fff;color:#333;border:2px solid #E0E0E0;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px">
+      <img src='https://www.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' style='width:20px;vertical-align:middle;margin-right:8px'>Google Drive
+    </button>`:''}
+    <details style="margin-bottom:16px;background:#F9F9F9;border-radius:10px;padding:10px">
+      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#1565C0">❓ ${t('aide')||'Aide'} - Comment enregistrer ?</summary>
+      <pre style="font-size:12px;color:#555;margin-top:8px;white-space:pre-wrap;font-family:inherit">${helpText}</pre>
+    </details>
+    <button onclick="this.closest('div[style*=fixed]').remove();URL.revokeObjectURL('${url}')" style="width:100%;padding:12px;background:#F0F0F0;color:#333;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">${t('fermer')||'Fermer'}</button>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.onclick=e=>{if(e.target===modal){modal.remove();URL.revokeObjectURL(url);}};
+}
+function exportToDrive(url){
+  // Ouvrir Google Drive upload
+  const a=document.createElement('a');a.href=url;a.download='only5_export.csv';a.click();
+  setTimeout(()=>{
+    window.open('https://drive.google.com/drive/my-drive','_blank');
+  },1000);
 }
 function renderStats(){
   const exportRow=document.getElementById('export-btn-row');
