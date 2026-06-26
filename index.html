@@ -638,8 +638,10 @@ Aucun cookie de tracking. Token d authentification stocke localement pour mainte
         <input id="edit-whatsapp" class="inp" type="tel" autocomplete="off" placeholder="06 12 34 56 78" style="flex:1;margin-bottom:0">
       </div>
       <span class="label" data-t="google">Lien Google My Business (Boutique 1)</span><input id="edit-google" class="inp" autocomplete="off" placeholder="https://g.page/r/...">
-      <span class="label" data-t="google2">Lien Google (Boutique 2 - optionnel)</span><input id="edit-google2" class="inp" autocomplete="off" placeholder="Optionnel - 2ème boutique">
-      <span class="label" data-t="google3">Lien Google (Boutique 3 - optionnel)</span><input id="edit-google3" class="inp" autocomplete="off" placeholder="Optionnel - 3ème boutique">
+      <div id="google-multi-row" style="display:none">
+        <span class="label" data-t="google2">Lien Google (Boutique 2 - optionnel)</span><input id="edit-google2" class="inp" autocomplete="off" placeholder="Optionnel - 2ème boutique">
+        <span class="label" data-t="google3">Lien Google (Boutique 3 - optionnel)</span><input id="edit-google3" class="inp" autocomplete="off" placeholder="Optionnel - 3ème boutique">
+      </div>
       <span class="label" data-t="siret">SIRET</span><input id="edit-siret" class="inp" autocomplete="off">
       <span class="label" data-t="couleur_principale">Couleur principale</span>
       <div id="edit-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"></div>
@@ -900,6 +902,7 @@ const TRANSLATIONS={
     restaurer:'Restaurer',
     clients_frequents:'Clients fréquents',
     remplir_champs:'Remplissez le prénom et le téléphone.',
+    envoi_s:' envoi(s)',
   },
   en:{
     connexion:'Login',creer_compte:'Create account',email:'Email address',
@@ -983,6 +986,7 @@ const TRANSLATIONS={
     restaurer:'Restore',
     clients_frequents:'Frequent clients',
     remplir_champs:'Fill in the name and phone number.',
+    envoi_s:' send(s)',
   },
   es:{
     connexion:'Iniciar sesión',creer_compte:'Crear cuenta',email:'Correo electrónico',
@@ -1304,7 +1308,12 @@ document.addEventListener('keydown',updateLastActive);
 const TRIAL_LIMIT=3;
 const STRIPE_LINKS={lite:'https://buy.stripe.com/test_9B600j5Sq7mb7tkgJs08g01',pro:'https://buy.stripe.com/test_bJefZheoW9uj3d4eBk08g02',business:'https://buy.stripe.com/test_8x28wPdkSbCraFwfFo08g03'};
 const PLAN_NAMES={trial:'Essai gratuit',lite:'Only5 Lite',pro:'Only5 Pro',business:'Only5 Business'};
-const PLAN_DESCS={trial:'3 envois offerts',lite:'3,99€/mois',pro:'9,99€/mois',business:'19,99€/mois'};
+const PLAN_DESCS={trial:'3 envois offerts',lite:'3,99€',pro:'9,99€',business:'19,99€'};
+function getPlanDesc(plan){
+  const pm=t('par_mois')||'/mois';
+  if(plan==='trial')return t('envois_offerts')||'3 envois offerts';
+  return(PLAN_DESCS[plan]||'')+pm;
+}
 const COLOR_PRESETS=['#E8202A','#1565C0','#3CB849','#F5C518','#FF6B35','#7B2D8B','#00897B','#0A0A0A'];
 const SECTORS=['Telephonie / Reparation','Restaurant / Cafe','Coiffure / Beaute','Automobile / Garage','Sante / Bien-etre','Commerce de detail','Immobilier','Autre'];
 const DEFAULT_TEMPLATES=[
@@ -1359,6 +1368,54 @@ const SECTOR_TEMPLATES={
     {id:'court',label:'Court',color:'#666',content:"Bonjour {prenom}, merci pour votre visite chez {boutique} !\nUn avis Google nous aiderait enormement :\n-> {lien_google}"},
   ],
 };
+// ── TRADUCTION LABELS TEMPLATES & SECTEURS ────────────────────────────────────
+const TPL_LABELS={
+  // FR
+  'Standard':          {en:'Standard',ur:'معیاری',es:'Estándar',ar:'قياسي',pt:'Padrão',de:'Standard',it:'Standard'},
+  'Court':             {en:'Short',ur:'مختصر',es:'Corto',ar:'قصير',pt:'Curto',de:'Kurz',it:'Breve'},
+  'Reparation':        {en:'Repair',ur:'مرمت',es:'Reparación',ar:'إصلاح',pt:'Reparação',de:'Reparatur',it:'Riparazione'},
+  'Achat':             {en:'Purchase',ur:'خریداری',es:'Compra',ar:'شراء',pt:'Compra',de:'Kauf',it:'Acquisto'},
+  'Achat telephone':   {en:'Phone purchase',ur:'فون خریداری',es:'Compra teléfono',ar:'شراء هاتف',pt:'Compra telemóvel',de:'Handykauf',it:'Acquisto telefono'},
+  '📱 Telephone pret !':    {en:'📱 Phone ready!',ur:'📱 فون تیار!',es:'📱 Teléfono listo!',ar:'📱 الهاتف جاهز!',pt:'📱 Telemóvel pronto!',de:'📱 Handy bereit!',it:'📱 Telefono pronto!'},
+  '📱 Téléphone prêt !':    {en:'📱 Phone ready!',ur:'📱 فون تیار!',es:'📱 Teléfono listo!',ar:'📱 الهاتف جاهز!',pt:'📱 Telemóvel pronto!',de:'📱 Handy bereit!',it:'📱 Telefono pronto!'},
+  'Apres le repas':    {en:'After meal',ur:'کھانے کے بعد',es:'Después de comer',ar:'بعد الوجبة',pt:'Após refeição',de:'Nach dem Essen',it:'Dopo il pasto'},
+  'Reservation':       {en:'Reservation',ur:'بکنگ',es:'Reserva',ar:'حجز',pt:'Reserva',de:'Reservierung',it:'Prenotazione'},
+  'Apres coiffure':    {en:'After haircut',ur:'بال کاٹنے کے بعد',es:'Después del corte',ar:'بعد قص الشعر',pt:'Após corte',de:'Nach Haarschnitt',it:'Dopo taglio'},
+  'Soin / Beaute':     {en:'Beauty care',ur:'خوبصورتی',es:'Cuidado belleza',ar:'العناية بالجمال',pt:'Cuidado beleza',de:'Schönheitspflege',it:'Cura bellezza'},
+  'Vehicule pret !':   {en:'Vehicle ready!',ur:'گاڑی تیار!',es:'¡Vehículo listo!',ar:'السيارة جاهزة!',pt:'Veículo pronto!',de:'Fahrzeug fertig!',it:'Veicolo pronto!'},
+  'Apres reparation':  {en:'After repair',ur:'مرمت کے بعد',es:'Tras reparación',ar:'بعد الإصلاح',pt:'Após reparação',de:'Nach Reparatur',it:'Dopo riparazione'},
+  'Apres consultation':{en:'After consultation',ur:'مشاورت کے بعد',es:'Tras consulta',ar:'بعد الاستشارة',pt:'Após consulta',de:'Nach Beratung',it:'Dopo consulenza'},
+  'Apres achat':       {en:'After purchase',ur:'خریداری کے بعد',es:'Tras compra',ar:'بعد الشراء',pt:'Após compra',de:'Nach Kauf',it:'Dopo acquisto'},
+  'Apres visite':      {en:'After visit',ur:'دورے کے بعد',es:'Tras visita',ar:'بعد الزيارة',pt:'Após visita',de:'Nach Besuch',it:'Dopo visita'},
+  'Revenir nous voir': {en:'Come back',ur:'دوبارہ آئیں',es:'Vuelve a vernos',ar:'عد لزيارتنا',pt:'Volte a nos ver',de:'Komm wieder',it:'Torna a trovarci'},
+  'Offre speciale':    {en:'Special offer',ur:'خصوصی پیشکش',es:'Oferta especial',ar:'عرض خاص',pt:'Oferta especial',de:'Sonderangebot',it:'Offerta speciale'},
+  'Avis tardif':       {en:'Late review',ur:'دیر سے جائزہ',es:'Reseña tardía',ar:'تقييم متأخر',pt:'Avaliação tardia',de:'Späte Bewertung',it:'Recensione tardiva'},
+};
+
+// Traduction des secteurs
+const SECTEUR_LABELS={
+  'Telephonie / Reparation':{en:'Phone repair',ur:'فون مرمت',es:'Telefonía / Reparación',ar:'إصلاح الهواتف',pt:'Telefonia / Reparação',de:'Handy-Reparatur',it:'Telefonia / Riparazione'},
+  'Restaurant / Cafe':{en:'Restaurant / Cafe',ur:'ریستوران / کیفے',es:'Restaurante / Café',ar:'مطعم / كافيه',pt:'Restaurante / Café',de:'Restaurant / Café',it:'Ristorante / Caffè'},
+  'Coiffure / Beaute':{en:'Hair / Beauty',ur:'بال / خوبصورتی',es:'Peluquería / Belleza',ar:'حلاقة / جمال',pt:'Cabelo / Beleza',de:'Friseur / Schönheit',it:'Capelli / Bellezza'},
+  'Automobile / Garage':{en:'Garage / Auto',ur:'گیراج / گاڑی',es:'Automóvil / Garaje',ar:'سيارات / مرآب',pt:'Automóvel / Garagem',de:'Auto / Werkstatt',it:'Automobile / Garage'},
+  'Sante / Bien-etre':{en:'Health / Wellness',ur:'صحت / تندرستی',es:'Salud / Bienestar',ar:'صحة / رفاهية',pt:'Saúde / Bem-estar',de:'Gesundheit / Wohlbefinden',it:'Salute / Benessere'},
+  'Commerce de detail':{en:'Retail',ur:'خوردہ فروشی',es:'Comercio al detalle',ar:'تجارة التجزئة',pt:'Comércio a retalho',de:'Einzelhandel',it:'Commercio al dettaglio'},
+  'Immobilier':{en:'Real estate',ur:'جائداد',es:'Inmobiliaria',ar:'عقارات',pt:'Imobiliário',de:'Immobilien',it:'Immobiliare'},
+  'Autre':{en:'Other',ur:'دیگر',es:'Otro',ar:'أخرى',pt:'Outro',de:'Andere',it:'Altro'},
+};
+
+function translateLabel(label){
+  if(currentLang==='fr')return label;
+  const map=TPL_LABELS[label];
+  if(map)return map[currentLang]||map['en']||label;
+  return label;
+}
+function translateSecteur(secteur){
+  if(currentLang==='fr')return secteur;
+  const map=SECTEUR_LABELS[secteur];
+  if(map)return map[currentLang]||map['en']||secteur;
+  return secteur;
+}
 function getTemplatesForSector(secteur){
   return SECTOR_TEMPLATES[secteur]?[...SECTOR_TEMPLATES[secteur]]:[...DEFAULT_TEMPLATES];
 }
@@ -1413,7 +1470,39 @@ function initLangSelects(){
   if(settingsLang)settingsLang.value=currentLang;
   applyTranslations();
 }
+// ── DÉTECTION LANGUE PAR PAYS ─────────────────────────────────────────────────
+async function detectLangByCountry(){
+  // Seulement si pas encore de langue sauvegardée
+  if(localStorage.getItem('only5:lang'))return;
+  try{
+    // Utiliser l'API de timezone du navigateur d'abord (rapide, sans réseau)
+    const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';
+    const tzMap={
+      'Europe/Paris':'fr','Europe/Brussels':'fr','Europe/Luxembourg':'fr',
+      'Europe/Zurich':'fr',
+      'Asia/Karachi':'ur','Asia/Lahore':'ur',
+      'Asia/Riyadh':'ar','Asia/Dubai':'ar','Asia/Baghdad':'ar','Africa/Cairo':'ar',
+      'Europe/Madrid':'es','America/Mexico_City':'es','America/Bogota':'es',
+      'America/Sao_Paulo':'pt','Europe/Lisbon':'pt',
+      'Europe/Berlin':'de','Europe/Vienna':'de',
+      'Europe/Rome':'it',
+      'Europe/Moscow':'ru',
+      'Asia/Tokyo':'ja','Asia/Seoul':'ko','Asia/Shanghai':'zh',
+      'Asia/Istanbul':'tr',
+      'Europe/Amsterdam':'nl',
+      'Europe/Warsaw':'pl',
+    };
+    const detected=tzMap[tz]||'en';
+    currentLang=detected;
+    localStorage.setItem('only5:lang',detected);
+    // Mettre à jour le select si visible
+    const sl=document.getElementById('reg-lang');
+    if(sl)sl.value=detected;
+    applyTranslations();
+  }catch(e){}
+}
 window.onload=async()=>{
+  await detectLangByCountry();
   initLangSelects();
   initOnboarding();
 
@@ -1425,20 +1514,20 @@ window.onload=async()=>{
   const type=params.get('type');
   if(code||(type&&type==='recovery')){
     showLoading(true);
+    // Sauvegarder le code pour après les CGU si nécessaire
+    if(code)localStorage.setItem('only5:pending_reset_code',code);
     try{
       let sessionOk=false;
       if(code){
         try{
           const {data,error}=await sb.auth.exchangeCodeForSession(code);
           if(!error&&data?.session)sessionOk=true;
-        }catch(e){
-          // iPhone 12 fallback - try setSession with token from URL
-          sessionOk=false;
-        }
+        }catch(e){sessionOk=false;}
       }
       showLoading(false);
       window.history.replaceState({},document.title,window.location.pathname);
       if(sessionOk||type==='recovery'||code){
+        localStorage.removeItem('only5:pending_reset_code');
         showScreen('auth');showResetPassword();return;
       }
     }catch(e){showLoading(false);}
@@ -1452,12 +1541,35 @@ window.onload=async()=>{
     if(tokenType==='recovery'||accessToken){
       window.history.replaceState({},document.title,window.location.pathname);
       if(accessToken){
+        // Sauvegarder pour après les CGU
+        localStorage.setItem('only5:pending_reset_token',accessToken);
+        localStorage.setItem('only5:pending_reset_refresh',hp.get('refresh_token')||'');
         showLoading(true);
         try{await sb.auth.setSession({access_token:accessToken,refresh_token:hp.get('refresh_token')||''});}catch(e){}
         showLoading(false);
       }
+      localStorage.removeItem('only5:pending_reset_token');
       showScreen('auth');showResetPassword();return;
     }
+  }
+
+  // PRIORITE 2b : token reset en attente (iPhone 12 - CGU a bloqué avant)
+  const pendingCode=localStorage.getItem('only5:pending_reset_code');
+  const pendingToken=localStorage.getItem('only5:pending_reset_token');
+  if(pendingCode||pendingToken){
+    showLoading(true);
+    try{
+      if(pendingCode){
+        await sb.auth.exchangeCodeForSession(pendingCode);
+        localStorage.removeItem('only5:pending_reset_code');
+      }else if(pendingToken){
+        await sb.auth.setSession({access_token:pendingToken,refresh_token:localStorage.getItem('only5:pending_reset_refresh')||''});
+        localStorage.removeItem('only5:pending_reset_token');
+        localStorage.removeItem('only5:pending_reset_refresh');
+      }
+    }catch(e){}
+    showLoading(false);
+    showScreen('auth');showResetPassword();return;
   }
 
   // PRIORITE 3 : ecouter les events Supabase (PASSWORD_RECOVERY)
@@ -1550,6 +1662,27 @@ function toggleCheck(which){
 function acceptLegal(){
   if(!checkedCgu||!checkedPolitique)return;
   localStorage.setItem('only5:legal_accepted','true');
+  // Fix iPhone 12 : si un token reset était en attente, l'utiliser maintenant
+  const pendingCode=localStorage.getItem('only5:pending_reset_code');
+  const pendingToken=localStorage.getItem('only5:pending_reset_token');
+  if(pendingCode||pendingToken){
+    (async()=>{
+      showLoading(true);
+      try{
+        if(pendingCode){
+          await sb.auth.exchangeCodeForSession(pendingCode);
+          localStorage.removeItem('only5:pending_reset_code');
+        }else{
+          await sb.auth.setSession({access_token:pendingToken,refresh_token:localStorage.getItem('only5:pending_reset_refresh')||''});
+          localStorage.removeItem('only5:pending_reset_token');
+          localStorage.removeItem('only5:pending_reset_refresh');
+        }
+      }catch(e){}
+      showLoading(false);
+      showScreen('auth');showResetPassword();
+    })();
+    return;
+  }
   showScreen('auth');showLogin();
 }
 
@@ -1790,7 +1923,7 @@ function showHome(){
   document.getElementById('home-header').style.background=acc;
   document.getElementById('btn-sms').style.background=acc;
   document.getElementById('home-boutique').textContent=profile.boutique||'';
-  document.getElementById('home-secteur').textContent=profile.secteur||'';
+  document.getElementById('home-secteur').textContent=translateSecteur(profile.secteur||'');
   document.getElementById('home-logo-letter').textContent=(profile.boutique||'?')[0].toUpperCase();
   // PWA install prompt
   if(window.deferredPWAPrompt&&!localStorage.getItem('only5:pwa_dismissed')){
@@ -1800,7 +1933,7 @@ function showHome(){
     document.body.appendChild(banner);
     setTimeout(()=>{if(banner.parentElement)banner.remove();},10000);
   }
-  renderTplList();renderSavedClients();renderRelanceTplList();updateTrialBanner();renderStats();renderSettings();
+  renderTplList();renderSavedClients();renderRelanceTplList();updateTrialBanner();renderStats();renderSettings();renderHistFull();renderCorbeille();
   showScreen('home');
 }
 function showTab(name,btn){
@@ -1813,14 +1946,21 @@ function showTab(name,btn){
 function renderAbonnement(){
   const plan=profile?.plan||'trial';
   const el=document.getElementById('current-plan-name');const el2=document.getElementById('current-plan-desc');
-  if(el)el.textContent=PLAN_NAMES[plan]||'Essai gratuit';if(el2)el2.textContent=PLAN_DESCS[plan]||'3 envois offerts';
+  if(el)el.textContent=PLAN_NAMES[plan]||'Essai gratuit';if(el2)el2.textContent=getPlanDesc(plan);
   ['lite','pro','business'].forEach(p=>{const btn=document.getElementById('btn-'+p);if(!btn)return;if(plan===p){btn.textContent='Plan actuel OK';btn.style.opacity='0.5';btn.style.cursor='not-allowed';}else{btn.style.opacity='1';btn.style.cursor='pointer';}});
 }
 
 // ── SEND ──────────────────────────────────────────────────────────────────────
 function renderTplList(){
   const c=document.getElementById('tpl-list');c.innerHTML='';
-  templates.forEach(t=>{const b=document.createElement('button');b.className='tpl-btn'+(selTpl===t.id?' active':'');if(selTpl===t.id){b.style.borderColor=t.color;b.style.background=t.color+'20';b.style.color=t.color;}b.innerHTML='<div class="dot" style="background:'+t.color+'"></div><span>'+t.label+'</span>';b.onclick=()=>{selTpl=t.id;renderTplList();if(previewOpen)updatePreview();};c.appendChild(b);});
+  templates.forEach(tp=>{
+    const b=document.createElement('button');
+    b.className='tpl-btn'+(selTpl===tp.id?' active':'');
+    if(selTpl===tp.id){b.style.borderColor=tp.color;b.style.background=tp.color+'20';b.style.color=tp.color;}
+    b.innerHTML='<div class="dot" style="background:'+tp.color+'"></div><span>'+translateLabel(tp.label)+'</span>';
+    b.onclick=()=>{selTpl=tp.id;renderTplList();if(previewOpen)updatePreview();};
+    c.appendChild(b);
+  });
 }
 function updatePreview(){const tpl=templates.find(t=>t.id===selTpl);if(!tpl)return;document.getElementById('preview-box').textContent=fillMsg(tpl.content,document.getElementById('send-prenom').value||'[Prenom client]');}
 function togglePreview(btn){previewOpen=!previewOpen;document.getElementById('preview-box').style.display=previewOpen?'block':'none';btn.textContent=previewOpen?'A':'V';if(previewOpen)updatePreview();}
@@ -2343,19 +2483,39 @@ function renderStats(){
 let corbeille=JSON.parse(localStorage.getItem('only5:corbeille')||'[]');
 function renderHistFull(){
   const list=document.getElementById('hist-full-list');if(!list)return;
-  const count=document.getElementById('hist-full-count');if(count)count.textContent=history.length+' envoi(s)';
-  if(!history.length){list.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px;padding:10px">'+t('aucun_envoi')+'</div>';return;}
+  const count=document.getElementById('hist-full-count');
+  if(count)count.textContent=history.length+(t('envoi_s')||' envoi(s)');
+  if(!history.length){
+    list.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px;padding:10px">'+t('aucun_envoi')+'</div>';
+    return;
+  }
   list.innerHTML=history.map((item)=>{
     const d=new Date(item.sent_at||item.at);
-    return'<div class="hist-row"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+(item.canal==='whatsapp'?'WhatsApp':'SMS')+' - '+d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')" style="color:#1565C0;border-color:#1565C0">Re</button><button class="btn-sm" onclick="moveToCorbeille(\''+item.id+'\')" style="color:#E8202A;border-color:#E8202A">🗑</button></div></div>';
+    const dateStr=d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const canalLabel=item.canal==='whatsapp'?'WhatsApp':'SMS';
+    const reTxt=t('relancer')||'Re';
+    return '<div class="hist-row">'
+      +'<div style="flex:1"><div class="hist-name">'+item.prenom+'</div>'
+      +'<div class="hist-meta">'+canalLabel+' · '+dateStr+'</div></div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="btn-sm" onclick="resend(\''+item.id+'\',\''+item.prenom+'\',\''+item.phone+'\',\''+item.template_id+'\')" style="color:#1565C0;border-color:#1565C0">↺</button>'
+      +'<button class="btn-sm" onclick="moveToCorbeille(\''+item.id+'\')" style="color:#E8202A;border-color:#E8202A">🗑</button>'
+      +'</div></div>';
   }).join('');
 }
 function renderCorbeille(){
   const list=document.getElementById('corbeille-list');if(!list)return;
-  if(!corbeille.length){list.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px;padding:10px">'+t('aucun_envoi')+'</div>';return;}
+  if(!corbeille.length){
+    list.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px;padding:10px">'+t('aucun_envoi')+'</div>';
+    return;
+  }
   list.innerHTML=corbeille.map((item)=>{
     const d=new Date(item.sent_at||item.at);
-    return'<div class="hist-row" style="opacity:0.7"><div><div class="hist-name">'+item.prenom+'</div><div class="hist-meta">'+d.toLocaleDateString('fr-FR')+'</div></div><button class="btn-sm" onclick="restaurerItem(\''+item.id+'\')" style="color:#25D366;border-color:#25D366" data-t="restaurer">↩</button></div>';
+    const dateStr=d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const canalLabel=item.canal==='whatsapp'?'WhatsApp':'SMS';
+    const restaurerTxt=t('restaurer')||'↩ Restaurer';
+    return '<div class="hist-row"><div style="flex:1"><div class="hist-name" style="color:#999">'+item.prenom+'</div><div class="hist-meta">'+canalLabel+' · '+dateStr+'</div></div>'
+      +'<button class="btn-sm" onclick="restaurerItem(\''+item.id+'\')" style="color:#25D366;border-color:#25D366;font-size:11px">↩ '+restaurerTxt+'</button></div>';
   }).join('');
 }
 async function moveToCorbeille(id){
@@ -2432,6 +2592,9 @@ function editProfile(){
   document.getElementById('edit-gerant').value=profile.gerant||'';
   document.getElementById('edit-whatsapp').value=profile.whatsapp||'';
   document.getElementById('edit-google').value=profile.google_link||'';
+  // Google 2 & 3 seulement pour Business
+  const multiRow=document.getElementById('google-multi-row');
+  if(multiRow)multiRow.style.display=(getPlan()==='business')?'block':'none';
   const g2=document.getElementById('edit-google2');if(g2)g2.value=profile.google_link_2||'';
   const g3=document.getElementById('edit-google3');if(g3)g3.value=profile.google_link_3||'';
   document.getElementById('edit-siret').value=profile.fact_siret||'';
@@ -2472,7 +2635,7 @@ function renderTplSettings(){
   templates.forEach(tp=>{
     const row=document.createElement('div');
     row.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #F0F0F0';
-    row.innerHTML='<div class="dot" style="background:'+tp.color+';width:12px;height:12px"></div><span style="flex:1;font-size:14px;font-weight:600">'+tp.label+'</span><button class="btn-sm" onclick="editTpl(\''+tp.id+'\')">'+(t('editer_btn')||'Éditer')+'</button><button class="btn-sm" style="color:#E8202A;border-color:#E8202A" onclick="deleteTpl(\''+tp.id+'\')">'+(t('supprimer_btn')||'Sup')+'</button>';
+    row.innerHTML='<div class="dot" style="background:'+tp.color+';width:12px;height:12px"></div><span style="flex:1;font-size:14px;font-weight:600">'+translateLabel(tp.label)+'</span><button class="btn-sm" onclick="editTpl(\''+tp.id+'\')">'+(t('editer_btn')||'Éditer')+'</button><button class="btn-sm" style="color:#E8202A;border-color:#E8202A" onclick="deleteTpl(\''+tp.id+'\')">'+(t('supprimer_btn')||'Sup')+'</button>';
     list.appendChild(row);
   });
   // Traduire le placeholder du champ nom modèle
