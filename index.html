@@ -22,6 +22,10 @@ input{-webkit-user-select:text;user-select:text}
 .screen{display:none;min-height:100vh}
 .screen.active{display:block}
 .card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px}
+.screen{transition:opacity .2s ease}
+.btn,.btn-gold,.btn-green,.btn-red,.btn-black,.btn-outline,.btn-sm{transition:opacity .15s,transform .1s}
+.btn:active,.btn-gold:active,.btn-green:active,.btn-red:active,.btn-black:active,.btn-outline:active,.btn-sm:active{transform:scale(0.97);opacity:0.85}
+.tpl-btn{transition:all .15s ease}
 .inp{width:100%;padding:13px 14px;border:1.5px solid #E0E0E0;border-radius:10px;font-size:16px;outline:none;background:#fff;color:#0A0A0A;display:block;margin-bottom:12px}
 .inp:focus{border-color:#F5C518}
 .btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;display:block;text-align:center}
@@ -36,7 +40,8 @@ input{-webkit-user-select:text;user-select:text}
 .tab-btn{flex:1;padding:13px 4px;background:none;border:none;border-bottom:3px solid transparent;font-size:12px;font-weight:400;color:#AAA;cursor:pointer;font-family:inherit;white-space:nowrap;min-width:70px}
 .tab-btn.active{font-weight:700;border-bottom-color:var(--accent,#E8202A)}
 .tab-content{display:none;padding:14px 14px 80px}
-.tab-content.active{display:block}
+.tab-content.active{display:block;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .tpl-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #E0E0E0;border-radius:10px;background:#fff;cursor:pointer;width:100%;margin-bottom:8px;text-align:left;font-family:inherit;font-size:14px;color:#666;font-weight:500}
 .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .chip{padding:7px 12px;background:#fff;border:1.5px solid #E0E0E0;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#444;display:inline-flex;align-items:center;gap:6px;margin-right:8px;white-space:nowrap}
@@ -903,6 +908,12 @@ const TRANSLATIONS={
     clients_frequents:'Clients fréquents',
     remplir_champs:'Remplissez le prénom et le téléphone.',
     envoi_s:' envoi(s)',
+    email_envoye:'Email envoyé !',
+    lien_envoye_a:'Lien envoyé à',
+    important:'Important :',
+    ouvrir_email:"Ouvrez l'email depuis votre téléphone et cliquez sur le lien bleu",
+    verif_spam:"Si l'email tarde, vérifiez vos spams",
+    renvoyer_email:"🔄 Renvoyer l'email",
   },
   en:{
     connexion:'Login',creer_compte:'Create account',email:'Email address',
@@ -987,6 +998,12 @@ const TRANSLATIONS={
     clients_frequents:'Frequent clients',
     remplir_champs:'Fill in the name and phone number.',
     envoi_s:' send(s)',
+    email_envoye:'Email sent!',
+    lien_envoye_a:'Link sent to',
+    important:'Important:',
+    ouvrir_email:'Open the email from your phone and click the blue link',
+    verif_spam:"If the email is late, check your spam",
+    renvoyer_email:'🔄 Resend email',
   },
   es:{
     connexion:'Iniciar sesión',creer_compte:'Crear cuenta',email:'Correo electrónico',
@@ -1183,19 +1200,46 @@ const TRANSLATIONS={
 
 let currentLang=localStorage.getItem('only5:lang')||'en';
 function t(key){return(TRANSLATIONS[currentLang]||TRANSLATIONS['fr'])[key]||TRANSLATIONS['fr'][key]||key;}
-function setLang(code){
-  currentLang=code;
-  localStorage.setItem('only5:lang',code);
+function reRenderAll(){
+  // Re-render TOUT en une seule passe, sans reload
   applyTranslations();
-  // Re-render tous les éléments dynamiques
-  renderSettings();
-  renderStats();
+  renderTplList();
   renderTplSettings();
+  renderStats();
+  renderSettings();
   renderClients();
   renderAbonnement();
   renderHistFull();
   renderCorbeille();
-  // Sauvegarder en BDD si connecté
+  renderSavedClients();
+  renderRelanceTplList();
+  updateTrialBanner();
+  // Mettre à jour le header
+  if(profile){
+    document.getElementById('home-boutique').textContent=profile.boutique||'';
+    document.getElementById('home-secteur').textContent=translateSecteur(profile.secteur||'');
+  }
+}
+
+function setLang(code){
+  currentLang=code;
+  localStorage.setItem('only5:lang',code);
+  // Animation flash pour indiquer le changement
+  const home=document.getElementById('screen-home');
+  if(home){
+    home.style.transition='opacity .15s';
+    home.style.opacity='0.7';
+    setTimeout(()=>{
+      reRenderAll();
+      home.style.opacity='1';
+    },150);
+  } else {
+    reRenderAll();
+  }
+  // Sync sélecteur langue dans settings
+  const sl=document.getElementById('settings-lang');
+  if(sl)sl.value=code;
+  // Sauvegarder en BDD silencieusement
   if(currentUser&&profile){
     sb.from('profiles').update({langue:code}).eq('id',currentUser.id).then(()=>{});
     profile.langue=code;
@@ -1703,26 +1747,34 @@ async function doForgotSendCode(resend){
   showLoading(true);
   let error=null;
   try{
-    const redirectTo=window.location.origin+window.location.pathname;
+    // Toujours utiliser l'URL courante pour la redirection (fix iPhone 12 / ancienne URL)
+    const redirectTo=window.location.origin+window.location.pathname.replace(/\/$/,'');
     const result=await sb.auth.resetPasswordForEmail(email,{redirectTo});
     error=result.error;
   }catch(e){error={message:e.message};}
   showLoading(false);
   if(error){showErr('forgot-err','Erreur envoi: '+error.message);return;}
   const form=safe('forgot-form');
-  if(form){form.innerHTML=`
+  if(form){
+    const emailSentTitle=t('email_envoye')||'Email envoyé !';
+    const emailSentTo=t('lien_envoye_a')||'Lien envoyé à';
+    const importantTxt=t('important')||'Important :';
+    const ouvrirTxt=t('ouvrir_email')||"Ouvrez l'email depuis votre téléphone et cliquez sur le lien bleu";
+    const spamTxt=t('verif_spam')||"Si l'email tarde, vérifiez vos spams";
+    const renvoierTxt=t('renvoyer_email')||"🔄 Renvoyer l'email";
+    const retourTxt=t('retour')||'← Retour connexion';
+    form.innerHTML=`
     <div style="text-align:center;padding:20px 0">
       <div style="font-size:48px;margin-bottom:16px">📧</div>
-      <div style="font-weight:900;font-size:20px;color:#fff;margin-bottom:10px">Email envoyé !</div>
+      <div style="font-weight:900;font-size:20px;color:#fff;margin-bottom:10px">${emailSentTitle}</div>
       <div style="color:#888;font-size:14px;line-height:1.8;margin-bottom:24px">
-        Lien envoyé à<br><strong style="color:#F5C518">${email}</strong><br><br>
-        ⚠️ <strong style="color:#fff">Important :</strong><br>
-        Ouvrez l'email depuis votre téléphone<br>
-        et cliquez sur le lien bleu<br>
-        <em style="color:#666">Si l'email tarde, vérifiez vos spams</em>
+        ${emailSentTo}<br><strong style="color:#F5C518">${email}</strong><br><br>
+        ⚠️ <strong style="color:#fff">${importantTxt}</strong><br>
+        ${ouvrirTxt}<br>
+        <em style="color:#666">${spamTxt}</em>
       </div>
-      <button class="btn btn-outline" onclick="doForgotSendCode(true)" style="margin-bottom:10px">🔄 Renvoyer l'email</button>
-      <button class="btn btn-outline" onclick="showLogin()">← Retour connexion</button>
+      <button class="btn btn-outline" onclick="doForgotSendCode(true)" style="margin-bottom:10px">${renvoierTxt}</button>
+      <button class="btn btn-outline" onclick="showLogin()">${retourTxt}</button>
     </div>
   `;}
 }
@@ -1933,15 +1985,30 @@ function showHome(){
     document.body.appendChild(banner);
     setTimeout(()=>{if(banner.parentElement)banner.remove();},10000);
   }
-  renderTplList();renderSavedClients();renderRelanceTplList();updateTrialBanner();renderStats();renderSettings();renderHistFull();renderCorbeille();
+  reRenderAll();
   showScreen('home');
 }
 function showTab(name,btn){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
-  if(name==='stats')renderStats();if(name==='clients')renderClients();if(name==='settings'){renderSettings();renderHistFull();renderCorbeille();}if(name==='abonnement')renderAbonnement();if(name==='messages')renderTplSettings();
+  const contents=document.querySelectorAll('.tab-content');
+  const current=document.querySelector('.tab-content.active');
+  // Cacher l'onglet actuel avec fade
+  if(current&&current.id!=='tab-'+name){
+    current.style.transition='opacity .1s';
+    current.style.opacity='0';
+  }
+  setTimeout(()=>{
+    contents.forEach(t=>{t.classList.remove('active');t.style.opacity='';t.style.transition='';});
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    const next=document.getElementById('tab-'+name);
+    if(next){next.classList.add('active');next.style.opacity='0';next.style.transition='opacity .15s';setTimeout(()=>next.style.opacity='1',10);}
+    if(btn)btn.classList.add('active');
+    // Render à la demande
+    if(name==='stats')renderStats();
+    if(name==='clients')renderClients();
+    if(name==='settings'){renderSettings();renderHistFull();renderCorbeille();}
+    if(name==='abonnement')renderAbonnement();
+    if(name==='messages')renderTplSettings();
+  },current&&current.id!=='tab-'+name?100:0);
 }
 function renderAbonnement(){
   const plan=profile?.plan||'trial';
@@ -2632,6 +2699,10 @@ async function saveProfile(){
 function renderTplSettings(){
   document.getElementById('tpl-count').textContent=templates.length;
   const list=document.getElementById('tpl-setting-list');list.innerHTML='';
+  if(!templates.length){
+    list.innerHTML='<div style="text-align:center;color:#AAA;font-size:13px;padding:16px">'+t('aucun_envoi')+'</div>';
+    return;
+  }
   templates.forEach(tp=>{
     const row=document.createElement('div');
     row.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #F0F0F0';
