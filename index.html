@@ -367,7 +367,7 @@ No tracking cookies. Authentication token stored locally to maintain session.</d
           <!-- Header -->
           <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;padding:14px 16px;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent)">
             <button onclick="closeScanner()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:15px;font-weight:700;padding:8px 16px;border-radius:20px;cursor:pointer;font-family:inherit">← Retour</button>
-            <div style="flex:1;text-align:center;color:#F5C518;font-size:13px;font-weight:700">Vise Client: ou TEL PERSO</div>
+            <div id="scanner-header-hint" style="flex:1;text-align:center;color:#F5C518;font-size:13px;font-weight:700">Vise Client: ou TEL PERSO</div>
             <div id="scan-photo-count" style="background:#F5C518;color:#000;font-size:12px;font-weight:900;padding:4px 10px;border-radius:12px;display:none">0 photo</div>
           </div>
           <!-- Video - muted obligatoire pour autoplay sans icône pause sur iOS -->
@@ -393,7 +393,7 @@ No tracking cookies. Authentication token stored locally to maintain session.</d
               <button onclick="takeScanPhoto()" style="width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid #F5C518;cursor:pointer;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(245,197,24,0.4)">📷</button>
               <button id="btn-analyser" onclick="analyserPhotos()" style="display:none;padding:10px 16px;background:#F5C518;color:#000;border:none;border-radius:12px;font-size:13px;font-weight:900;cursor:pointer;font-family:inherit">Analyser ▶</button>
             </div>
-            <div style="color:rgba(255,255,255,0.5);font-size:11px">Prends autant de photos que tu veux puis clique Analyser</div>
+            <div id="scanner-hint" style="color:rgba(255,255,255,0.5);font-size:11px">Prends autant de photos que tu veux puis clique Analyser</div>
           </div>
         </div>
 
@@ -775,6 +775,10 @@ No tracking cookies. Authentication token stored locally to maintain session.</d
 </div>
 
 <script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+// ⚠️ PHASE TEST UNIQUEMENT — remplacer par Supabase Edge Function en production
+const ANTHROPIC_KEY='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';
+
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function safe(id){return document.getElementById(id);}
 const AUTH_FORMS=['login-form','register-form','forgot-form','otp-form','reset-form'];
@@ -1668,15 +1672,16 @@ window.onload=async()=>{
   }
 
   // PRIORITE 5 : retour Stripe apres paiement
+  // ⚠️ SECURITE : la mise à jour du plan se fait via webhook Stripe côté serveur.
+  // Ici on recharge juste le profil Supabase (mis à jour par le webhook).
   const paidPlan=params.get('plan');
   if(paidPlan&&params.get('paid')==='1'){
     window.history.replaceState({},document.title,window.location.pathname);
     const {data:{session}}=await sb.auth.getSession();
     if(session){
       currentUser=session.user;
-      await sb.from('profiles').update({plan:paidPlan}).eq('id',currentUser.id);
       await loadUserData();showHome();
-      setTimeout(()=>alert('Felicitations ! Abonnement '+PLAN_NAMES[paidPlan]+' actif !'),500);
+      setTimeout(()=>alert('Paiement reçu ! Votre plan sera activé sous quelques secondes.'),500);
       return;
     }
   }
@@ -1943,7 +1948,8 @@ async function loadUserData(){
   selTpl=templates[0]?.id||'standard';
   const {data:hist}=await sb.from('envois').select('*').eq('user_id',uid).order('sent_at',{ascending:false}).limit(20);
   history=hist||[];
-  trialCount=lsg('only5:trial:'+uid)||0;
+  // trial_count depuis Supabase (profiles.trial_count) avec fallback localStorage
+  trialCount=(prof&&typeof prof.trial_count==='number')?prof.trial_count:(lsg('only5:trial:'+uid)||0);
   const plan=profile?.plan||'trial';
   isPaid=(plan!=='trial')||isAdmin();
   if(isAdmin())isPaid=true;
@@ -2117,7 +2123,13 @@ async function doSendMsg(canal){
   if(currentUser){
     try{const {data}=await sb.from('envois').insert(entry).select().single();if(data)history=[data,...history.slice(0,49)];}catch(e){}
   }
-  if(!isPaid){trialCount++;lss('only5:trial:'+(currentUser?.id||'demo'),trialCount);updateTrialBanner();if(trialCount>=TRIAL_LIMIT)setTimeout(()=>document.getElementById('paywall').classList.add('show'),1500);}
+  if(!isPaid){
+    trialCount++;
+    lss('only5:trial:'+(currentUser?.id||'demo'),trialCount);
+    if(currentUser){try{await sb.from('profiles').update({trial_count:trialCount}).eq('id',currentUser.id);}catch(e){}}
+    updateTrialBanner();
+    if(trialCount>=TRIAL_LIMIT)setTimeout(()=>document.getElementById('paywall').classList.add('show'),1500);
+  }
   const f=document.getElementById('flash-sent');if(f){f.style.display='block';setTimeout(()=>f.style.display='none',2500);}
   document.getElementById('send-prenom').value='';
   document.getElementById('send-phone').value='';
@@ -2145,9 +2157,15 @@ function openScanner(mode){
   if(countEl)countEl.style.display='none';
   const hint=document.getElementById('scanner-hint');
   if(hint){
-    if(mode==='nom')hint.textContent='📷 Vise la ligne Client: ou Nom & Prénom';
-    else if(mode==='tel')hint.textContent='📷 Vise la ligne TEL PERSO';
-    else hint.textContent='📷 Vise Client: ou TEL PERSO';
+    if(mode==='nom')hint.textContent='📷 Prends une photo de la ligne Nom & Prénom ou Client:';
+    else if(mode==='tel')hint.textContent='📷 Prends une photo de la ligne TEL PERSO';
+    else hint.textContent='📷 Vise Client: ou TEL PERSO puis clique Analyser';
+  }
+  const hh=document.getElementById('scanner-header-hint');
+  if(hh){
+    if(mode==='nom')hh.textContent='📷 Étape 1/2 — Vise Nom & Prénom';
+    else if(mode==='tel')hh.textContent='📷 Étape 2/2 — Vise TEL PERSO';
+    else hh.textContent='Vise Client: ou TEL PERSO';
   }
   showScanView('camera');
   const modal=document.getElementById('scanner-modal');
@@ -2220,8 +2238,8 @@ function keepPhoto(){
   showScanView('camera');
 }
 function preprocessCanvas(src, invert=false){
-  // Crée une version améliorée pour OCR : agrandissement + contraste élevé + noir/blanc
-  const scale=2.5;
+  // Agrandissement x3 pour meilleure lisibilité OCR
+  const scale=3;
   const dst=document.createElement('canvas');
   dst.width=src.width*scale;
   dst.height=src.height*scale;
@@ -2231,20 +2249,40 @@ function preprocessCanvas(src, invert=false){
   ctx.drawImage(src,0,0,dst.width,dst.height);
   const imgData=ctx.getImageData(0,0,dst.width,dst.height);
   const d=imgData.data;
-  // Détecter si fond sombre (Kezia = fond violet/bleu)
-  let totalLum=0;
-  for(let i=0;i<d.length;i+=4){totalLum+=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];}
-  const avgLum=totalLum/(d.length/4);
-  const isDark=avgLum<128; // fond sombre → Kezia style
+
+  // Détecter fond sombre ET écran coloré (Kezia = fond violet/bleu, texte blanc)
+  let totalLum=0,colorVariance=0;
   for(let i=0;i<d.length;i+=4){
-    let l=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-    // Si fond sombre, on inverse d'abord
-    if(isDark||invert)l=255-l;
-    // Contraste fort
-    l=((l-128)*3)+128;
+    totalLum+=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    const maxC=Math.max(d[i],d[i+1],d[i+2]);
+    const minC=Math.min(d[i],d[i+1],d[i+2]);
+    colorVariance+=maxC-minC;
+  }
+  const avgLum=totalLum/(d.length/4);
+  const avgSat=colorVariance/(d.length/4);
+  const isDark=avgLum<140;
+  const isScreen=avgSat>30; // haute saturation = écran coloré
+
+  for(let i=0;i<d.length;i+=4){
+    let r=d[i],g=d[i+1],b=d[i+2];
+    let l=0.299*r+0.587*g+0.114*b;
+    if(isDark||invert){
+      // Fond sombre → inverser
+      if(isScreen){
+        // Écran coloré (Kezia) : désaturer d'abord pour éviter faux positifs
+        const gray=(r+g+b)/3;
+        l=255-gray;
+      } else {
+        l=255-l;
+      }
+    }
+    // Contraste plus fort pour écrans (reflets)
+    const factor=isScreen?4:3;
+    l=((l-128)*factor)+128;
     l=Math.max(0,Math.min(255,l));
-    // Seuil noir/blanc
-    const v=l>128?255:0;
+    // Seuil légèrement abaissé pour écrans (texte pâle)
+    const threshold=isScreen?110:128;
+    const v=l>threshold?255:0;
     d[i]=d[i+1]=d[i+2]=v;
   }
   ctx.putImageData(imgData,0,0);
@@ -2354,7 +2392,7 @@ Réponds UNIQUEMENT avec ce JSON, rien d'autre:
 
       const resp=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
-        headers:{'Content-Type':'application/json'},
+        headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
         body:JSON.stringify({
           model:'claude-sonnet-4-6',max_tokens:150,
           messages:[{role:'user',content:[
@@ -2391,6 +2429,29 @@ Réponds UNIQUEMENT avec ce JSON, rien d'autre:
   }
 
   status.style.display='none';
+
+  // ── MODE NOM : trouvé le prénom mais pas encore le tél → scan séquentiel
+  if(prenomFinal&&!telFinal&&scannerMode==='nom'){
+    document.getElementById('send-prenom').value=prenomFinal;
+    // Réinitialiser photos pour le prochain scan
+    scanPhotos=[];
+    document.getElementById('scan-photos-row').innerHTML='';
+    const ba=document.getElementById('btn-analyser');if(ba)ba.style.display='none';
+    const sc=document.getElementById('scan-photo-count');if(sc)sc.style.display='none';
+    // Passer en mode tél
+    scannerMode='tel';
+    const hh=document.getElementById('scanner-header-hint');
+    if(hh)hh.textContent='✓ Nom OK — Étape 2/2 : vise TEL PERSO';
+    const sh=document.getElementById('scanner-hint');
+    if(sh)sh.textContent='📷 Prends une photo de la ligne TEL PERSO';
+    // Statut vert temporaire
+    status.style.display='block';
+    status.style.background='rgba(37,211,102,0.9)';
+    status.textContent='✓ '+prenomFinal+' — Maintenant vise TEL PERSO';
+    setTimeout(()=>{status.style.display='none';status.style.background='';},2500);
+    return; // Garder le scanner ouvert
+  }
+
   if(prenomFinal)document.getElementById('send-prenom').value=prenomFinal;
   if(telFinal)document.getElementById('send-phone').value=telFinal;
 
@@ -2419,7 +2480,7 @@ async function extractWithAI(imageBase64,mediaType,mode){
       : 'Sur cette image, trouve le NOM+PRÉNOM et le NUMÉRO DE TÉLÉPHONE. Cherche "Nom & Prénom", "Client:", "Tel. Perso", "TEL PERSO" ou équivalents. Réponds UNIQUEMENT en JSON: {"prenom":"NOM PRENOM ou vide","tel":"numéro ou vide"}';
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({
         model:'claude-sonnet-4-6',max_tokens:200,
         messages:[{role:'user',content:[
